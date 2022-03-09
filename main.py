@@ -30,8 +30,8 @@ if __name__ == "__main__":
         logging.info(f'Start tokenization for {filename}')
         tokens = list(tokenizer.tokenize(file, filename))
         logging.info(f'Start tagging for {filename}')
-        pos_tagger.process(tokens)
-        morph_tagger.process(tokens)
+        tokens = list(tqdm(pos_tagger.process(tokens), total=len(tokens)))
+        tokens = list(tqdm(morph_tagger.process(tokens), total=len(tokens)))
         for tok in tokens:
             print(tok)
 

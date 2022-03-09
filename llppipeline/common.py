@@ -13,6 +13,14 @@ class Token:
             # covers fields specified as None
             self.__dict__[key] = val if val else "_"
 
+    def __setattr__(self, key, value):
+        raise TypeError('Fields are read-only')
+
+    def copy(self, **kwargs):
+        new_fields = dict(self.__dict__)
+        new_fields.update(kwargs)
+        return Token(**new_fields)
+
     def __str__(self):
         return "\t".join(str(self.__dict__.get(key) or '_') for key in Token.fields)
 
@@ -27,5 +35,5 @@ class Tokenizer:
 
 
 class Module:
-    def process(self, tokens: Sequence[Token], **kwargs):
+    def process(self, tokens: Sequence[Token], **kwargs) -> Iterable[Token]:
         raise NotImplementedError

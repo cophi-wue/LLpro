@@ -43,8 +43,7 @@ class NLTKPunktTokenizer(Tokenizer):
                 logging.warning(f'Found irregular characters in {filename}: {", ".join(irr)}')
 
         for tok in self.processor(myinput):
-            tok.doc = filename
-            tok.id = i
+            tok = tok.copy(doc=filename, id=i)
             yield tok
             i += 1
 
@@ -62,13 +61,13 @@ class SoMeWeTaTagger(Module):
 
         self.processor = myprocessor
 
-    def process(self, tokens: Sequence[Token], **kwargs):
+    def process(self, tokens: Sequence[Token], **kwargs) -> Iterable[Token]:
         for sentence in Token.get_sentences(tokens):
             tagged = self.processor(sentence)
             assert len(tagged) == len(tagged)
             for token, (tok, tag) in zip(sentence, tagged):
                 assert token.word == tok
-                token.pos = tag
+                yield token.copy(pos=tag)
 
 
 class RNNTagger(Module):
@@ -139,7 +138,7 @@ class RNNTagger(Module):
 
         self.processor = myprocessor
 
-    def process(self, tokens: Sequence[Token], **kwargs):
+    def process(self, tokens: Sequence[Token], **kwargs) -> Iterable[Token]:
         it = iter(tokens)
         for tok, tag in self.processor(Token.get_sentences(tokens)):
             maintag = tag.split(".")[0]
@@ -148,8 +147,11 @@ class RNNTagger(Module):
 
             token = next(it)
             assert tok == token.word
+            new_fields = {}
             if self.write_morph:
                 # TODO systematischer parsen?
-                token.morph = re.search(r'^[^\.]+\.(.*)$', tag).group(1) if '.' in tag else None
+                new_fields['morph'] = re.search(r'^[^\.]+\.(.*)$', tag).group(1) if '.' in tag else None
             if self.write_pos:
-                token.pos = stts
+                new_fields['pos'] = stts
+
+            yield token.copy(**new_fields)
