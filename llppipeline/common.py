@@ -28,6 +28,10 @@ class Token:
     def get_sentences(tokens: Iterable[Token]) -> Iterable[Iterable[Token]]:
         return more_itertools.split_when(tokens, lambda a, b: a.sentence != b.sentence)
 
+    @staticmethod
+    def get_documents(tokens: Iterable[Token]) -> Iterable[Iterable[Token]]:
+        return more_itertools.split_when(tokens, lambda a, b: a.doc != b.doc)
+
 
 class Tokenizer:
     def tokenize(self, file: TextIO, filename: str) -> Iterable[Token]:
