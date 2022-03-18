@@ -24,7 +24,10 @@ class NLTKPunktTokenizer(Tokenizer):
             sentences = sent_tokenize(myinput, language="german")
             for i, sent in enumerate(sentences):
                 for word in word_tokenize(sent, language="german"):
-                    yield Token(word=word, sentence=i)
+                    tok = Token()
+                    tok.set_field('word', 'nltk_punkt_tokenizer', word)
+                    tok.set_field('sentence', 'nltk_punkt_tokenizer', i)
+                    yield tok
 
         self.processor = myprocessor
 
@@ -41,7 +44,8 @@ class NLTKPunktTokenizer(Tokenizer):
                 logging.warning(f'Found irregular characters in {filename}: {", ".join(irr)}')
 
         for tok in self.processor(myinput):
-            tok = tok.copy(doc=filename, id=i)
+            tok.set_field('doc', 'nltk_punkt_tokenizer', filename)
+            tok.set_field('id', 'nltk_punkt_tokenizer', i)
             yield tok
             i += 1
 
@@ -65,15 +69,14 @@ class SoMeWeTaTagger(Module):
             assert len(tagged) == len(tagged)
             for token, (tok, tag) in zip(sentence, tagged):
                 assert token.word == tok
-                yield token.copy(pos=tag)
+                token.set_field('pos', 'someweta', tag)
+                yield token
 
 
 class RNNTagger(Module):
 
-    def __init__(self, rnntagger_home='resources/RNNTagger', write_pos=False, write_morph=True):
+    def __init__(self, rnntagger_home='resources/RNNTagger'):
         self.rnntagger_home = Path(rnntagger_home)
-        self.write_pos = write_pos
-        self.write_morph = write_morph
         sys.path.insert(0, str(self.rnntagger_home))
         sys.path.insert(0, str(self.rnntagger_home / "PyNMT"))
         import torch
@@ -123,19 +126,19 @@ class RNNTagger(Module):
 
             token = next(it)
             assert tok == token.word
-            new_fields = {}
-            if self.write_morph:
-                # TODO systematischer parsen?
-                new_fields['morph'] = re.search(r'^[^\.]+\.(.*)$', tag).group(1) if '.' in tag else None
-            if self.write_pos:
-                new_fields['pos'] = stts
+            # TODO systematischer parsen?
+            morph = re.search(r'^[^\.]+\.(.*)$', tag).group(1) if '.' in tag else None
+            token.set_field('morph', 'rnntagger', morph)
+            token.set_field('pos', 'rnntagger', stts)
 
-            yield token.copy(**new_fields)
+            yield token
 
 
 class RNNLemmatizer(Module):
-    def __init__(self, rnntagger_home='resources/RNNTagger'):
+    def __init__(self, rnntagger_home='resources/RNNTagger', pos_module='rnntagger', morph_module='rnntagger'):
         self.rnntagger_home = Path(rnntagger_home)
+        self.pos_module = pos_module
+        self.morph_module = morph_module
         sys.path.insert(0, str(self.rnntagger_home))
         sys.path.insert(0, str(self.rnntagger_home / "PyNMT"))
         import torch
@@ -166,7 +169,10 @@ class RNNLemmatizer(Module):
             batch = []
             for tok in tokens:
                 word = tok.word
-                tag = tok.pos + '.' + tok.morph  # TODO geht das auch unabhängiger von dem direkten Morphologie-Format?
+                if tok.get_field('morph', morph_module):
+                    tag = tok.get_field('pos', pos_module) + '.' + tok.get_field('morph', morph_module)  # TODO geht das auch unabhängiger von dem direkten Morphologie-Format?
+                else:
+                    tag = tok.get_field('pos', pos_module)
                 word = re.sub(r'   ', ' <> ', re.sub(r'(.)', r'\g<1> ', word))
                 tag = re.sub(r'(.)', r'\g<1> ', tag)
 
@@ -194,8 +200,9 @@ class RNNLemmatizer(Module):
                 try:
                     while sum(1 - x for x in current_batch_is_cached) < self.vector_mappings.batch_size:
                         tok = next(it)
+                        cache_key = (tok.word, tok.get_field('pos', self.pos_module), tok.get_field('morph', self.morph_module))
                         current_batch.append(tok)
-                        if (tok.word, tok.pos, tok.morph) in cached.keys():
+                        if cache_key in cached.keys():
                             current_batch_is_cached.append(1)
                         else:
                             current_batch_is_cached.append(0)
@@ -210,5 +217,6 @@ class RNNLemmatizer(Module):
                         yield tok.copy(lemma=cached[(tok.word, tok.pos, tok.morph)])
                     else:
                         lemma = next(lemmas)
-                        cached[(tok.word, tok.pos, tok.morph)] = lemma
-                        yield tok.copy(lemma=lemma)
+                        cached[cache_key] = lemma
+                        tok.set_field('lemma', 'rnnlemmatizer', lemma)
+                    yield tok
