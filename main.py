@@ -11,6 +11,7 @@ if __name__ == "__main__":
     pos_tagger = SoMeWeTaTagger()
     morph_tagger = RNNTagger()
     lemmatizer = RNNLemmatizer()
+    zmorge_analyzer = ZmorgeAnalyzer()
 
 
     def files():
@@ -28,6 +29,7 @@ if __name__ == "__main__":
         tokens = list(tqdm(pos_tagger.process(tokens), total=len(tokens)))
         tokens = list(tqdm(morph_tagger.process(tokens), total=len(tokens)))
         tokens = list(tqdm(lemmatizer.process(tokens), total=len(tokens)))
+        tokens = list(tqdm(zmorge_analyzer.process(tokens), total=len(tokens)))
         for tok in tokens:
             print(tok)
 

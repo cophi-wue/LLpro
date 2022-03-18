@@ -5,6 +5,7 @@ import unicodedata
 from pathlib import Path
 
 import regex
+import subprocess
 
 from .common import *
 
@@ -213,10 +214,54 @@ class RNNLemmatizer(Module):
                 lemmas = iter(self.processor(
                     [tok for tok, is_cached in zip(current_batch, current_batch_is_cached) if not is_cached]))
                 for tok, is_cached in zip(current_batch, current_batch_is_cached):
+                    cache_key = (
+                        tok.word, tok.get_field('pos', self.pos_module), tok.get_field('morph', self.morph_module))
                     if is_cached:
-                        yield tok.copy(lemma=cached[(tok.word, tok.pos, tok.morph)])
+                        lemma = cached[cache_key]
+                        tok.set_field('lemma', 'rnnlemmatizer', lemma)
                     else:
                         lemma = next(lemmas)
                         cached[cache_key] = lemma
                         tok.set_field('lemma', 'rnnlemmatizer', lemma)
                     yield tok
+
+
+class ZmorgeAnalyzer(Module):
+
+    def __init__(self, transducer='resources/fst-infl2', modelfile='resources/zmorge-20150315-smor_newlemma.ca'):
+        process = subprocess.Popen([transducer, '-s', modelfile], text=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL)
+        pat = re.compile("^>( (.+))?")
+        negative = re.compile("^no result for")
+
+        def myprocessor(words):
+            for chunk in more_itertools.chunked(words, n=100):
+                for word in chunk:
+                    process.stdin.write(word + '\n')
+                process.stdin.write('\n')
+                process.stdin.flush()
+
+                counter = 0
+                cur_word = None
+                cur_analysis = None
+                while counter <= len(chunk):
+                    line = process.stdout.readline().strip()
+                    if pat.match(line) is not None:
+                        if cur_word is not None:
+                            yield cur_word, cur_analysis
+
+                        counter = counter + 1
+                        cur_word = pat.match(line).group(2)
+                        cur_analysis = []
+                    elif negative.match(line) is None:
+                        cur_analysis.append(line)
+
+        self.processor = myprocessor
+
+    def process(self, tokens: Sequence[Token], **kwargs) -> Iterable[Token]:
+        for tok, (word, analysis) in zip(tokens, self.processor(tok.word for tok in tokens)):
+            assert tok.word == word
+            tok.set_field('morph', 'zmorge', analysis)
+            yield tok
+
+
+
