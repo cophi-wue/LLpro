@@ -5,7 +5,6 @@ import unicodedata
 from pathlib import Path
 
 import regex
-import subprocess
 
 from .common import *
 
@@ -44,7 +43,11 @@ class NLTKPunktTokenizer(Tokenizer):
             if len(irr) > 0:
                 logging.warning(f'Found irregular characters in {filename}: {", ".join(irr)}')
 
+        cursent = None
         for tok in self.processor(myinput):
+            if cursent != tok.sentence:
+                cursent = tok.sentence
+                i = 0
             tok.set_field('doc', 'nltk_punkt_tokenizer', filename)
             tok.set_field('id', 'nltk_punkt_tokenizer', i)
             yield tok
@@ -171,7 +174,8 @@ class RNNLemmatizer(Module):
             for tok in tokens:
                 word = tok.word
                 if tok.get_field('morph', morph_module):
-                    tag = tok.get_field('pos', pos_module) + '.' + tok.get_field('morph', morph_module)  # TODO geht das auch unabhängiger von dem direkten Morphologie-Format?
+                    tag = tok.get_field('pos', pos_module) + '.' + tok.get_field('morph',
+                                                                                 morph_module)  # TODO geht das auch unabhängiger von dem direkten Morphologie-Format?
                 else:
                     tag = tok.get_field('pos', pos_module)
                 word = re.sub(r'   ', ' <> ', re.sub(r'(.)', r'\g<1> ', word))
@@ -201,7 +205,8 @@ class RNNLemmatizer(Module):
                 try:
                     while sum(1 - x for x in current_batch_is_cached) < self.vector_mappings.batch_size:
                         tok = next(it)
-                        cache_key = (tok.word, tok.get_field('pos', self.pos_module), tok.get_field('morph', self.morph_module))
+                        cache_key = (
+                        tok.word, tok.get_field('pos', self.pos_module), tok.get_field('morph', self.morph_module))
                         current_batch.append(tok)
                         if cache_key in cached.keys():
                             current_batch_is_cached.append(1)
@@ -226,42 +231,68 @@ class RNNLemmatizer(Module):
                     yield tok
 
 
-class ZmorgeAnalyzer(Module):
+class ParzuParser(Module):
 
-    def __init__(self, transducer='resources/fst-infl2', modelfile='resources/zmorge-20150315-smor_newlemma.ca'):
-        process = subprocess.Popen([transducer, '-s', modelfile], text=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL)
-        pat = re.compile("^>( (.+))?")
-        negative = re.compile("^no result for")
+    def __init__(self, parzu_home='resources/ParZu', pos_source=None):
+        sys.path.insert(0, str(parzu_home))
+        from parzu_class import process_arguments, Parser
 
-        def myprocessor(words):
-            for chunk in more_itertools.chunked(words, n=100):
-                for word in chunk:
-                    process.stdin.write(word + '\n')
-                process.stdin.write('\n')
-                process.stdin.flush()
+        self.opts = process_arguments(commandline=False)
+        self.parser = Parser(self.opts, timeout=1000)
 
-                counter = 0
-                cur_word = None
-                cur_analysis = None
-                while counter <= len(chunk):
-                    line = process.stdout.readline().strip()
-                    if pat.match(line) is not None:
-                        if cur_word is not None:
-                            yield cur_word, cur_analysis
+        def myprocessor(document):
+            newinput = []
+            for sent in Token.get_sentences(document):
+                sent_strs = []
+                for tok in sent:
+                    sent_strs.append(tok.word + '\t' + tok.get_field('pos', pos_source))
 
-                        counter = counter + 1
-                        cur_word = pat.match(line).group(2)
-                        cur_analysis = []
-                    elif negative.match(line) is None:
-                        cur_analysis.append(line)
+                newinput.append("\n".join(sent_strs))
+            reformatted_input = "\n\n".join(newinput)
+
+            output = self.parser.main(
+                reformatted_input, inputformat="tagged", outputformat="conll"
+            )
+            return output
 
         self.processor = myprocessor
 
     def process(self, tokens: Sequence[Token], **kwargs) -> Iterable[Token]:
-        for tok, (word, analysis) in zip(tokens, self.processor(tok.word for tok in tokens)):
-            assert tok.word == word
-            tok.set_field('morph', 'zmorge', analysis)
-            yield tok
+        tokens = list(tokens)
+        it = iter(tokens)
 
+        processed = self.processor(tokens)
+        assert len(processed) > 0
+        for sent in processed:
+            for line in sent.split('\n'):
+                if line.strip() == '':
+                    continue
+                tok = next(it)
+                (
+                    _,
+                    word,
+                    lemma,
+                    _,
+                    pos,
+                    feats,
+                    head,
+                    deprel,
+                    deps,
+                    misc,
+                ) = line.strip().split("\t")
+                if deprel == 'root':
+                    head = 0
+                else:
+                    head = int(line.split('\t')[6])
 
+                assert tok.word == word
+                if tok.pos != pos:
+                    logging.warning(
+                        f'While processing ParZu: POS tags for token {tok.doc}, sentence {tok.sentence}, word {tok.id}'
+                        f' "{tok.word}", POS tag {tok.pos} given vs {pos} generated by ParZu!')
 
+                tok.set_field('pos', 'parzu', pos)
+                tok.set_field('lemma', 'parzu', lemma)
+                tok.set_field('morph', 'parzu', feats)
+                tok.set_field('dep', 'parzu', (int(head), deprel))
+                yield tok

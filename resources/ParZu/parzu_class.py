@@ -216,23 +216,23 @@ class Parser():
     def __init__(self, options, timeout=10):
 
         # launch punkt_tokenizer for sentence splitting
-        self.punkt_tokenizer = punkt_tokenizer.PunktSentenceTokenizer()
-        self.punkt_tokenizer._params.collocations = punkt_tokenizer.punkt_data_german.collocations
-        self.punkt_tokenizer._params.ortho_context = punkt_tokenizer.punkt_data_german.ortho_context
-        self.punkt_tokenizer._params.abbrev_types = punkt_tokenizer.punkt_data_german.abbrev_types
-        self.punkt_tokenizer._params.sent_starters = punkt_tokenizer.punkt_data_german.sent_starters
+        # self.punkt_tokenizer = punkt_tokenizer.PunktSentenceTokenizer()
+        # self.punkt_tokenizer._params.collocations = punkt_tokenizer.punkt_data_german.collocations
+        # self.punkt_tokenizer._params.ortho_context = punkt_tokenizer.punkt_data_german.ortho_context
+        # self.punkt_tokenizer._params.abbrev_types = punkt_tokenizer.punkt_data_german.abbrev_types
+        # self.punkt_tokenizer._params.sent_starters = punkt_tokenizer.punkt_data_german.sent_starters
 
         # launch moses tokenizer
-        tokenizer_cmd = "perl " + os.path.join(root_directory,"preprocessor","tokenizer.perl") + " -l de"
-        self.tokenizer = pexpect.spawn(tokenizer_cmd, echo=False, encoding='utf-8')
-        self.tokenizer.expect("Tokenizer v3\r\nLanguage: de\r\n")
-        self.tokenizer.delaybeforesend = 0
+        # tokenizer_cmd = "perl " + os.path.join(root_directory,"preprocessor","tokenizer.perl") + " -l de"
+        # self.tokenizer = pexpect.spawn(tokenizer_cmd, echo=False, encoding='utf-8')
+        # self.tokenizer.expect("Tokenizer v3\r\nLanguage: de\r\n")
+        # self.tokenizer.delaybeforesend = 0
 
         # launch clevertagger for POS tagging
-        clevertagger_dir = os.path.dirname(options["taggercmd"][0])
-        sys.path.append(clevertagger_dir)
-        import clevertagger
-        self.tagger = clevertagger.Clevertagger()
+        # clevertagger_dir = os.path.dirname(options["taggercmd"][0])
+        # sys.path.append(clevertagger_dir)
+        # import clevertagger
+        # self.tagger = clevertagger.Clevertagger()
 
         # launch SMOR morphological analyzer
         try:
@@ -250,6 +250,10 @@ class Parser():
         # test morphological analyzer
         self.morph.send('\n')
         out1 = self.morph.readline().strip()
+        # TODO Pydev macht komische Ausgaben beim Debugging
+        if out1.startswith('pydev debugger'):
+            out1 = self.morph.readline().strip()
+            out1 = self.morph.readline().strip()
         out2 = self.morph.readline().strip()
         if not (out1 == '>' and out2 == 'no result for'):
             sys.stderr.write('Error: fst-infl2 returned unexpected output:\n')
@@ -321,8 +325,8 @@ class Parser():
                                           echo=False)
         self.conll_to_svg.delaybeforesend = 0
 
-        self.lock_tokenize = threading.Lock()
-        self.lock_tag = threading.Lock()
+        # self.lock_tokenize = threading.Lock()
+        # self.lock_tag = threading.Lock()
         self.lock_preprocess = threading.Lock()
         self.lock_parse = threading.Lock()
         self.lock_svg = threading.Lock()
@@ -330,7 +334,7 @@ class Parser():
         self.options = options
 
     def __del__(self):
-        self.tokenizer.close()
+        # self.tokenizer.close()
         self.morph.close()
         self.prolog_preprocess.close()
         self.prolog_parser.close()
@@ -346,9 +350,7 @@ class Parser():
 
 
         if inputformat in ['plain', 'tokenized_lines']:
-            text = text.strip()
-            with self.lock_tokenize:
-                sentences = self.tokenize(text, inputformat)
+            raise ValueError()
         else:
             sentences = text.split('\n\n')
 
@@ -367,8 +369,7 @@ class Parser():
             return sentences
 
         if inputformat in ['plain', 'tokenized_lines', 'tokenized']:
-            with self.lock_tag:
-                sentences = self.tag(sentences)
+            raise ValueError()
         else:
             sentences = text.split('\n\n')
         if outputformat == 'tagged':
@@ -407,44 +408,6 @@ class Parser():
 
         return sentences
 
-
-    #sentence splitting and tokenization
-    #input: plain text
-    #output: one token per line; empty lines mark sentence boundaries
-    def tokenize(self, text, inputformat):
-
-        if self.options['verbose']:
-            self.options['senderror'].write("Starting tokenizer\n")
-
-        if not text:
-            return []
-
-        if inputformat == 'tokenized_lines':
-            return ['\n'.join(line.split()) for line in text.splitlines()]
-
-        elif self.options['linewise']:
-            sentences = text.splitlines()
-        else:
-            sentences = self.punkt_tokenizer.tokenize(text)
-            # remove line breaks
-            sentences = [sentence.replace('\n', ' ').replace('\r', '') for sentence in sentences]
-
-        sentences = process_by_sentence(self.tokenizer, sentences)
-
-        return sentences
-
-
-    #pos tagging
-    #input: list of sentences; each sentence is one token per line
-    #output: list of sentences; each sentence is one token per line (token \t tag \n)
-    def tag(self, sentences):
-
-        if self.options['verbose']:
-            self.options['senderror'].write("Starting POS-tagger\n")
-
-        sentences = self.tagger.tag(sentences)
-
-        return sentences
 
 
     #convert to prolog-readable format
@@ -555,7 +518,7 @@ class Parser():
             if self.options['verbose']:
                 self.options['senderror'].write(line)
             line = re.sub(r'\x1B\[[0-?]*[ -/]*[@-~]', '', line)     # remove styling tokens
-            if re.match('(\?-)?(\s+\|\s+)?true\.\r\n', line):
+            if re.match(r'\?- \r\n', line):
                 break
 
         return parsedfile.name
