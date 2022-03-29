@@ -3,6 +3,7 @@ from typing import TextIO, Iterable, Sequence
 
 import more_itertools
 
+
 class Token:
     fields = "doc id word sentence lemma pos morph".split()
     id: int
@@ -12,6 +13,8 @@ class Token:
     lemma: str
     pos: str
     morph: str
+    head: int
+    deprel: str
 
     def __init__(self):
         self.fields = {}
@@ -45,6 +48,16 @@ class Token:
 
     def __str__(self):
         return self.fields.__str__()
+
+    def to_output_line(self, modules=None, fields=None):
+        if fields is None:
+            fields = ['doc', 'sentence', 'id', 'word', 'lemma', 'pos', 'morph', 'head', 'deprel']
+
+        if modules is None:
+            modules = {}
+
+        field_strings = [str(self.get_field(field, module_name=modules.get(field, None))) for field in fields]
+        return '\t'.join(field_strings)
 
     @staticmethod
     def get_sentences(tokens: Iterable[Token]) -> Iterable[Iterable[Token]]:

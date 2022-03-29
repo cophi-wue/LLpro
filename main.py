@@ -11,11 +11,11 @@ if __name__ == "__main__":
     parzu = ParzuParser()
     # pos_tagger = SoMeWeTaTagger()
     morph_tagger = RNNTagger()
-    # lemmatizer = RNNLemmatizer()
+    lemmatizer = RNNLemmatizer()
 
 
     def files():
-        for fname in glob('/mnt/data/kallimachos/Romankorpus/Heftromane/txt/*762'):
+        for fname in glob('testfile1'):
             fobj = open(fname)
             yield fobj, fname
             fobj.close()
@@ -28,8 +28,8 @@ if __name__ == "__main__":
         logging.info(f'Start tagging for {filename}')
         # tokens = list(tqdm(pos_tagger.process(tokens), total=len(tokens)))
         tokens = list(tqdm(morph_tagger.process(tokens), total=len(tokens)))
-        # tokens = list(tqdm(lemmatizer.process(tokens), total=len(tokens)))
+        tokens = list(tqdm(lemmatizer.process(tokens), total=len(tokens)))
         tokens = list(tqdm(parzu.process(tokens), total=len(tokens)))
-        # for tok in tokens:
-        #     print(tok)
+        for tok in tokens:
+            print(tok.to_output_line(modules={'pos': 'rnntagger', 'morph': 'rnntagger', 'lemma': 'rnnlemmatizer'}))
 
