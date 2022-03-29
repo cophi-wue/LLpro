@@ -67,14 +67,14 @@ class SoMeWeTaTagger(Module):
 
         self.processor = myprocessor
 
-    def process(self, tokens: Sequence[Token], **kwargs) -> Iterable[Token]:
+    def process(self, tokens: Sequence[Token], update_fn, **kwargs):
         for sentence in Token.get_sentences(tokens):
             tagged = self.processor(sentence)
             assert len(tagged) == len(tagged)
             for token, (tok, tag) in zip(sentence, tagged):
                 assert token.word == tok
                 token.set_field('pos', 'someweta', tag)
-                yield token
+                update_fn(1)
 
 
 class RNNTagger(Module):
@@ -122,7 +122,7 @@ class RNNTagger(Module):
 
         self.processor = myprocessor
 
-    def process(self, tokens: Sequence[Token], **kwargs) -> Iterable[Token]:
+    def process(self, tokens: Sequence[Token], update_fn, **kwargs):
         it = iter(tokens)
         for tok, tag in self.processor(Token.get_sentences(tokens)):
             maintag = tag.split(".")[0]
@@ -134,8 +134,7 @@ class RNNTagger(Module):
             morph = re.search(r'^[^\.]+\.(.*)$', tag).group(1) if '.' in tag else None
             token.set_field('morph', 'rnntagger', morph)
             token.set_field('pos', 'rnntagger', stts)
-
-            yield token
+            update_fn(1)
 
 
 class RNNLemmatizer(Module):
@@ -192,7 +191,7 @@ class RNNLemmatizer(Module):
 
         self.processor = myprocessor
 
-    def process(self, tokens: Sequence[Token], **kwargs) -> Iterable[Token]:
+    def process(self, tokens: Sequence[Token], update_fn, **kwargs):
         for document in Token.get_documents(tokens):
             # for each document, use a cache to skip tokens already lemmatized
             cached = {}
@@ -228,7 +227,7 @@ class RNNLemmatizer(Module):
                         lemma = next(lemmas)
                         cached[cache_key] = lemma
                         tok.set_field('lemma', 'rnnlemmatizer', lemma)
-                    yield tok
+                    update_fn(1)
 
 
 class ParzuParser(Module):
@@ -257,7 +256,7 @@ class ParzuParser(Module):
 
         self.processor = myprocessor
 
-    def process(self, tokens: Sequence[Token], **kwargs) -> Iterable[Token]:
+    def process(self, tokens: Sequence[Token], update_fn, **kwargs):
         for sent in Token.get_sentences(tokens):
             sent = list(sent)
             it = iter(sent)
@@ -297,4 +296,4 @@ class ParzuParser(Module):
                     tok.set_field('morph', 'parzu', feats)
                     tok.set_field('head', 'parzu', int(head))
                     tok.set_field('deprel', 'parzu', deprel)
-                    yield tok
+                    update_fn(1)

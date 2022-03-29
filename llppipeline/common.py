@@ -1,7 +1,10 @@
 from __future__ import annotations
-from typing import TextIO, Iterable, Sequence
+
+from abc import abstractmethod
+from typing import TextIO, Iterable, Sequence, List
 
 import more_itertools
+from tqdm import tqdm
 
 
 class Token:
@@ -74,5 +77,20 @@ class Tokenizer:
 
 
 class Module:
-    def process(self, tokens: Sequence[Token], **kwargs) -> Iterable[Token]:
+
+    def run(self, tokens: Iterable[Token], pbar: tqdm = None, pbar_opts=None, **kwargs):
+        tokens = list(tokens)
+
+        if pbar is None:
+            pbar_opts = pbar_opts if pbar_opts is not None else {}
+            pbar = tqdm(total=len(tokens), unit='tok', postfix=type(self).__name__, **pbar_opts)
+
+        def my_update_fn(x: int):
+            pbar.update(x)
+
+        self.process(tokens, my_update_fn, **kwargs)
+        pbar.close()
+
+    @abstractmethod
+    def process(self, tokens: List[Token], update_fn, **kwargs):
         raise NotImplementedError
