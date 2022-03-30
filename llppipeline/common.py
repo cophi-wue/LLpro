@@ -1,11 +1,13 @@
 from __future__ import annotations
 
 import itertools
+import logging
+import logging.handlers
 import multiprocessing
-import os
+import os.path
+from abc import abstractmethod
 import time
-from abc import abstractmethod, ABC
-from typing import TextIO, Iterable, Sequence, List
+from typing import Iterable, List
 
 import more_itertools
 from tqdm import tqdm
@@ -27,8 +29,10 @@ class Token:
     def __init__(self, fields=None):
         self.fields = {}
         if fields is not None:
-            for (key, module_name), value in fields.items():
-                self.set_field(key, module_name, value)
+            self.update(fields)
+
+    def update(self, d):
+        self.fields.update(d)
 
     def get_field(self, key, module_name=None, default=None):
         if module_name is not None:
@@ -82,9 +86,22 @@ class Token:
     def get_documents(tokens: Iterable[Token]) -> Iterable[Iterable[Token]]:
         return more_itertools.split_when(tokens, lambda a, b: a.doc != b.doc)
 
+    @staticmethod
+    def to_conll(tokens: Iterable[Token], modules=None):
+        if modules is None:
+            modules = {}
+        fields = ['id', 'word', 'lemma', None, 'pos', 'morph', 'head', 'deprel', None, None]
+        lines = []
+        for sent in Token.get_sentences(tokens):
+            for tok in sent:
+                field_strings = [str(tok.get_field(field, module_name=modules.get(field, None), default='_')) for field in fields]
+                lines.append('\t'.join(field_strings))
+            lines.append('\n')
+
+        return '\n'.join(lines[:-1])
 
 class Tokenizer:
-    def tokenize(self, file: TextIO, filename: str) -> Iterable[Token]:
+    def tokenize(self, content: str, filename: str = None) -> Iterable[Token]:
         raise NotImplementedError
 
 
@@ -102,10 +119,9 @@ class Module:
         def my_update_fn(x: int):
             pbar.update(x)
 
-        with logging_redirect_tqdm():
-            self.process(tokens, my_update_fn, **kwargs)
-            pbar.update(len(tokens) - pbar.n)
-            pbar.close()
+        self.process(tokens, my_update_fn, **kwargs)
+        pbar.update(len(tokens) - pbar.n)
+        pbar.close()
 
     @abstractmethod
     def process(self, tokens: List[Token], update_fn, **kwargs):
@@ -117,29 +133,38 @@ _WORKER_MODULE: Module = None
 
 class ParallelizedModule(Module):
 
-    def __init__(self, module, num_processes=4, chunking='sentences', chunks_per_process=1):
+    def __init__(self, module, num_processes=4, chunking='sentences', tokens_per_process=1):
         if type(module) is type:
             self._name = module.__name__ + 'x' + str(num_processes)
         else:
             self._name = type(self).__name__ + 'x' + str(num_processes)
 
         self.chunking = chunking
-        self.chunks_per_process = chunks_per_process
+        self.tokens_per_process = tokens_per_process
         self.pool = multiprocessing.Pool(processes=num_processes, initializer=ParallelizedModule._init_worker,
                                          initargs=(module,))
 
     def name(self):
         return self._name
 
+    def gen_chunks(self, tokens):
+        chunks = list(Token.get_sentences(tokens))
+        process_chunk = []
+        for c in chunks:
+            process_chunk.extend(c)
+            if len(process_chunk) >= self.tokens_per_process:
+                yield process_chunk
+                process_chunk = []
+
+        if len(process_chunk) > 0:
+            yield process_chunk
+
     def process(self, tokens: List[Token], update_fn, **kwargs):
-        # chunked = Token.get_sentences(tokens)
-        # self.pool.map_async()
         m = multiprocessing.Manager()
         q = m.Queue()
-        chunks = list(Token.get_sentences(tokens))
-        process_chunks = [itertools.chain.from_iterable(it) for it in more_itertools.chunked(chunks, n=self.chunks_per_process)]
+        process_chunks = list(self.gen_chunks(tokens))
         for i, chunk in enumerate(process_chunks):
-            self.pool.apply_async(ParallelizedModule._process_worker, (list(chunk), i, q))
+            self.pool.apply_async(ParallelizedModule._process_worker, (chunk, i, q))
         processed_chunks = [None] * len(process_chunks)
         while True:
             kind, i, value = q.get()
@@ -151,7 +176,7 @@ class ParallelizedModule(Module):
                     break
 
         for tok, modified_tok in zip(tokens, itertools.chain.from_iterable(processed_chunks)):
-            tok.fields = modified_tok.fields
+            tok.update(modified_tok.fields)
 
     @staticmethod
     def _init_worker(module_constructor):
@@ -168,3 +193,25 @@ class ParallelizedModule(Module):
         _WORKER_MODULE.process(tokens, send_update)
         out_queue.put(('result', i, tokens))
         return
+
+
+def pipeline_process(tokenizer: Tokenizer, modules: List[Module], filenames: List[str]):
+    file_sizes = [os.path.getsize(f) for f in filenames]
+    with logging_redirect_tqdm():
+        file_pbar = tqdm(total=sum(file_sizes), position=0, unit='B', unit_scale=True)
+        for filename, size in zip(filenames, file_sizes):
+            with open(filename) as f:
+                content = f.read()
+            logging.info(f'Start tokenization for {filename}')
+            tokens = list(tokenizer.tokenize(content, filename))
+            logging.info(f'Start tagging for {filename}')
+            for module in modules:
+                logging.info(f'Start module {module} for {filename}')
+                start_time = time.time()
+                module.run(tokens, pbar_opts={'position': 1, 'leave': False})
+                end_time = time.time()
+                logging.info(f'Finished module {module} for {filename} ({len(tokens)/(end_time-start_time):.0f}tok/s)')
+
+            file_pbar.update(size)
+            yield filename, tokens
+    file_pbar.close()

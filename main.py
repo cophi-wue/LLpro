@@ -1,3 +1,5 @@
+import argparse
+import json
 from glob import glob
 
 from tqdm import tqdm
@@ -5,29 +7,34 @@ from tqdm import tqdm
 from llppipeline.pipeline import *
 
 if __name__ == "__main__":
-    logging.getLogger().setLevel(logging.DEBUG)
-    logging.info('Loading modules')
+    parser = argparse.ArgumentParser(description='NLP Pipeline for literary texts written in German.')
+    parser.add_argument('-v', '--verbose', action="store_const", dest="loglevel", const=logging.INFO)
+    parser.add_argument('--format', choices=['json', 'conll'], default='json')
+    group = parser.add_mutually_exclusive_group()
+    group.add_argument('--stdout', default=True, help='Write all processed tokens to stdout',
+                       action='store_const', dest='outtype', const='stdout')
+    group.add_argument('--writefiles', metavar='DIR', nargs='?',
+                       help='For each input file, write processed tokens to a separate file', const='.', default=None)
+    parser.add_argument('infiles', metavar='FILE', type=str, nargs='+')
+    parser.set_defaults(outtype='stdout')
+    args = parser.parse_args()
+    logging.basicConfig(level=args.loglevel)
 
+    logging.info('Loading modules')
     tokenizer = NLTKPunktTokenizer()
     # pos_tagger = SoMeWeTaTagger()
     morph_tagger = RNNTagger()
     lemmatizer = RNNLemmatizer()
-    parzu = ParallelizedModule(ParzuParser, num_processes=20, chunks_per_process=10)
+    parzu = ParallelizedModule(ParzuParser, num_processes=20, tokens_per_process=1000)
 
+    for filename, processed_tokens in pipeline_process(tokenizer, [morph_tagger, lemmatizer, parzu], args.infiles):
+        if args.format == 'conll':
+            output = Token.to_conll(processed_tokens, modules={'pos': 'rnntagger', 'morph': 'rnntagger', 'lemma': 'rnnlemmatizer'})
+        else:
+            output = '\n'.join([json.dumps(dict((field + '_' + module, value) for (field, module), value in tok.fields.items())) for tok in processed_tokens])
 
-    def files():
-        for fname in glob('/mnt/data/kallimachos/Romankorpus/Heftromane/txt/*762'):
-            fobj = open(fname)
-            yield fobj, fname
-            fobj.close()
-
-    for file, filename in files():
-        logging.info(f'Start tokenization for {filename}')
-        tokens = list(tokenizer.tokenize(file, filename))
-        logging.info(f'Start tagging for {filename}')
-        morph_tagger.run(tokens)
-        lemmatizer.run(tokens)
-        parzu.run(tokens)
-        for tok in tokens:
-            print(tok.to_output_line(modules={'pos': 'rnntagger', 'morph': 'rnntagger', 'lemma': 'rnnlemmatizer'}))
-
+        if args.writefiles is not None:
+            with open(os.path.join(args.writefiles, filename)) as out:
+                print(output, file=out)
+        else:
+            print(output)
