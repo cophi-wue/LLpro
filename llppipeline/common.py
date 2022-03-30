@@ -5,8 +5,8 @@ import logging
 import logging.handlers
 import multiprocessing
 import os.path
-from abc import abstractmethod
 import time
+from abc import abstractmethod
 from typing import Iterable, List
 
 import more_itertools
@@ -94,11 +94,13 @@ class Token:
         lines = []
         for sent in Token.get_sentences(tokens):
             for tok in sent:
-                field_strings = [str(tok.get_field(field, module_name=modules.get(field, None), default='_')) for field in fields]
+                field_strings = [str(tok.get_field(field, module_name=modules.get(field, None), default='_')) for field
+                                 in fields]
                 lines.append('\t'.join(field_strings))
             lines.append('\n')
 
         return '\n'.join(lines[:-1])
+
 
 class Tokenizer:
     def tokenize(self, content: str, filename: str = None) -> Iterable[Token]:
@@ -210,7 +212,8 @@ def pipeline_process(tokenizer: Tokenizer, modules: List[Module], filenames: Lis
                 start_time = time.time()
                 module.run(tokens, pbar_opts={'position': 1, 'leave': False})
                 end_time = time.time()
-                logging.info(f'Finished module {module} for {filename} ({len(tokens)/(end_time-start_time):.0f}tok/s)')
+                logging.info(
+                    f'Finished module {module} for {filename} ({len(tokens) / (end_time - start_time):.0f}tok/s)')
 
             file_pbar.update(size)
             yield filename, tokens

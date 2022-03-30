@@ -1,4 +1,3 @@
-import logging
 import re
 import sys
 import unicodedata
@@ -205,7 +204,7 @@ class RNNLemmatizer(Module):
                     while sum(1 - x for x in current_batch_is_cached) < self.vector_mappings.batch_size:
                         tok = next(it)
                         cache_key = (
-                        tok.word, tok.get_field('pos', self.pos_module), tok.get_field('morph', self.morph_module))
+                            tok.word, tok.get_field('pos', self.pos_module), tok.get_field('morph', self.morph_module))
                         current_batch.append(tok)
                         if cache_key in cached.keys():
                             current_batch_is_cached.append(1)
