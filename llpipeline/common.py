@@ -97,7 +97,7 @@ class Token:
                 field_strings = [str(tok.get_field(field, module_name=modules.get(field, None), default='_')) for field
                                  in fields]
                 lines.append('\t'.join(field_strings))
-            lines.append('\n')
+            lines.append('')
 
         return '\n'.join(lines[:-1])
 

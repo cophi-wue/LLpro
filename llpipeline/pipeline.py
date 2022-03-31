@@ -55,7 +55,7 @@ class NLTKPunktTokenizer(Tokenizer):
 
 class SoMeWeTaTagger(Module):
 
-    def __init__(self, model='resources/german_newspaper_2018-12-21.model'):
+    def __init__(self, model='resources/german_newspaper_2020-05-28.model'):
         from someweta import ASPTagger
 
         self.tagger = ASPTagger()
