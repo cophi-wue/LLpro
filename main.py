@@ -4,7 +4,7 @@ from glob import glob
 
 from tqdm import tqdm
 
-from llppipeline.pipeline import *
+from llpipeline.pipeline import *
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='NLP Pipeline for literary texts written in German.')
