@@ -13,8 +13,8 @@ if __name__ == "__main__":
     group = parser.add_mutually_exclusive_group()
     group.add_argument('--stdout', default=True, help='Write all processed tokens to stdout',
                        action='store_const', dest='outtype', const='stdout')
-    group.add_argument('--writefiles', metavar='DIR', nargs='?',
-                       help='For each input file, write processed tokens to a separate file', const='.', default=None)
+    group.add_argument('--writefiles', metavar='DIR', nargs=1,
+                       help='For each input file, write processed tokens to a separate file in DIR', default=None)
     parser.add_argument('infiles', metavar='FILE', type=str, nargs='+')
     parser.set_defaults(outtype='stdout')
     args = parser.parse_args()

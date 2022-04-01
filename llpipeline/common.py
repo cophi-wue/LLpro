@@ -197,10 +197,13 @@ class ParallelizedModule(Module):
         return
 
 
-def pipeline_process(tokenizer: Tokenizer, modules: List[Module], filenames: List[str]):
+def pipeline_process(tokenizer: Tokenizer, modules: List[Module], filenames: List[str], file_pbar_opts=None, module_pbar_opts=None):
+    file_pbar_opts = file_pbar_opts if file_pbar_opts is not None else {}
+    module_pbar_opts = module_pbar_opts if module_pbar_opts is not None else {}
+
     file_sizes = [os.path.getsize(f) for f in filenames]
     with logging_redirect_tqdm():
-        file_pbar = tqdm(total=sum(file_sizes), position=0, unit='B', unit_scale=True)
+        file_pbar = tqdm(total=sum(file_sizes), position=0, unit='B', unit_scale=True, **file_pbar_opts)
         for filename, size in zip(filenames, file_sizes):
             with open(filename) as f:
                 content = f.read()
@@ -209,8 +212,10 @@ def pipeline_process(tokenizer: Tokenizer, modules: List[Module], filenames: Lis
             logging.info(f'Start tagging for {filename}')
             for module in modules:
                 logging.info(f'Start module {module} for {filename}')
+                pbar_opts = {'position': 1, 'leave': False}
+                pbar_opts.update(module_pbar_opts)
                 start_time = time.time()
-                module.run(tokens, pbar_opts={'position': 1, 'leave': False})
+                module.run(tokens, pbar_opts=pbar_opts)
                 end_time = time.time()
                 logging.info(
                     f'Finished module {module} for {filename} ({len(tokens) / (end_time - start_time):.0f}tok/s)')
