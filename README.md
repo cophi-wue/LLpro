@@ -41,14 +41,6 @@ wget 'https://www.cis.uni-muenchen.de/~schmid/tools/RNNTagger/data/RNNTagger.zip
 unzip -uo RNNTagger.zip
 ```
 
-## Docker Module
-
-A docker module can be built after preparing the installation:
-
-```shell
-./prepare.sh && docker build --tag cophiwue/llpipeline
-```
-
 ## Usage
 
 ```text
@@ -68,6 +60,25 @@ options:
   --stdout              Write all processed tokens to stdout
   --writefiles DIR      For each input file, write processed
                         tokens to a separate file in DIR
+```
+
+## Docker Module
+
+A docker module can be built after preparing the installation:
+
+```shell
+./prepare.sh && docker build --tag cophiwue/llpipeline
+```
+
+Example usage:
+
+```shell
+mkdir -p files/in files/out
+docker docker run --interactive \
+    --tty \
+    -a stderr \
+    -v "./files:/files" \
+    llptest -v --writefiles /files/out /files/in
 ```
 
 ## Developer Guide

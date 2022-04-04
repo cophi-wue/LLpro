@@ -172,8 +172,8 @@ class RNNLemmatizer(Module):
             for tok in tokens:
                 word = tok.word
                 if tok.get_field('morph', morph_module):
-                    tag = tok.get_field('pos', pos_module) + '.' + tok.get_field('morph',
-                                                                                 morph_module)  # TODO geht das auch unabhängiger von dem direkten Morphologie-Format?
+                    tag = tok.get_field('pos', pos_module) + '.' + tok.get_field('morph', morph_module)
+                    # TODO geht das auch unabhängiger von dem direkten Morphologie-Format?
                 else:
                     tag = tok.get_field('pos', pos_module)
                 word = re.sub(r'   ', ' <> ', re.sub(r'(.)', r'\g<1> ', word))
