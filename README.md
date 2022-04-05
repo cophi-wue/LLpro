@@ -6,7 +6,7 @@ This pipeline currently performs
 * Tokenization and Sentence Splitting via [NLTK](https://www.nltk.org/_modules/nltk/tokenize/punkt.html) [(Bird, Klein, Loper 2009)](#ref-bird_natural_2009)
 * POS tagging via [SoMeWeTa](https://github.com/tsproisl/SoMeWeTa) [(Proisl 2018)](#ref-proisl_someweta_2018)
 * Lemmatization and Morphological Analysis via [RNNTagger](https://www.cis.uni-muenchen.de/~schmid/tools/RNNTagger/) [(Schmid 2019)](#ref-schmid_deep_2019)
-* Dependency Parsing via [ParZu](https://github.com/rsennrich/ParZu) ([Sennrich, Schneider, Volk, Warin 2009](#ref-sennrich_new_2009); [Sennrich, Volk, Schneider 2013](#ref-sennrich_exploiting_2013))
+* Dependency Parsing via [ParZu](https://github.com/rsennrich/ParZu) ([Sennrich, Schneider, Volk, Warin 2009](#ref-sennrich_new_2009); [Sennrich, Volk, Schneider 2013](#ref-sennrich_exploiting_2013); [Sennrich, Kunz 2014](#ref-sennrich_zmorge_2014))
 
 See [Model Selection](./doc/MODEL_SELECTION.md) for a discussion on this choice of language models.
 
@@ -87,6 +87,24 @@ docker docker run --interactive \
 
 See the separate [Developer Guide](./doc/DEVELOPING.md)
 
+## License
+
+In accordance with the license terms of ParZu+Zmorge (GPL v2), and of SoMeWeTa (GPL v3) the LLP-Library is
+licensed unter the terms of GPL v3. See [LICENSE](LICENSE.md). NOTICE: Some subsystems and resources used by the LLP-Library have additional license terms:
+
+* RNNTagger: see <https://www.cis.uni-muenchen.de/~schmid/tools/RNNTagger/Tagger-Licence>
+* SoMeWeTa model `german_web_social_media_2020-05-28.model`: derived from the TIGER corpus; see <https://www.ims.uni-stuttgart.de/documents/ressourcen/korpora/tiger-corpus/license/htmlicense.html>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
 ## References
 
 <div id="ref-bird_natural_2009" class="csl-entry" role="doc-biblioentry">
@@ -97,7 +115,7 @@ Bird, Steven, Ewan Klein, and Edward Loper. 2009. <em>Natural Language Processin
 
 <div id="ref-brunner_bert_2021" class="csl-entry" role="doc-biblioentry">
 
-Brunner, Annelen, Ngoc Duyen Tanja Tu, Lukas Weimer, and Fotis Jannidis. 2021. <span>“To <span>BERT</span> or Not to <span>BERT</span> – Comparing Contextual Embeddings in a Deep Learning Architecture for the Automatic Recognition of Four Types of Speech, Thought and Writing Representation.”</span> In <em>Proceedings of the 5th Swiss Text Analytics Conference (<span>SwissText</span>) &amp; 16th Conference on Natural Language Processing (<span>KONVENS</span>)</em>, 2624:11. <span>CEUR</span> Workshop Proceedings. Zurich, Switzerland.
+Brunner, Annelen, Ngoc Duyen Tanja Tu, Lukas Weimer, and Fotis Jannidis. 2021. <span>“To <span>BERT</span> or Not to <span>BERT</span> – Comparing Contextual Embeddings in a Deep Learning Architecture for the Automatic Recognition of Four Types of Speech, Thought and Writing Representation.”</span> In <em>Proceedings of the 5th Swiss Text Analytics Conference (<span>SwissText</span>) &amp; 16th Conference on Natural Language Processing (<span>KONVENS</span>)</em>, 2624:11. <span>CEUR</span> Workshop Proceedings. Zurich, Switzerland. <a href="http://ceur-ws.org/Vol-2624/paper5.pdf">http://ceur-ws.org/Vol-2624/paper5.pdf</a>.
 
 </div>
 
@@ -128,6 +146,12 @@ Schmid, Helmut. 2019. <span>“Deep Learning-Based Morphological Taggers and Lem
 <div id="ref-schroder_neural_2021" class="csl-entry" role="doc-biblioentry">
 
 Schröder, Fynn, Hans Ole Hatzel, and Chris Biemann. 2021. <span>“Neural End-to-End Coreference Resolution for German in Different Domains.”</span> In <em>Proceedings of the 17th Conference on Natural Language Processing (<span>KONVENS</span> 2021)</em>, 170–81. Düsseldorf, Germany: <span>KONVENS</span> 2021 Organizers. <a href="https://aclanthology.org/2021.konvens-1.15">https://aclanthology.org/2021.konvens-1.15</a>.
+
+</div>
+
+<div id="ref-sennrich_zmorge_2014" class="csl-entry" role="doc-biblioentry">
+
+Sennrich, Rico, and Beat Kunz. 2014. <span>“Zmorge: A German Morphological Lexicon Extracted from Wiktionary.”</span> In <em>Proceedings of the Ninth International Conference on Language Resources and Evaluation (<span>LREC</span>’14)</em>, 1063–67. Reykjavik, Iceland: European Language Resources Association (<span>ELRA</span>). <a href="http://www.lrec-conf.org/proceedings/lrec2014/pdf/116_Paper.pdf">http://www.lrec-conf.org/proceedings/lrec2014/pdf/116_Paper.pdf</a>.
 
 </div>
 

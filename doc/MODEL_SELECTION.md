@@ -25,7 +25,7 @@ On the basis of these evaluations, the models selected for the default LLP pipel
   Based on LSTMs with character-based word representations and lemmatizes using an encoder-decoder system with attention. [Webpage](https://www.cis.uni-muenchen.de/~schmid/tools/RNNTagger/). Overall best performance in both lemmatization and morphological analysis.
 
 
-* Dependency Parsing via **ParZu**, trained on TüBa-D/Z ([Sennrich, Schneider, Volk, Warin 2009](#ref-sennrich_new_2009); [Sennrich, Volk, Schneider 2013](#ref-sennrich_exploiting_2013)):
+* Dependency Parsing via **ParZu**, trained on TüBa-D/Z, with Zmorge as included morpholgical analyzer ([Sennrich, Schneider, Volk, Warin 2009](#ref-sennrich_new_2009); [Sennrich, Volk, Schneider 2013](#ref-sennrich_exploiting_2013); [Sennrich, Kunz 2014](#ref-sennrich_zmorge_2014)):
 
   Hybrid architecture using hand-written rules and statistical disambiguation to support a core CYK parser.
   [Github](https://github.com/rsennrich/ParZu). Only marginally better than Spacy (v3.2, de_dep_news_trf), but significantly slower due to the parser being implemented in Prolog. The default pipeline increases the speed by parallelizing on multiple cores.
@@ -55,6 +55,11 @@ Proisl, Thomas. 2018. <span>“<span>SoMeWeTa</span>: A Part-of-Speech Tagger fo
 <div id="ref-schmid_deep_2019" class="csl-entry" role="doc-biblioentry">
 
 Schmid, Helmut. 2019. <span>“Deep Learning-Based Morphological Taggers and Lemmatizers for Annotating Historical Texts.”</span> In <em><span>DATeCH</span>, Proceedings of the 3rd International Conference on Digital Access to Textual Cultural Heritage</em>, 133–37. Brussels, Belgium: Association for Computing Machinery. <a href="https://www.cis.uni-muenchen.de/~schmid/papers/Datech2019.pdf">https://www.cis.uni-muenchen.de/~schmid/papers/Datech2019.pdf</a>.
+
+</div>
+<div id="ref-sennrich_zmorge_2014" class="csl-entry" role="doc-biblioentry">
+
+Sennrich, Rico, and Beat Kunz. 2014. <span>“Zmorge: A German Morphological Lexicon Extracted from Wiktionary.”</span> In <em>Proceedings of the Ninth International Conference on Language Resources and Evaluation (<span>LREC</span>’14)</em>, 1063–67. Reykjavik, Iceland: European Language Resources Association (<span>ELRA</span>). <a href="http://www.lrec-conf.org/proceedings/lrec2014/pdf/116_Paper.pdf">http://www.lrec-conf.org/proceedings/lrec2014/pdf/116_Paper.pdf</a>.
 
 </div>
 <div id="ref-sennrich_new_2009" class="csl-entry" role="doc-biblioentry">
