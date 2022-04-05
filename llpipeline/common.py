@@ -53,7 +53,7 @@ class Token:
         self.fields[(field, module_name)] = value
 
     def __setattr__(self, field, value):
-        if field in Token.fields:
+        if field in ['id', 'doc', 'word', 'sentence', 'lemma', 'pos', 'morph', 'head', 'deprel']:
             raise TypeError('Fields need to be set with set_field(field, module_name)')
         else:
             object.__setattr__(self, field, value)
@@ -106,6 +106,10 @@ class Token:
 
 class Tokenizer:
 
+    @property
+    def name(self) -> str:
+        return type(self).__name__
+
     @abstractmethod
     def tokenize(self, content: str, filename: str = None) -> Iterable[Token]:
         """
@@ -120,7 +124,7 @@ class Tokenizer:
 class Module:
 
     @property
-    def name(self):
+    def name(self) -> str:
         return type(self).__name__
 
     def run(self, tokens: Sequence[Token], pbar: tqdm = None, pbar_opts=None, **kwargs) -> None:
