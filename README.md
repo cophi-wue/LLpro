@@ -67,7 +67,7 @@ options:
 A docker module can be built after preparing the installation:
 
 ```shell
-./prepare.sh && docker build --tag cophiwue/llpipeline
+./prepare.sh && docker build --tag cophiwue/llp-pipeline
 ```
 
 Example usage:
@@ -79,7 +79,7 @@ docker docker run --interactive \
     --tty \
     -a stderr \
     -v "./files:/files" \
-    cophiwue/llpipeline -v --writefiles /files/out /files/in
+    cophiwue/llp-pipeline -v --writefiles /files/out /files/in
 # processed files are located in ./files/out
 ```
 

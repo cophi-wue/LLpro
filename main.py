@@ -1,7 +1,7 @@
 import argparse
 import json
 
-from llpipeline.pipeline import *
+from llppipeline.pipeline import *
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='NLP Pipeline for literary texts written in German.')

@@ -9,13 +9,13 @@ pipeline consists of:
 The
 function
 ```python
-llpipeline.common.pipeline_process(tokenizer: Tokenizer,
+llppipeline.common.pipeline_process(tokenizer: Tokenizer,
                                    modules: Iterable[Module],
                                    filenames: Sequence[str]) -> Tuple[str, Sequence[Token]]
 ```
 implements the pipeline by processing each file, performing file reading, tokenization using `tokenizer`, running each module
 from `modules` to annotate, and yielding the resulting annotated token sequence. See `main.py` on an example usage
-of `llpipeline.common.pipeline_process`.
+of `llppipeline.common.pipeline_process`.
 
 ## The Class `Token`
 
