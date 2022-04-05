@@ -7,8 +7,13 @@ pipeline consists of:
 2. multiple `Module`s that annotate the tokens.
 
 The
-function `llpipeline.common.pipeline_process(tokenizer: Tokenizer, modules: Iterable[Module], filenames: Sequence[str])`
-implements the pipeline by processing each file, performing tokenization using `tokenizer`, running each module
+function
+```python
+llpipeline.common.pipeline_process(tokenizer: Tokenizer,
+                                   modules: Iterable[Module],
+                                   filenames: Sequence[str]) -> Tuple[str, Sequence[Token]]
+```
+implements the pipeline by processing each file, performing file reading, tokenization using `tokenizer`, running each module
 from `modules` to annotate, and yielding the resulting annotated token sequence. See `main.py` on an example usage
 of `llpipeline.common.pipeline_process`.
 
