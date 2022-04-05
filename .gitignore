@@ -1,0 +1,8 @@
+*.qlf
+*.tar.gz
+*.pyc
+statistics/tmp*
+tmp/
+*.svg
+external
+config.ini
