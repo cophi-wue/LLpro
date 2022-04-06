@@ -89,11 +89,16 @@ See the separate [Developer Guide](./doc/DEVELOPING.md)
 
 ## License
 
-In accordance with the license terms of ParZu+Zmorge (GPL v2), and of SoMeWeTa (GPL v3) the LLP-Library is
-licensed unter the terms of GPL v3. See [LICENSE](LICENSE.md). NOTICE: Some subsystems and resources used by the LLP-Library have additional license terms:
+In accordance with the license terms of ParZu+Zmorge (GPL v2), and of SoMeWeTa
+(GPL v3) the LLP-Pipeline is licensed unter the terms of GPL v3. See
+[LICENSE](LICENSE.md). NOTICE: Some subsystems and resources used by the
+LLP-Pipeline have additional license terms:
 
-* RNNTagger: see <https://www.cis.uni-muenchen.de/~schmid/tools/RNNTagger/Tagger-Licence>
-* SoMeWeTa model `german_web_social_media_2020-05-28.model`: derived from the TIGER corpus; see <https://www.ims.uni-stuttgart.de/documents/ressourcen/korpora/tiger-corpus/license/htmlicense.html>
+* RNNTagger: see
+  <https://www.cis.uni-muenchen.de/~schmid/tools/RNNTagger/Tagger-Licence>
+* SoMeWeTa model `german_web_social_media_2020-05-28.model`: derived from the
+  TIGER corpus; see
+<https://www.ims.uni-stuttgart.de/documents/ressourcen/korpora/tiger-corpus/license/htmlicense.html>
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
