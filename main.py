@@ -1,4 +1,5 @@
 import argparse
+import collections
 import json
 
 from llppipeline.pipeline import *
@@ -16,26 +17,34 @@ if __name__ == "__main__":
     parser.set_defaults(outtype='stdout')
     args = parser.parse_args()
     logging.basicConfig(level=args.loglevel)
-    print(args)
+
+    filenames = []
+    for f in args.infiles:
+        if os.path.isfile(f):
+            filenames.append(f)
+        else:
+            for root, dirs, members in os.walk(f, followlinks=True):
+                filenames.extend([os.path.join(root, m) for m in members])
 
     logging.info('Loading modules')
     tokenizer = NLTKPunktTokenizer()
     pos_tagger = SoMeWeTaTagger()
     morph_tagger = RNNTagger()
     lemmatizer = RNNLemmatizer()
-    # parzu = ParallelizedModule(ParzuParser, num_processes=20, tokens_per_process=1000)
-    parzu = ParzuParser(pos_source=pos_tagger.name)
+    parzu = ParallelizedModule(lambda: ParzuParser(pos_source=pos_tagger.name), num_processes=20, tokens_per_process=1000, name='ParzuParser')
 
-    filenames = more_itertools.collapse(
-        [next(os.walk(f), (None, None, []))[2] if os.path.isdir(f) else f for f in args.infiles])
     for filename, processed_tokens in pipeline_process(tokenizer, [pos_tagger, morph_tagger, lemmatizer, parzu], list(filenames)):
         if args.format == 'conll':
             output = Token.to_conll(processed_tokens,
                                     modules={'pos': pos_tagger.name, 'morph': morph_tagger.name, 'lemma': lemmatizer.name})
         else:
-            output = '\n'.join(
-                [json.dumps(dict((field + '_' + module, value) for (field, module), value in tok.fields.items())) for
-                 tok in processed_tokens])
+            output = []
+            for tok in processed_tokens:
+                obj = collections.defaultdict(lambda: {})
+                for (field, module), value in tok.fields.items():
+                    obj[field][module] = value
+                output.append(json.dumps(obj))
+            output = '\n'.join(output)
 
         if args.writefiles is not None:
             with open(os.path.join(args.writefiles, os.path.basename(filename)), 'w') as out:

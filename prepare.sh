@@ -9,4 +9,5 @@ wget 'https://pub.cl.uzh.ch/users/sennrich/zmorge/transducers/zmorge-20150315-sm
 unzip zmorge-20150315-smor_newlemma.ca.zip
 wget 'https://www.cis.uni-muenchen.de/~schmid/tools/RNNTagger/data/RNNTagger.zip'
 unzip -uo RNNTagger.zip
+find ./RNNTagger/lib/ -type f ! -name '*german*' -delete # remove unncessesary models
 

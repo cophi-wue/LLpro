@@ -7,7 +7,7 @@ import regex
 
 from .common import *
 
-IRREGULAR_CHARACTERS = regex.compile(r'[^\P{dt}\p{dt=canonical}]|[^\p{Latin}\pN-"‚‘„“.?!,;:\-–—*(){}/\'«‹›»’+&%# \t\n]',
+IRREGULAR_CHARACTERS = regex.compile(r'[^\P{dt}\p{dt=canonical}]|[^\p{Latin}\pN-"‚‘„“.?!,;:\-–—*()\[\]{}/\'«‹›»’+&%# \t\n]',
                                      flags=regex.UNICODE | regex.MULTILINE)
 
 

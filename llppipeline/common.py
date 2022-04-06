@@ -106,6 +106,9 @@ class Token:
 
 class Tokenizer:
 
+    def __str__(self):
+        return self.name
+
     @property
     def name(self) -> str:
         return type(self).__name__
@@ -123,6 +126,9 @@ class Tokenizer:
 
 class Module:
 
+    def __str__(self):
+        return self.name
+
     @property
     def name(self) -> str:
         return type(self).__name__
@@ -135,7 +141,7 @@ class Module:
         """
         if pbar is None:
             pbar_opts = pbar_opts if pbar_opts is not None else {}
-            pbar = tqdm(total=len(tokens), unit='tok', postfix=self.name, **pbar_opts)
+            pbar = tqdm(total=len(tokens), unit='tok', postfix=str(self), dynamic_ncols=True, **pbar_opts)
 
         def my_update_fn(x: int):
             pbar.update(x)
@@ -164,8 +170,8 @@ _WORKER_MODULE: Module = None
 
 class ParallelizedModule(Module):
 
-    def __init__(self, module: Union[Module | Callable[[None], Module]], num_processes: int,
-                 chunking: str = 'sentences', tokens_per_process: int = 1):
+    def __init__(self, module: Union[Module | Callable[[], Module]], num_processes: int,
+                 chunking: str = 'sentences', tokens_per_process: int = 1, name: str = None):
         """
         This module class implements a parallelization of some base module on multiple child processes. Each child
         process initializes a specified module of the same class. When processing tokens, this module offloads the
@@ -182,21 +188,28 @@ class ParallelizedModule(Module):
           subprocesses are passed possibly more than ``tokens_per_process`` tokens, until the end of the sentence
           is reached.
         """
-        if type(module) is type:
-            self._name = module.__name__ + 'x' + str(num_processes)
+        if name is not None:
+            self._name = name
+        elif type(module) is type:
+            self._name = module.__name__
         else:
-            self._name = type(self).__name__ + 'x' + str(num_processes)
+            self._name = type(self).__name__
 
         if chunking not in {'sentences', 'tokens'}:
             raise AttributeError()
 
+        self.num_processes = num_processes
         self.chunking = chunking
         self.tokens_per_process = tokens_per_process
         self.pool = multiprocessing.Pool(processes=num_processes, initializer=ParallelizedModule._init_worker,
                                          initargs=(module,))
 
+    @property
     def name(self):
         return self._name
+
+    def __str__(self):
+        return self._name + 'x' + str(self.num_processes)
 
     def gen_chunks(self, tokens):
         if self.chunking == 'sentences':
@@ -264,7 +277,7 @@ def pipeline_process(tokenizer: Tokenizer, modules: Iterable[Module], filenames:
 
     file_sizes = [os.path.getsize(f) for f in filenames]
     with logging_redirect_tqdm():
-        file_pbar = tqdm(total=sum(file_sizes), position=0, unit='B', unit_scale=True, **file_pbar_opts)
+        file_pbar = tqdm(total=sum(file_sizes), position=0, unit='B', unit_scale=True, dynamic_ncols=True, **file_pbar_opts)
         file_pbar.set_description_str(f'0/{len(filenames)}')
         for i, (filename, size) in enumerate(zip(filenames, file_sizes)):
             with open(filename) as f:

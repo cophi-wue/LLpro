@@ -39,6 +39,9 @@ wget 'https://pub.cl.uzh.ch/users/sennrich/zmorge/transducers/zmorge-20150315-sm
 unzip zmorge-20150315-smor_newlemma.ca.zip
 wget 'https://www.cis.uni-muenchen.de/~schmid/tools/RNNTagger/data/RNNTagger.zip'
 unzip -uo RNNTagger.zip
+find ./RNNTagger/lib/ -type f ! -name '*german*' -delete # remove unncessesary models
+
+# TODO steps to generate "improved statistics" from Tüba-D/Z from Parzu
 ```
 
 ## Usage
@@ -67,7 +70,7 @@ options:
 A docker module can be built after preparing the installation:
 
 ```shell
-./prepare.sh && docker build --tag cophiwue/llp-pipeline
+./prepare.sh && docker build --tag cophiwue/llp-pipeline .
 ```
 
 Example usage:
@@ -75,10 +78,11 @@ Example usage:
 ```shell
 mkdir -p files/in files/out
 # copy files into ./files/in to be processed
-docker docker run --interactive \
+docker run --interactive \
     --tty \
+    -a stdout \
     -a stderr \
-    -v "./files:/files" \
+    -v "$(pwd)/files:/files" \
     cophiwue/llp-pipeline -v --writefiles /files/out /files/in
 # processed files are located in ./files/out
 ```
