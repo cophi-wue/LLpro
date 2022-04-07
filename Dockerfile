@@ -6,11 +6,14 @@ RUN apt-get update -y
 RUN apt-get -y install \
     python3-pip \
     swi-prolog \
-    sfst
+    sfst \
+    unzip \
+    wget
 
+RUN mkdir resources
+COPY prepare.sh .
 COPY requirements.txt .
-RUN pip3 install --no-cache-dir -vvv -r requirements.txt
-RUN python3 -c 'import nltk; nltk.download("punkt")'
+RUN sh prepare.sh
 COPY . .
 
 ENTRYPOINT ["python3", "main.py"]

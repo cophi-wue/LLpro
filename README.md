@@ -16,34 +16,6 @@ Modules open to implement are:
 * Coreference Resolution via BERT Embeddings [(Schröder, Hatzel, Biemann 2021)](#ref-schroder_neural_2021)
 * Tagging of German speech, thought and writing representation (STWR) via Flair/BERT embeddings [(Brunner, Tu, Weimer, Jannidis 2020)](#ref-brunner_bert_2021)
 
-## Prerequisites
-
-* Python 3.7
-* For RNNTagger
-  * CUDA (tested on version 11.4)
-* For Parzu:
-  * SWI-Prolog 5.6
-  * SFST
-
-## Preparation
-
-Execute `./prepare.sh`, or perform following commands:
-
-```shell
-pip install -r requirements.txt
-python -c 'import nltk; nltk.download("punkt")
-
-cd resources
-wget 'https://corpora.linguistik.uni-erlangen.de/someweta/german_newspaper_2020-05-28.model'
-wget 'https://pub.cl.uzh.ch/users/sennrich/zmorge/transducers/zmorge-20150315-smor_newlemma.ca.zip'
-unzip zmorge-20150315-smor_newlemma.ca.zip
-wget 'https://www.cis.uni-muenchen.de/~schmid/tools/RNNTagger/data/RNNTagger.zip'
-unzip -uo RNNTagger.zip
-find ./RNNTagger/lib/ -type f ! -name '*german*' -delete # remove unncessesary models
-
-# TODO steps to generate "improved statistics" from Tüba-D/Z from Parzu
-```
-
 ## Usage
 
 ```text
@@ -67,10 +39,11 @@ options:
 
 ## Docker Module
 
-A docker module can be built after preparing the installation:
+We strongly recommend using Docker to run the pipeline. With the provided Dockerfile, all dependencies and prerequisites
+are downloaded automatically.
 
 ```shell
-./prepare.sh && docker build --tag cophiwue/llp-pipeline .
+docker build --tag cophiwue/llp-pipeline .
 ```
 
 Example usage:
@@ -85,6 +58,36 @@ docker run --interactive \
     -v "$(pwd)/files:/files" \
     cophiwue/llp-pipeline -v --writefiles /files/out /files/in
 # processed files are located in ./files/out
+```
+
+## Prerequisites
+
+Running the LLP-Pipeline without Docker requires the following prerequisites:
+
+* Python == 3.7
+* For RNNTagger
+  * CUDA (tested on version 11.4)
+* For Parzu:
+  * SWI-Prolog >= 5.6
+  * SFST >= 1.4
+
+## Preparation
+
+Execute `./prepare.sh`, or perform following commands:
+
+```shell
+pip install -r requirements.txt
+python -c 'import nltk; nltk.download("punkt")
+
+cd resources
+wget 'https://corpora.linguistik.uni-erlangen.de/someweta/german_newspaper_2020-05-28.model'
+wget 'https://pub.cl.uzh.ch/users/sennrich/zmorge/transducers/zmorge-20150315-smor_newlemma.ca.zip'
+unzip zmorge-20150315-smor_newlemma.ca.zip
+wget 'https://www.cis.uni-muenchen.de/~schmid/tools/RNNTagger/data/RNNTagger.zip'
+unzip -uo RNNTagger.zip
+find ./RNNTagger/lib/ -type f ! -name '*german*' -delete # remove unncessesary models
+
+# TODO steps to generate "improved statistics" from Tüba-D/Z from Parzu
 ```
 
 ## Developer Guide
