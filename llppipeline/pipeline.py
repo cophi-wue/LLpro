@@ -1,3 +1,4 @@
+import pickle
 import re
 import sys
 import unicodedata
@@ -84,9 +85,14 @@ class RNNTagger(Module):
         import torch
         from PyRNN.Data import Data
         import PyRNN.RNNTagger
+        import PyRNN.CRFTagger
 
+        with open(str(self.rnntagger_home / "lib/PyRNN/german.hyper"), "rb") as file:
+            hyper_params = pickle.load(file)
         self.vector_mappings = Data(str(self.rnntagger_home / "lib/PyRNN/german.io"))
-        self.model = torch.load(str(self.rnntagger_home / "lib/PyRNN/german.rnn"))
+        self.model = PyRNN.CRFTagger.CRFTagger(*hyper_params) if len(hyper_params) == 10 \
+            else PyRNN.RNNTagger.RNNTagger(*hyper_params)
+        self.model.load_state_dict(torch.load(str(self.rnntagger_home / "lib/PyRNN/german.rnn")))
         if torch.cuda.is_available() and use_cuda:
             self.model = self.model.cuda()
         self.model.eval()
@@ -145,11 +151,16 @@ class RNNLemmatizer(Module):
         sys.path.insert(0, str(self.rnntagger_home / "PyNMT"))
         import torch
         from PyNMT.Data import Data, rstrip_zeros
+        from PyNMT.NMT import NMTDecoder
 
         beam_size = 0
         batch_size = 32
         self.vector_mappings = Data(str(self.rnntagger_home / "lib/PyNMT/german.io"), batch_size)
-        self.model = torch.load(str(self.rnntagger_home / "lib/PyNMT/german.nmt"))
+
+        with open(str(self.rnntagger_home / "lib/PyNMT/german.hyper"), "rb") as file:
+            hyper_params = pickle.load(file)
+        self.model = NMTDecoder(*hyper_params)
+        self.model.load_state_dict(torch.load(str(self.rnntagger_home / "lib/PyNMT/german.nmt")))
         if torch.cuda.is_available() and use_cuda:
             self.model = self.model.cuda()
         self.model.eval()
@@ -158,7 +169,7 @@ class RNNLemmatizer(Module):
         def process_batch(batch):
             # see RNNTagger/PyNMT/nmt-translate.py
             src_words, sent_idx, (src_wordIDs, src_len) = batch
-            tgt_wordIDs = self.model.translate(src_wordIDs, src_len, beam_size)
+            tgt_wordIDs, _ = self.model.translate(src_wordIDs, src_len, beam_size)
             # undo the sorting of sentences by length
             tgt_wordIDs = [tgt_wordIDs[i] for i in sent_idx]
 
@@ -181,7 +192,7 @@ class RNNLemmatizer(Module):
 
                 formatted = word + ' ## ' + tag + '\n'
                 batch.append(formatted.split())
-            return self.vector_mappings.build_batch(batch)
+            return self.vector_mappings.build_test_batch(batch)
 
         def myprocessor(tokens_batch):
             assert len(tokens_batch) <= self.vector_mappings.batch_size
