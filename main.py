@@ -1,8 +1,20 @@
 import argparse
 import collections
 import json
+import math
 
 from llppipeline.pipeline import *
+
+
+def get_cpu_limit():
+    with open("/sys/fs/cgroup/cpu/cpu.cfs_quota_us") as fp:
+        cfs_quota_us = int(fp.read())
+    with open("/sys/fs/cgroup/cpu/cpu.cfs_period_us") as fp:
+        cfs_period_us = int(fp.read())
+    container_cpus = cfs_quota_us // cfs_period_us
+    cpus = multiprocessing.cpu_count() if container_cpus < 1 else container_cpus
+    return cpus
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='NLP Pipeline for literary texts written in German.')
@@ -31,7 +43,8 @@ if __name__ == "__main__":
     pos_tagger = SoMeWeTaTagger()
     morph_tagger = RNNTagger()
     lemmatizer = RNNLemmatizer()
-    parzu = ParallelizedModule(lambda: ParzuParser(pos_source=pos_tagger.name), num_processes=20, tokens_per_process=1000, name='ParzuParser')
+    parzu = ParallelizedModule(lambda: ParzuParser(pos_source=pos_tagger.name), num_processes=math.floor(get_cpu_limit()),
+                               tokens_per_process=1000, name='ParzuParser')
 
     for filename, processed_tokens in pipeline_process(tokenizer, [pos_tagger, morph_tagger, lemmatizer, parzu], list(filenames)):
         if args.format == 'conll':

@@ -201,6 +201,7 @@ class ParallelizedModule(Module):
         self.num_processes = num_processes
         self.chunking = chunking
         self.tokens_per_process = tokens_per_process
+        logging.info(f"Starting {num_processes} processes of {self._name}")
         self.pool = multiprocessing.Pool(processes=num_processes, initializer=ParallelizedModule._init_worker,
                                          initargs=(module,))
 
