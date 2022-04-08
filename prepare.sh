@@ -2,8 +2,8 @@
 set -e
 WGET="wget --show-progress --progress=bar:force:noscroll"
 
-pip install --no-cache-dir -r requirements.txt
-python -c 'import nltk; nltk.download("punkt")'
+pip3 install --no-cache-dir -r requirements.txt
+python3 -c 'import nltk; nltk.download("punkt")'
 
 cd resources
 $WGET 'https://corpora.linguistik.uni-erlangen.de/someweta/german_newspaper_2020-05-28.model'
