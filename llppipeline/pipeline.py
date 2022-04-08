@@ -135,7 +135,7 @@ class RNNTagger(Module):
             token = next(it)
             assert tok == token.word
             # TODO systematischer parsen?
-            morph = re.search(r'^[^\.]+\.(.*)$', tag).group(1) if '.' in tag else None
+            morph = re.search(r'^[^\.]+\.(.+)$', tag).group(1) if '.' in tag and not stts.startswith('$') else None
             token.set_field('morph', self.name, morph)
             token.set_field('pos', self.name, stts)
             update_fn(1)
