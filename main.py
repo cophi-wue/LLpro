@@ -45,13 +45,15 @@ if __name__ == "__main__":
     lemmatizer = RNNLemmatizer()
     parzu = ParallelizedModule(lambda: ParzuParser(pos_source=pos_tagger.name), num_processes=math.floor(get_cpu_limit()),
                                tokens_per_process=1000, name='ParzuParser')
+    rw = RedewiedergabeTagger()
 
-    for filename, processed_tokens in pipeline_process(tokenizer, [pos_tagger, morph_tagger, lemmatizer, parzu], list(filenames)):
+    for filename, processed_tokens in pipeline_process(tokenizer, [pos_tagger, morph_tagger, lemmatizer, parzu, rw], list(filenames)):
         output = []
         if args.format == 'conll':
             for sent in Token.get_sentences(processed_tokens):
                 for tok in sent:
-                    misc_items = []
+                    misc_items = [f'STWR{rw_type}={d["value"]}' for rw_type, d in
+                                  tok.get_field('redewiedergabe', rw.name, default={}).items()]
                     field_strings = [tok.id, tok.word,
                                      tok.get_field('lemma', lemmatizer.name, default='_'),
                                      '_',  # UPOS

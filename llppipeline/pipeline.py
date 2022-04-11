@@ -307,3 +307,59 @@ class ParzuParser(Module):
                     tok.set_field('head', self.name, int(head))
                     tok.set_field('deprel', self.name, deprel)
                     update_fn(1)
+
+
+class RedewiedergabeTagger(Module):
+
+    def __init__(self, model_paths=None, use_cuda=True):
+        import torch
+        from flair.models import SequenceTagger
+
+        self.model_paths = model_paths if model_paths is not None else \
+            {'direct': 'resources/rwtagger_models/models/direct/final-model.pt',
+             'indirect': 'resources/rwtagger_models/models/indirect/final-model.pt',
+             'reported': 'resources/rwtagger_models/models/reported/final-model.pt',
+             'freeIndirect': 'resources/rwtagger_models/models/freeIndirect/final-model.pt'}
+
+        self.models: Dict[str, SequenceTagger] = {}
+        for rw_type, model_path in self.model_paths.items():
+            model = SequenceTagger.load(model_path)
+            if torch.cuda.is_available() and use_cuda:
+                model = model.cuda()
+            model = model.eval()
+            self.models[rw_type] = model
+        logging.info(
+            f"{self.name} using devices {','.join(str(next(m.parameters()).device) for m in self.models.values())}")
+
+    def process(self, tokens: Sequence[Token], update_fn: Callable[[int], None], **kwargs) -> None:
+        from flair.data import Sentence
+        max_seq_length = 512
+
+        def get_chunks():
+            for sentence in Token.get_sentences(tokens):
+                for chunk in Token.get_chunks(sentence, max_chunk_len=max_seq_length,
+                                              sequence_length_function=lambda x: self.bert_sequence_length(x),
+                                              borders='tokens'):
+                    yield chunk
+
+        for chunk in get_chunks():
+            chunk = list(chunk)
+            pred = [{} for _ in chunk]
+            for rw_type, model in self.models.items():
+                sent_obj = Sentence([tok.word for tok in chunk])
+                model.predict(sent_obj)
+                for i, labeled_token in enumerate(sent_obj.to_dict('cat')['entities']):
+                    pred[i][rw_type] = labeled_token['labels'][0].to_dict()
+                    pred[i][rw_type]['value'] = 'no' if pred[i][rw_type]['value'] == 'x' else 'yes'
+
+            for tok, p in zip(chunk, pred):
+                tok.set_field('redewiedergabe', self.name, p)
+            update_fn(len(chunk))
+
+    def bert_sequence_length(self, seq):
+        from flair.embeddings import BertEmbeddings
+
+        for model in self.models.values():
+            if type(model.embeddings) == BertEmbeddings:
+                return sum(len(model.embeddings.tokenizer.tokenize(tok.word)) for tok in seq)
+        return len(seq)

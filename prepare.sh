@@ -12,4 +12,6 @@ unzip zmorge-20150315-smor_newlemma.ca.zip
 $WGET 'https://www.cis.uni-muenchen.de/~schmid/tools/RNNTagger/data/RNNTagger-1.3.zip'
 unzip -uo RNNTagger-1.3.zip
 find ./RNNTagger/lib/ -type f ! -name '*german*' -delete # remove unncessesary models
+$WGET 'http://www.redewiedergabe.de/models/models.zip' -O rwtagger_models.zip
+unzip rwtagger_models.zip -d rwtagger_models
 
