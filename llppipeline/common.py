@@ -84,7 +84,53 @@ class Token:
         return more_itertools.split_when(tokens, lambda a, b: a.doc != b.doc)
 
     @staticmethod
+    def get_chunks(tokens: Iterable[Token], max_chunk_len=None, min_chunk_len=None, sequence_length_function=None, borders='sentences') -> Iterable[Iterable[Token]]:
+        if borders == 'sentences':
+            chunks = list(Token.get_sentences(tokens))
+        elif borders == 'tokens':
+            chunks = [[tok] for tok in tokens]
+        else:
+            raise ValueError
 
+        if (max_chunk_len is None) is (min_chunk_len is None):
+            raise ValueError
+
+        if sequence_length_function is None:
+            len_fn = len
+        else:
+            len_fn = sequence_length_function
+
+        if min_chunk_len is not None:
+            process_chunk = []
+            for c in chunks:
+                process_chunk.extend(c)
+                if len_fn(process_chunk) >= min_chunk_len:
+                    yield process_chunk
+                    process_chunk = []
+
+            if len_fn(process_chunk) > 0:
+                yield process_chunk
+        else:
+            process_chunk = []
+            for c in chunks:
+                c = list(c)
+                if len_fn(c) > max_chunk_len:
+                    if borders == 'sentences':
+                        # fallback: make intra-sentence splits
+                        yield process_chunk
+                        for split in Token.get_chunks(c, max_chunk_len=max_chunk_len, sequence_length_function=sequence_length_function, borders='tokens'):
+                            yield split
+                        process_chunk = []
+                    else:
+                        raise ValueError(f'Token {c[0].name} has length {len_fn(c)} > max_chunk_len = {max_chunk_len} and cannot be split!')
+                elif len_fn(process_chunk + c) > max_chunk_len:
+                    yield process_chunk
+                    process_chunk = c
+                else:
+                    process_chunk.extend(c)
+
+            if len_fn(process_chunk) > 0:
+                yield process_chunk
 
 
 class Tokenizer:
@@ -154,7 +200,7 @@ _WORKER_MODULE: Module = None
 class ParallelizedModule(Module):
 
     def __init__(self, module: Union[Module | Callable[[], Module]], num_processes: int,
-                 chunking: str = 'sentences', tokens_per_process: int = 1, name: str = None):
+                 borders: str = 'sentences', tokens_per_process: int = 1, name: str = None):
         """
         This module class implements a parallelization of some base module on multiple child processes. Each child
         process initializes a specified module of the same class. When processing tokens, this module offloads the
@@ -162,10 +208,10 @@ class ParallelizedModule(Module):
 
         :param module: The base module. Either a class object of type ``Module`` or a callable returning a ``Module`` instance.
         :param num_processes: The number of child processes.
-        :param chunking: (Optional. Default is ``"sentences"``.) Specifies on which boundaries a sequence of tokens
-          can be split into chunks, when passing to subprocesses. When ``"sentences"`` then each child process is
-          processing a sequence of full sentences. When ``"tokens"`` then each child process is processing a sequence
-          of tokens, possibly ending mid-sentence.
+        :param borders: (Optional. Default is ``"sentences"``.) Passed to ``Token.get_chunks``. Specifies on which
+          boundaries a sequence of tokens can be split into chunks, when passing to subprocesses. When ``"sentences"``
+          then each child process is processing a sequence of full sentences. When ``"tokens"`` then each child process
+          is processing a sequence of tokens, possibly ending mid-sentence.
         :param tokens_per_process: Approximate number of tokens to be passed to subprocesses. If `chunking` is ``"tokens"``,
           then at most ``tokens_per_process`` are passed to each subprocess. If `chunking` is ``"sentences"``, then
           subprocesses are passed possibly more than ``tokens_per_process`` tokens, until the end of the sentence
@@ -178,11 +224,11 @@ class ParallelizedModule(Module):
         else:
             self._name = type(self).__name__
 
-        if chunking not in {'sentences', 'tokens'}:
+        if borders not in {'sentences', 'tokens'}:
             raise AttributeError()
 
         self.num_processes = num_processes
-        self.chunking = chunking
+        self.borders = borders
         self.tokens_per_process = tokens_per_process
         logging.info(f"Starting {num_processes} processes of {self._name}")
         self.pool = multiprocessing.Pool(processes=num_processes, initializer=ParallelizedModule._init_worker,
@@ -195,28 +241,10 @@ class ParallelizedModule(Module):
     def __str__(self):
         return self._name + 'x' + str(self.num_processes)
 
-    def gen_chunks(self, tokens):
-        if self.chunking == 'sentences':
-            chunks = list(Token.get_sentences(tokens))
-        elif self.chunking == 'tokens':
-            chunks = [[tok] for tok in tokens]
-        else:
-            raise ValueError
-
-        process_chunk = []
-        for c in chunks:
-            process_chunk.extend(c)
-            if len(process_chunk) >= self.tokens_per_process:
-                yield process_chunk
-                process_chunk = []
-
-        if len(process_chunk) > 0:
-            yield process_chunk
-
     def process(self, tokens: Sequence[Token], update_fn, **kwargs):
         m = multiprocessing.Manager()
         q = m.Queue()
-        process_chunks = list(self.gen_chunks(tokens))
+        process_chunks = list(Token.get_chunks(tokens, min_chunk_len=self.tokens_per_process))
         for i, chunk in enumerate(process_chunks):
             self.pool.apply_async(ParallelizedModule._process_worker, (chunk, i, q))
         processed_chunks = [None] * len(process_chunks)
