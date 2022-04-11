@@ -84,7 +84,8 @@ class Token:
         return more_itertools.split_when(tokens, lambda a, b: a.doc != b.doc)
 
     @staticmethod
-    def get_chunks(tokens: Iterable[Token], max_chunk_len=None, min_chunk_len=None, sequence_length_function=None, borders='sentences') -> Iterable[Iterable[Token]]:
+    def get_chunks(tokens: Iterable[Token], max_chunk_len=None, min_chunk_len=None, sequence_length_function=None,
+                   borders='sentences') -> Iterable[Iterable[Token]]:
         if borders == 'sentences':
             chunks = list(Token.get_sentences(tokens))
         elif borders == 'tokens':
@@ -118,11 +119,14 @@ class Token:
                     if borders == 'sentences':
                         # fallback: make intra-sentence splits
                         yield process_chunk
-                        for split in Token.get_chunks(c, max_chunk_len=max_chunk_len, sequence_length_function=sequence_length_function, borders='tokens'):
+                        for split in Token.get_chunks(c, max_chunk_len=max_chunk_len,
+                                                      sequence_length_function=sequence_length_function,
+                                                      borders='tokens'):
                             yield split
                         process_chunk = []
                     else:
-                        raise ValueError(f'Token {c[0].name} has length {len_fn(c)} > max_chunk_len = {max_chunk_len} and cannot be split!')
+                        raise ValueError(
+                            f'Token {c[0].name} has length {len_fn(c)} > max_chunk_len = {max_chunk_len} and cannot be split!')
                 elif len_fn(process_chunk + c) > max_chunk_len:
                     yield process_chunk
                     process_chunk = c
@@ -289,7 +293,8 @@ def pipeline_process(tokenizer: Tokenizer, modules: Iterable[Module], filenames:
 
     file_sizes = [os.path.getsize(f) for f in filenames]
     with logging_redirect_tqdm():
-        file_pbar = tqdm(total=sum(file_sizes), position=0, unit='B', unit_scale=True, dynamic_ncols=True, **file_pbar_opts)
+        file_pbar = tqdm(total=sum(file_sizes), position=0, unit='B', unit_scale=True, dynamic_ncols=True,
+                         **file_pbar_opts)
         file_pbar.set_description_str(f'0/{len(filenames)}')
         for i, (filename, size) in enumerate(zip(filenames, file_sizes)):
             with open(filename) as f:
@@ -308,6 +313,6 @@ def pipeline_process(tokenizer: Tokenizer, modules: Iterable[Module], filenames:
                     f'Finished module {module} for {filename} ({len(tokens) / (end_time - start_time):.0f}tok/s)')
 
             file_pbar.update(size)
-            file_pbar.set_description_str(f'{i+1}/{len(filenames)}')
+            file_pbar.set_description_str(f'{i + 1}/{len(filenames)}')
             yield filename, tokens
     file_pbar.close()

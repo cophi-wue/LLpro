@@ -43,11 +43,13 @@ if __name__ == "__main__":
     pos_tagger = SoMeWeTaTagger()
     morph_tagger = RNNTagger()
     lemmatizer = RNNLemmatizer()
-    parzu = ParallelizedModule(lambda: ParzuParser(pos_source=pos_tagger.name), num_processes=math.floor(get_cpu_limit()),
+    parzu = ParallelizedModule(lambda: ParzuParser(pos_source=pos_tagger.name),
+                               num_processes=math.floor(get_cpu_limit()),
                                tokens_per_process=1000, name='ParzuParser')
     rw = RedewiedergabeTagger()
 
-    for filename, processed_tokens in pipeline_process(tokenizer, [pos_tagger, morph_tagger, lemmatizer, parzu, rw], list(filenames)):
+    for filename, processed_tokens in pipeline_process(tokenizer, [pos_tagger, morph_tagger, lemmatizer, parzu, rw],
+                                                       list(filenames)):
         output = []
         if args.format == 'conll':
             for sent in Token.get_sentences(processed_tokens):

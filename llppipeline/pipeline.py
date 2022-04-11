@@ -8,8 +8,9 @@ import regex
 
 from .common import *
 
-IRREGULAR_CHARACTERS = regex.compile(r'[^\P{dt}\p{dt=canonical}]|[^\p{Latin}\pN-"‚‘„“.?!,;:\-–—*()\[\]{}/\'«‹›»’+&%# \t\n]',
-                                     flags=regex.UNICODE | regex.MULTILINE)
+IRREGULAR_CHARACTERS = regex.compile(
+    r'[^\P{dt}\p{dt=canonical}]|[^\p{Latin}\pN-"‚‘„“.?!,;:\-–—*()\[\]{}/\'«‹›»’+&%# \t\n]',
+    flags=regex.UNICODE | regex.MULTILINE)
 
 
 class NLTKPunktTokenizer(Tokenizer):
@@ -96,7 +97,7 @@ class RNNTagger(Module):
         if torch.cuda.is_available() and use_cuda:
             self.model = self.model.cuda()
         self.model.eval()
-        logging.info(f"RNNTagger using device {next(self.model.parameters()).device}")
+        logging.info(f"{self.name} using device {next(self.model.parameters()).device}")
 
         def annotate_sentence(model, data, words):
             # vgl. RNNTagger/PyRNN/rnn-annotate.py
@@ -164,7 +165,7 @@ class RNNLemmatizer(Module):
         if torch.cuda.is_available() and use_cuda:
             self.model = self.model.cuda()
         self.model.eval()
-        logging.info(f"RNNLemmatizer using device {next(self.model.parameters()).device}")
+        logging.info(f"{self.name} using device {next(self.model.parameters()).device}")
 
         def process_batch(batch):
             # see RNNTagger/PyNMT/nmt-translate.py
