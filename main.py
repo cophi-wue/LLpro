@@ -47,11 +47,25 @@ if __name__ == "__main__":
                                tokens_per_process=1000, name='ParzuParser')
 
     for filename, processed_tokens in pipeline_process(tokenizer, [pos_tagger, morph_tagger, lemmatizer, parzu], list(filenames)):
+        output = []
         if args.format == 'conll':
-            output = Token.to_conll(processed_tokens,
-                                    modules={'pos': pos_tagger.name, 'morph': morph_tagger.name, 'lemma': lemmatizer.name})
+            for sent in Token.get_sentences(processed_tokens):
+                for tok in sent:
+                    misc_items = []
+                    field_strings = [tok.id, tok.word,
+                                     tok.get_field('lemma', lemmatizer.name, default='_'),
+                                     '_',  # UPOS
+                                     tok.get_field('pos', pos_tagger.name, default='_'),
+                                     tok.get_field('morph', morph_tagger.name, default='_'),
+                                     tok.get_field('head', parzu.name, default='_'),
+                                     tok.get_field('deprel', parzu.name, default='_'),
+                                     '_',  # DEPS
+                                     ','.join(misc_items)
+                                     ]
+                    output.append('\t'.join([str(x) for x in field_strings]))
+                output.append('')
+            output = '\n'.join(output)
         else:
-            output = []
             for tok in processed_tokens:
                 obj = collections.defaultdict(lambda: {})
                 for (field, module), value in tok.fields.items():

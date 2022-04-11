@@ -84,24 +84,7 @@ class Token:
         return more_itertools.split_when(tokens, lambda a, b: a.doc != b.doc)
 
     @staticmethod
-    def to_conll(tokens: Iterable[Token], modules: Dict[str, str] = None) -> str:
-        """
-        Converts an iterable of tokens into CONLL-U format.
-        :param modules: (optional) Specify which module to choose for each field. Should be a dict mapping some
-        field name (id, word, lemma, ...) to a module name.
-        """
-        if modules is None:
-            modules = {}
-        fields = ['id', 'word', 'lemma', None, 'pos', 'morph', 'head', 'deprel', None, None]
-        lines = []
-        for sent in Token.get_sentences(tokens):
-            for tok in sent:
-                field_strings = [str(tok.get_field(field, module_name=modules.get(field, None), default='_')) for field
-                                 in fields]
-                lines.append('\t'.join(field_strings))
-            lines.append('')
 
-        return '\n'.join(lines[:-1])
 
 
 class Tokenizer:
