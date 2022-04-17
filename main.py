@@ -73,7 +73,7 @@ if __name__ == "__main__":
                                      tok.get_field('head', parzu.name, default='_'),
                                      tok.get_field('deprel', parzu.name, default='_'),
                                      '_',  # DEPS
-                                     ','.join(misc_items)
+                                     '|'.join(misc_items)
                                      ]
                     output.append('\t'.join([str(x) for x in field_strings]))
                 output.append('')

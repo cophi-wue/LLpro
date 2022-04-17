@@ -28,7 +28,7 @@ class NLTKPunktTokenizer(Tokenizer):
                 for word in word_tokenize(sent, language="german"):
                     tok = Token()
                     tok.set_field('word', self.name, word)
-                    tok.set_field('sentence', self.name, i)
+                    tok.set_field('sentence', self.name, i + 1)
                     yield tok
 
         self.processor = myprocessor
