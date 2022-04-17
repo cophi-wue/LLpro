@@ -5,6 +5,7 @@ import unicodedata
 from pathlib import Path
 
 import regex
+from flair.data import Sentence
 
 from .common import *
 
@@ -349,9 +350,9 @@ class RedewiedergabeTagger(Module):
             for rw_type, model in self.models.items():
                 sent_obj = Sentence([tok.word for tok in chunk])
                 model.predict(sent_obj)
-                for i, labeled_token in enumerate(sent_obj.to_dict('cat')['entities']):
-                    pred[i][rw_type] = labeled_token['labels'][0].to_dict()
-                    pred[i][rw_type]['value'] = 'no' if pred[i][rw_type]['value'] == 'x' else 'yes'
+                for i, label in enumerate(sent_obj.to_dict('cat')['cat']):
+                    pred[i][rw_type] = label
+                    pred[i][rw_type]['value'] = 'no' if label['value'] == 'x' else 'yes'
 
             for tok, p in zip(chunk, pred):
                 tok.set_field('redewiedergabe', self.name, p)
@@ -364,3 +365,78 @@ class RedewiedergabeTagger(Module):
             if type(model.embeddings) == BertEmbeddings:
                 return sum(len(model.embeddings.tokenizer.tokenize(tok.word)) for tok in seq)
         return len(seq)
+
+
+class FLERTNERTagger(Module):
+
+    def __init__(self, mini_batch_size=32):
+        from flair.models import SequenceTagger
+        from flair.data import Sentence
+        from flair.datasets import DataLoader
+        from flair.datasets import FlairDatapointDataset
+        # see https://github.com/flairNLP/flair/issues/2650#issuecomment-1063785119
+
+        self.tagger = SequenceTagger.load("flair/ner-german-large")
+
+        def myprocessor(sentences: Sequence[Sentence]) -> Iterable[Sentence]:
+            dataloader = DataLoader(
+                dataset=FlairDatapointDataset(sentences),
+                batch_size=mini_batch_size,
+            )
+            for batch in dataloader:
+                self._annotate_batch(batch)
+                for sentence in batch:
+                    yield sentence
+
+        self.processor = myprocessor
+
+    def _annotate_batch(self, batch):
+        from flair.models.sequence_tagger_utils.bioes import get_spans_from_bio
+        import torch
+
+        # cf. flair/models/sequence_tagger_model.py
+        # get features from forward propagation
+        features, gold_labels = self.tagger.forward(batch)
+
+        # Sort batch in same way as forward propagation
+        lengths = torch.LongTensor([len(sentence) for sentence in batch])
+        _, sort_indices = lengths.sort(dim=0, descending=True)
+        batch = [batch[i] for i in sort_indices]
+
+        # make predictions
+        if self.tagger.use_crf:
+            predictions, all_tags = self.tagger.viterbi_decoder.decode(features, False)
+        else:
+            predictions, all_tags = self.tagger._standard_inference(features, batch, False)
+
+        for sentence, sentence_predictions in zip(batch, predictions):
+            if self.tagger.predict_spans:
+                sentence_tags = [label[0] for label in sentence_predictions]
+                sentence_scores = [label[1] for label in sentence_predictions]
+                predicted_spans = get_spans_from_bio(sentence_tags, sentence_scores)
+                for predicted_span in predicted_spans:
+                    span = sentence[predicted_span[0][0]:predicted_span[0][-1] + 1]
+                    span.add_label(self.tagger.tag_type, value=predicted_span[2], score=predicted_span[1])
+
+            # token-labels can be added directly ("O" and legacy "_" predictions are skipped)
+            else:
+                for token, label in zip(sentence.tokens, sentence_predictions):
+                    if label[0] in ["O", "_"]:
+                        continue
+                    token.add_label(typename=self.tagger.tag_type, value=label[0], score=label[1])
+
+    def process(self, tokens: Sequence[Token], update_fn: Callable[[int], None], **kwargs) -> None:
+        sentences = [list(s) for s in Token.get_sentences(tokens)]
+        flair_sentences = [Sentence([tok.word for tok in s]) for s in sentences]
+        for sentence, tagged_sentence in zip(sentences, self.processor(flair_sentences)):
+            if self.tagger.predict_spans:
+                result = [list() for _ in sentence]
+                for span in tagged_sentence.get_spans('ner'):
+                    for tok in span.tokens:
+                        result[tok.idx-1].append(span.tag)
+                for res, tok in zip(result, sentence):
+                    tok.set_field('ner', self.name, ','.join(res) if len(res) > 0 else None)
+            else:
+                for tok, tagged_tok in zip(sentence, tagged_sentence):
+                    tok.set_field('ner', self.name, tagged_tok.get_label('ner').value)
+            update_fn(len(sentence))

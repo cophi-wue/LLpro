@@ -2,6 +2,7 @@ import argparse
 import collections
 import json
 import math
+import flair
 
 from llppipeline.pipeline import *
 
@@ -29,6 +30,9 @@ if __name__ == "__main__":
     parser.set_defaults(outtype='stdout')
     args = parser.parse_args()
     logging.basicConfig(level=args.loglevel)
+    for hdl in logging.getLogger('flair').handlers:
+        logging.getLogger('flair').removeHandler(hdl)
+    logging.getLogger('flair').propagate = True
 
     filenames = []
     for f in args.infiles:
@@ -46,16 +50,21 @@ if __name__ == "__main__":
     parzu = ParallelizedModule(lambda: ParzuParser(pos_source=pos_tagger.name),
                                num_processes=math.floor(get_cpu_limit()),
                                tokens_per_process=1000, name='ParzuParser')
-    rw = RedewiedergabeTagger()
+    rw_tagger = RedewiedergabeTagger()
+    ner_tagger = FLERTNERTagger()
 
-    for filename, processed_tokens in pipeline_process(tokenizer, [pos_tagger, morph_tagger, lemmatizer, parzu, rw],
+    for filename, processed_tokens in pipeline_process(tokenizer,
+                                                       [pos_tagger, morph_tagger, lemmatizer, parzu, rw_tagger, ner_tagger],
                                                        list(filenames)):
         output = []
         if args.format == 'conll':
             for sent in Token.get_sentences(processed_tokens):
                 for tok in sent:
                     misc_items = [f'STWR{rw_type}={d["value"]}' for rw_type, d in
-                                  tok.get_field('redewiedergabe', rw.name, default={}).items()]
+                                  tok.get_field('redewiedergabe', rw_tagger.name, default={}).items()
+                                  if d["value"] == 'yes']
+                    if tok.get_field('ner', ner_tagger.name, None) is not None:
+                        misc_items.append('NER=' + tok.get_field('ner', ner_tagger.name, None))
                     field_strings = [tok.id, tok.word,
                                      tok.get_field('lemma', lemmatizer.name, default='_'),
                                      '_',  # UPOS
