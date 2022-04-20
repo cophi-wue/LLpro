@@ -1,0 +1,8 @@
+transformers==4.9.1
+numpy
+scikit-learn==0.22.1
+pyhocon
+graphviz
+tensorboard
+tqdm==4.56.0
+dkpro-cassis @ git+https://github.com/hatzel/dkpro-cassis.git@9e9a260a9ae2d281a2c6a964b6eb88d3affcd240
