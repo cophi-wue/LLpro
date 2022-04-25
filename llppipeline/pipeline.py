@@ -44,6 +44,36 @@ class NLTKPunktTokenizer(Tokenizer):
                 yield tok
 
 
+class SoMaJoTokenizer(Tokenizer):
+
+    def __init__(self, normalize=True, check_characters=True):
+        self.normalize = normalize
+        self.check_characters = check_characters
+        from somajo import SoMaJo
+
+        self.tokenizer = SoMaJo("de_CMC", split_camel_case=True)
+
+    def tokenize(self, content: str, filename: str = None) -> Iterable[Token]:
+        if self.normalize:
+            content = unicodedata.normalize('NFKC', content)
+
+        if self.check_characters:
+            irr = [unicodedata.name(x) for x in set(IRREGULAR_CHARACTERS.findall(content))]
+            if len(irr) > 0:
+                logging.warning(f'Found irregular characters in {filename}: {", ".join(irr)}')
+
+        sentences = self.tokenizer.tokenize_text(paragraphs=[content])
+        for sent_id, sent in enumerate(sentences):
+            for word_id, word in enumerate(sent):
+                tok = Token()
+                tok.set_field('word', self.name, word.text)
+                tok.set_field('sentence', self.name, sent_id + 1)
+                tok.set_field('id', self.name, word_id)
+                if filename is not None:
+                    tok.set_field('doc', self.name, filename)
+                yield tok
+
+
 class SoMeWeTaTagger(Module):
 
     def __init__(self, model='resources/german_newspaper_2020-05-28.model'):
