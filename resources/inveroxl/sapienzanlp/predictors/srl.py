@@ -11,7 +11,7 @@ from sapienzanlp.data.model_io.sentence import SrlSentence, Sentence
 from sapienzanlp.data.model_io.word import Word, Predicate, Argument
 from sapienzanlp.models.model import Model
 from sapienzanlp.predictors.predictor import Predictor
-from sapienzanlp.preprocessing.spacy_tokenizer import SpacyTokenizer
+# from sapienzanlp.preprocessing.spacy_tokenizer import SpacyTokenizer
 from sapienzanlp.preprocessing.transformers_processor import TransformersProcessor
 
 logger = get_logger(level=logging.DEBUG)
@@ -37,7 +37,7 @@ class SemanticRoleLabeler(Predictor):
         self.tokenizer_kwargs["split_on_spaces"] = kwargs.get("split_on_spaces", False)
         # lazy loading of the tokenizer
         # it will be loaded if the input to `__call__` is not tokenized
-        self.tokenizer = SpacyTokenizer
+        # self.tokenizer = SpacyTokenizer
         self.processor = TransformersProcessor(model.word_encoder.language_model)
         self.processor.add_to_tensor_inputs("sentence_lengths")
         self.labels = self.model.labels
@@ -321,7 +321,7 @@ class DependencySemanticRoleLabeler(SemanticRoleLabeler):
         Returns:
             :obj:`Dict`: A dictionary in which there is the set of roles for each predicate in the batch.
         """
-        roles = {i: {} for i in range(len(predicates))}
+        roles = {i: {} for i in range(len(sentence_lengths))}
 
         if role_scores is None:
             # TODO if there are no predicates in the sentence, the role scores are None
@@ -372,7 +372,7 @@ class SpanSemanticRoleLabeler(SemanticRoleLabeler):
             :obj:`Dict`: A dictionary in which there is the set of roles for each predicate in the batch.
 
         """
-        roles = {i: {} for i in range(len(predicates))}
+        roles = {i: {} for i in range(len(sentence_lengths))}
 
         if role_scores is None:
             # TODO if there are no predicates in the sentence, the role scores are None

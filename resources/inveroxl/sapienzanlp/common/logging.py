@@ -30,9 +30,9 @@ def _configure_library_root_logger() -> None:
 
         # Apply our default configuration to the library root logger.
         library_root_logger = _get_library_root_logger()
-        library_root_logger.addHandler(_default_handler)
+        # library_root_logger.addHandler(_default_handler)
         library_root_logger.setLevel(_default_log_level)
-        library_root_logger.propagate = False
+        library_root_logger.propagate = True
 
 
 def _reset_library_root_logger() -> None:
@@ -76,8 +76,8 @@ def get_logger(
     if level is not None:
         set_log_level(level)
 
-    if formatter is None:
-        formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(name)s - %(message)s")
-    _default_handler.setFormatter(formatter)
+    # if formatter is None:
+    #     formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(name)s - %(message)s")
+    # _default_handler.setFormatter(formatter)
 
     return logging.getLogger(name)

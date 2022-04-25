@@ -4,7 +4,7 @@ import os
 from pathlib import Path
 from typing import Dict, Union, Optional
 
-import psutil
+# import psutil
 import torch
 import torch.nn as nn
 
@@ -39,9 +39,9 @@ class Model(nn.Module, FromConfig):
             device: str = "cpu",
             strict: bool = True,
     ):
-        num_threads = os.getenv("TORCH_NUM_THREADS", psutil.cpu_count(logical=False))
-        torch.set_num_threads(num_threads)
-        logger.info(f"Model is running on {num_threads} threads")
+        # num_threads = os.getenv("TORCH_NUM_THREADS", psutil.cpu_count(logical=False))
+        # torch.set_num_threads(num_threads)
+        # logger.info(f"Model is running on {num_threads} threads")
         # get model stuff
         if isinstance(model_dir, str):
             model_dir = Path(model_dir)

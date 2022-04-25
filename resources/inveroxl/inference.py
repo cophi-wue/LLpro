@@ -14,141 +14,127 @@ from objects import (
     AnnotationOut,
 )
 from sapienzanlp.predictors.srl import SemanticRoleLabeler
-from sapienzanlp.preprocessing.language_detector import LanguageDetector
-from sapienzanlp.preprocessing.sentence_splitter import SpacySentenceSplitter
-from sapienzanlp.preprocessing.spacy_tokenizer import SpacyTokenizer, SPACY_LANGUAGE_MAPPER
-from sapienzanlp.preprocessing.stanza_tokenizer import StanzaTokenizer
-from utils import SUPPORTED_LANGUAGES
 
 logger = logging.getLogger(__name__)
 
 
 class Invero:
-    def __init__(self):
+    def __init__(self, device, model_name, languages):
         # env params
-        device = os.getenv("DEVICE", "cpu")
-        model_name = os.getenv("MODEL_NAME", "resources/model")
-        lang_detector_path = os.getenv("LANG_DETECTOR", "resources/lid.176.bin")
-        languages = os.getenv("LANGUAGES", "en")
+        # device = os.getenv("DEVICE", "cpu")
+        # model_name = os.getenv("MODEL_NAME", "resources/model")
+        # lang_detector_path = os.getenv("LANG_DETECTOR", "resources/lid.176.bin")
+        # languages = os.getenv("LANGUAGES", "en")
         self.languages = languages.lower().split()
-        for l in self.languages:
-            if l.lower() not in SUPPORTED_LANGUAGES:
-                logger.error(
-                    f"Language {l} not supported. For a list of supported languages please visit "
-                    f"http://verbatlas.org/api-documentation"
-                )
-                sys.exit(4)
+        # for l in self.languages:
+        #     if l.lower() not in SUPPORTED_LANGUAGES:
+        #         logger.error(
+        #             f"Language {l} not supported. For a list of supported languages please visit "
+        #             f"http://verbatlas.org/api-documentation"
+        #         )
+        #         sys.exit(4)
         self.inventories = ["ca", "cs", "de", "en", "es", "va", "zh"]
         self.batch_size = int(os.getenv("BATCH_SIZE", 8))
         # models stuff
-        logger.info(f"Device in use: {device}")
+        # logger.info(f"Device in use: {device}")
         self.srl_model = SemanticRoleLabeler.from_pretrained(
             model_name, device=device, split_on_spaces=True
         )
         # additional stuff
-        self.language_detector = LanguageDetector(lang_detector_path)
-        self.sent_splitters = {
-            lang: SpacySentenceSplitter(lang.lower(), "statistical") for lang in self.languages
-        }
-        self.tokenizers = {
-            lang: SpacyTokenizer(lang.lower())
-            if lang.lower() in SPACY_LANGUAGE_MAPPER
-            else StanzaTokenizer(lang.lower())
-            for lang in self.languages
-        }
+        # self.language_detector = LanguageDetector(lang_detector_path)
+        # self.sent_splitters = {
+        #     lang: SpacySentenceSplitter(lang.lower(), "statistical") for lang in self.languages
+        # }
+        # self.tokenizers = {
+        #     lang: SpacyTokenizer(lang.lower())
+        #     if lang.lower() in SPACY_LANGUAGE_MAPPER
+        #     else StanzaTokenizer(lang.lower())
+        #     for lang in self.languages
+        # }
 
-    def __call__(self, sentences_in: List[DocumentIn]) -> List[DocumentOut]:
-        """
-        Predict labels.
-
-        Args:
-            sentences_in (:obj:`List[str]`):
-                Text to tag with word senses.
-
-        Returns:
-            :obj:`List[SentenceOut]`: Text tagged.
-
-        """
+    def __call__(self, docs: List[Doc], progress_fn=None) -> List[DocumentOut]:
         # preprocess text
-        docs = self.preprocess_text(sentences_in)
+        # docs = self.preprocess_text(sentences_in)
         # get batches and predict labels
         for batch in self.generator(docs):
             model_outputs = self.srl_model([b.tokens for b in batch], is_split_into_words=True)
+            if progress_fn is not None:
+                progress_fn(sum(len(b.tokens) for b in batch))
             for inventory, outputs in model_outputs.items():
                 for b, output in zip(batch, outputs):
                     b.annotations[inventory] = output
         return self.clean_output(docs)
 
-    def preprocess_text(self, sentences_in: List[DocumentIn]) -> List[Doc]:
-        """
-        Preprocess the raw text in input.
-        As of now, it uses spacy to detect the language and split the raw text in sentences.
-        Then it uses stanza to pos-tag and lemmatize it. This is the fastest and most
-        accurate way to do it.
-
-        Args:
-            sentences_in (:obj:`List[str]`):
-                A batch of text to preprocess.
-
-        Returns:
-            :obj:`List[Doc]`: The text in input tokenized, pos-tagged and lemmatized.
-
-        """
-        # flat the sentences in the document
-        docs = self.flat_texts(sentences_in)
-        # preprocess the sentences (tokenization, pos, lemma) in one big batch :)
-        outputs = []
-        # group batch by languages (may be different from one sentence
-        # to the other
-        preprocess_batch = []
-        prev_lang = docs[0].lang
-        for doc in docs:
-            if doc.lang == prev_lang:
-                preprocess_batch.append(doc)
-            else:
-                outputs += self.tokenizers[prev_lang]([d.text for d in preprocess_batch])
-                preprocess_batch = [doc]
-                prev_lang = doc.lang
-        # left over
-        outputs += self.tokenizers[prev_lang]([d.text for d in preprocess_batch])
-        for doc, output in zip(docs, outputs):
-            doc.tokens = output
-        # split the docs longer than the maximum allowed from the LM
-        docs = self.check_max_model_len(docs)
-        return docs
-
-    def flat_texts(self, sentences_in: List[DocumentIn]) -> List[Doc]:
-        """
-        Flat sentences in the input.
-
-        Args:
-            sentences_in (:obj:`List[SentenceIn]`):
-                Text batch in input.
-
-        Returns:
-            :obj:`List[Doc]`: Flattened batch in input.
-        """
-        docs = []
-        for doc_id, sentence_in in enumerate(sentences_in):
-            if sentence_in.lang is None:
-                sentence_in.lang = self.language_detector(sentence_in.text)
-            sentence_in.lang = sentence_in.lang.lower()
-            if sentence_in.lang not in self.languages:
-                raise ValueError(f"Language ({sentence_in.lang}) not supported")
-            # sentence segmentation
-            sents = self.sent_splitters[sentence_in.lang](sentence_in.text, max_len=300)
-            # add sentences to the output list
-            for sid, sent in enumerate(sents):
-                if sent:
-                    docs.append(
-                        Doc(
-                            doc_id=doc_id,
-                            sid=int(str(doc_id) + str(sid)),
-                            lang=sentence_in.lang,
-                            text=sent,
-                        )
-                    )
-        return docs
+    # def preprocess_text(self, sentences_in: List[DocumentIn]) -> List[Doc]:
+    #     """
+    #     Preprocess the raw text in input.
+    #     As of now, it uses spacy to detect the language and split the raw text in sentences.
+    #     Then it uses stanza to pos-tag and lemmatize it. This is the fastest and most
+    #     accurate way to do it.
+    #
+    #     Args:
+    #         sentences_in (:obj:`List[str]`):
+    #             A batch of text to preprocess.
+    #
+    #     Returns:
+    #         :obj:`List[Doc]`: The text in input tokenized, pos-tagged and lemmatized.
+    #
+    #     """
+    #     # flat the sentences in the document
+    #     docs = self.flat_texts(sentences_in)
+    #     # preprocess the sentences (tokenization, pos, lemma) in one big batch :)
+    #     outputs = []
+    #     # group batch by languages (may be different from one sentence
+    #     # to the other
+    #     preprocess_batch = []
+    #     prev_lang = docs[0].lang
+    #     for doc in docs:
+    #         if doc.lang == prev_lang:
+    #             preprocess_batch.append(doc)
+    #         else:
+    #             outputs += self.tokenizers[prev_lang]([d.text for d in preprocess_batch])
+    #             preprocess_batch = [doc]
+    #             prev_lang = doc.lang
+    #     # left over
+    #     outputs += self.tokenizers[prev_lang]([d.text for d in preprocess_batch])
+    #     for doc, output in zip(docs, outputs):
+    #         doc.tokens = output
+    #     # split the docs longer than the maximum allowed from the LM
+    #     docs = self.check_max_model_len(docs)
+    #     return docs
+    #
+    # def flat_texts(self, sentences_in: List[DocumentIn]) -> List[Doc]:
+    #     """
+    #     Flat sentences in the input.
+    #
+    #     Args:
+    #         sentences_in (:obj:`List[SentenceIn]`):
+    #             Text batch in input.
+    #
+    #     Returns:
+    #         :obj:`List[Doc]`: Flattened batch in input.
+    #     """
+    #     docs = []
+    #     for doc_id, sentence_in in enumerate(sentences_in):
+    #         if sentence_in.lang is None:
+    #             sentence_in.lang = self.language_detector(sentence_in.text)
+    #         sentence_in.lang = sentence_in.lang.lower()
+    #         if sentence_in.lang not in self.languages:
+    #             raise ValueError(f"Language ({sentence_in.lang}) not supported")
+    #         # sentence segmentation
+    #         sents = self.sent_splitters[sentence_in.lang](sentence_in.text, max_len=300)
+    #         # add sentences to the output list
+    #         for sid, sent in enumerate(sents):
+    #             if sent:
+    #                 docs.append(
+    #                     Doc(
+    #                         doc_id=doc_id,
+    #                         sid=int(str(doc_id) + str(sid)),
+    #                         lang=sentence_in.lang,
+    #                         text=sent,
+    #                     )
+    #                 )
+    #     return docs
 
     def clean_output(self, sentences: List[Doc]) -> List[DocumentOut]:
         """
