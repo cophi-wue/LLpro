@@ -20,21 +20,8 @@ class NLTKPunktTokenizer(Tokenizer):
         self.normalize = normalize
         self.check_characters = check_characters
 
-        from nltk.tokenize import word_tokenize, sent_tokenize
-
-        def myprocessor(myinput):
-            sentences = sent_tokenize(myinput, language="german")
-            for i, sent in enumerate(sentences):
-                for word in word_tokenize(sent, language="german"):
-                    tok = Token()
-                    tok.set_field('word', self.name, word)
-                    tok.set_field('sentence', self.name, i + 1)
-                    yield tok
-
-        self.processor = myprocessor
-
     def tokenize(self, content: str, filename: str = None) -> Iterable[Token]:
-        i = 0
+        from nltk.tokenize import word_tokenize, sent_tokenize
         if self.normalize:
             content = unicodedata.normalize('NFKC', content)
 
@@ -43,16 +30,18 @@ class NLTKPunktTokenizer(Tokenizer):
             if len(irr) > 0:
                 logging.warning(f'Found irregular characters in {filename}: {", ".join(irr)}')
 
-        cursent = None
-        for tok in self.processor(content):
-            if cursent != tok.sentence:
-                cursent = tok.sentence
-                i = 1
-            tok.set_field('id', self.name, i)
-            if filename is not None:
-                tok.set_field('doc', self.name, filename)
-            yield tok
-            i += 1
+        sentences = sent_tokenize(content, language="german")
+        for sent_id, sent in enumerate(sentences):
+            for word_id, word in enumerate(word_tokenize(sent, language="german")):
+                # property of the TreebankWordTokenizer
+                word = word.replace("``", '"').replace("''", '"')
+                tok = Token()
+                tok.set_field('word', self.name, word)
+                tok.set_field('sentence', self.name, sent_id + 1)
+                tok.set_field('id', self.name, word_id)
+                if filename is not None:
+                    tok.set_field('doc', self.name, filename)
+                yield tok
 
 
 class SoMeWeTaTagger(Module):
