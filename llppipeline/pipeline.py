@@ -572,3 +572,45 @@ class CorefIncrementalTagger(Module):
         for mention_set, tok in zip(mentions, tokens):
             if len(mention_set) > 0:
                 tok.set_field('coref_clusters', self.name, list(mention_set))
+
+
+class InVeRoXL(Module):
+
+    def __init__(self, inveroxl_home='resources/inveroxl', use_cuda=True):
+        self.device = torch.device('cuda' if torch.cuda.is_available() and use_cuda else "cpu")
+        self.inveroxl_home = Path(inveroxl_home)
+        sys.path.insert(0, str(self.inveroxl_home))
+        from inference import Invero
+
+        self.model = Invero(device=self.device, model_name=str(self.inveroxl_home / "resources" / "model"),
+                            languages='de')
+        logging.info(f"{self.name} using device {next(self.model.srl_model.model.parameters()).device}")
+
+    def prepare_docs(self, tokens):
+        from sapienzanlp.data.model_io.word import Word
+        from objects import Doc
+        for i, sent in enumerate(Token.get_sentences(tokens)):
+            prepared_tokens = [Word(text=w.word, index=j) for j, w in enumerate(sent)]
+            yield Doc(doc_id=0, sid=i, lang='de', text=None, tokens=prepared_tokens)
+
+    def process(self, tokens: Sequence[Token], update_fn: Callable[[int], None], **kwargs) -> None:
+        tokens = list(tokens)
+        prepared_docs = list(self.prepare_docs(tokens))
+        prepared_docs = self.model.check_max_model_len(prepared_docs)
+        out = self.model(prepared_docs, progress_fn=update_fn)
+        assert len(out) == 1
+        annotated_doc = out[0]
+        assert len(annotated_doc.tokens) == len(tokens)
+
+        frames = [list() for _ in tokens]
+        annotations = [(an.token_index, an.verbatlas) for an in annotated_doc.annotations if
+                       an.verbatlas.frame_name != '_']
+        for i, (token_index, an) in enumerate(annotations):
+            frames[token_index].append({'id': i, 'sense': an.frame_name})
+            for r in an.roles:
+                for j in range(*r.span):
+                    frames[j].append({'id': i, 'role': r.role})
+
+        for tok_frames, tok in zip(frames, tokens):
+            if len(tok_frames) > 0:
+                tok.set_field('srl', self.name, tok_frames)
