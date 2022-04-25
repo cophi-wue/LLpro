@@ -51,19 +51,22 @@ if __name__ == "__main__":
                                tokens_per_process=1000, name='ParzuParser')
     rw_tagger = RedewiedergabeTagger()
     ner_tagger = FLERTNERTagger()
+    coref_tagger = CorefIncrementalTagger()
 
     for filename, processed_tokens in pipeline_process(tokenizer,
-                                                       [pos_tagger, morph_tagger, lemmatizer, parzu, rw_tagger, ner_tagger],
-                                                       list(filenames)):
+           [pos_tagger, morph_tagger, lemmatizer, parzu, rw_tagger, ner_tagger, coref_tagger],
+           list(filenames)):
         output = []
         if args.format == 'conll':
             for sent in Token.get_sentences(processed_tokens):
                 for tok in sent:
-                    misc_items = [f'STWR{rw_type}={d["value"]}' for rw_type, d in
-                                  tok.get_field('redewiedergabe', rw_tagger.name, default={}).items()
-                                  if d["value"] == 'yes']
+                    misc_items = []
+                    for rw_type in tok.get_field('redewiedergabe', rw_tagger.name, default=[]):
+                        misc_items.append(f'STWR{rw_type}=yes')
                     if tok.get_field('ner', ner_tagger.name, None) is not None:
                         misc_items.append('NER=' + tok.get_field('ner', ner_tagger.name, None))
+                    for cluster_id in tok.get_field('coref_clusters', coref_tagger.name, default=[]):
+                        misc_items.append(f'CorefID={cluster_id}')
                     field_strings = [tok.id, tok.word,
                                      tok.get_field('lemma', lemmatizer.name, default='_'),
                                      '_',  # UPOS

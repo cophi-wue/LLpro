@@ -463,3 +463,112 @@ class FLERTNERTagger(Module):
                 for tok, tagged_tok in zip(sentence, tagged_sentence):
                     tok.set_field('ner', self.name, tagged_tok.get_label('ner').value)
             update_fn(len(sentence))
+
+
+class CorefIncrementalTagger(Module):
+
+    def __init__(self, coref_home='resources/uhh-lt-neural-coref',
+                 model='resources/model_droc_incremental_no_segment_distance_May02_17-32-58_1800.bin',
+                 config_name='droc_incremental_no_segment_distance',
+                 use_cuda=True):
+        self.device = torch.device('cuda' if torch.cuda.is_available() and use_cuda else "cpu")
+        self.coref_home = Path(coref_home)
+        self.model_path = Path(model)
+        sys.path.insert(0, str(self.coref_home))
+        from tensorize import Tensorizer
+        from transformers import BertTokenizer, ElectraTokenizer
+        from model import IncrementalCorefModel
+
+        # cf. resources/uhh-lt-neural-coref/torch_serve/model_handler.py
+        self.config = self.initialize_config(config_name)
+        assert self.config['incremental']
+        self.model = IncrementalCorefModel(self.config, self.device)
+        self.model.to(self.device)
+        self.tensorizer = Tensorizer(self.config)
+        self.model.load_state_dict(torch.load(str(model), map_location=self.device))
+        self.model.eval()
+        self.window_size = 384  # fixed hyperparameter, should be read out of config from MAR file
+
+        self.tensorizer = Tensorizer(self.config)
+        if self.config['model_type'] == 'electra':
+            self.tokenizer = ElectraTokenizer.from_pretrained(self.config['bert_tokenizer_name'],
+                                                              strip_accents=False)
+        else:
+            self.tokenizer = BertTokenizer.from_pretrained(self.config['bert_tokenizer_name'])
+
+        # apparently without effect as neither "keep" nor "discard" are recognized
+        self.tensorizer.long_doc_strategy = "keep"
+        logging.info(f"{self.name} using device {next(self.model.parameters()).device}")
+
+    def initialize_config(self, config_name):
+        import pyhocon
+        config = pyhocon.ConfigFactory.parse_file(str(self.coref_home / "experiments.conf"))[config_name]
+        return config
+
+    # cf. resources/uhh-lt-neural-coref/model.py
+    def get_predictions_incremental(self, input_ids, input_mask, speaker_ids, sentence_len, genre, sentence_map,
+                                    is_training, update_fn=None):
+        max_segments = 5
+
+        entities = None
+        from entities import IncrementalEntities
+        cpu_entities = IncrementalEntities(conf=self.config, device="cpu")
+
+        offset = 0
+        for i, start in enumerate(range(0, input_ids.shape[0], max_segments)):
+            end = start + max_segments
+            start_offset = torch.sum(input_mask[:start], (0, 1))
+            delta_offset = torch.sum(input_mask[start:end], (0, 1))
+            end_offset = start_offset + delta_offset
+            res = self.model.get_predictions_incremental_internal(
+                input_ids[start:end].to(self.device),
+                input_mask[start:end].to(self.device),
+                speaker_ids[start:end].to(self.device),
+                sentence_len[start:end].to(self.device),
+                genre.to(self.device),
+                sentence_map[start_offset:end_offset].to(self.device),
+                is_training.to(self.device),
+                entities=entities,
+                offset=offset,
+            )
+
+            if update_fn is not None:
+                update_fn(start_offset, end_offset)
+
+            offset += torch.sum(input_mask[start:end], (0, 1)).item()
+            entities, new_cpu_entities = res
+            cpu_entities.extend(new_cpu_entities)
+        cpu_entities.extend(entities)
+        starts, ends, mention_to_cluster_id, predicted_clusters = cpu_entities.get_result(
+            remove_singletons=not self.config['incremental_singletons']
+        )
+        return starts, ends, mention_to_cluster_id, predicted_clusters
+
+    def _tensorize(self, tokens):
+        nested_list = [[tok.word for tok in sent] for sent in Token.get_sentences(tokens)]
+
+        from preprocess import get_document
+        document = get_document('_', nested_list, 'german', self.window_size, self.tokenizer, 'nested_list')
+        _, example = self.tensorizer.tensorize_example(document, is_training=False)[0]
+
+        token_map = self.tensorizer.stored_info['subtoken_maps']['_']
+        tensorized = [torch.tensor(e) for e in example[:7]]
+        return tensorized, token_map
+
+    def process(self, tokens: Sequence[Token], update_fn: Callable[[int], None], **kwargs) -> None:
+        tokens = list(tokens)
+        mentions = [set() for _ in tokens]
+        tensorized, subtoken_map = self._tensorize(tokens)
+
+        def my_update_fn(start, end):
+            update_fn(subtoken_map[end - 1] - 1 - subtoken_map[start])
+
+        _, _, _, predicted_clusters = self.get_predictions_incremental(*tensorized, update_fn=my_update_fn)
+        for i, cluster in enumerate(predicted_clusters):
+            for mention_start, mention_end in cluster:
+                for r in range(mention_start, mention_end + 1):
+                    mentions[subtoken_map[r]].add(i)
+
+        for mention_set, tok in zip(mentions, tokens):
+            if len(mention_set) > 0:
+                tok.set_field('coref_clusters', self.name, list(mention_set))
