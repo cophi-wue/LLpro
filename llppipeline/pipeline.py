@@ -5,6 +5,7 @@ import unicodedata
 from pathlib import Path
 
 import regex
+import torch
 from flair.data import Sentence
 
 from .common import *
@@ -103,7 +104,6 @@ class RNNTagger(Module):
         self.rnntagger_home = Path(rnntagger_home)
         sys.path.insert(0, str(self.rnntagger_home))
         sys.path.insert(0, str(self.rnntagger_home / "PyNMT"))
-        import torch
         from PyRNN.Data import Data
         import PyRNN.RNNTagger
         import PyRNN.CRFTagger
@@ -127,13 +127,14 @@ class RNNTagger(Module):
 
             word_embs = None if data.word_emb_size <= 0 else model.float_tensor(data.words2vecs(words))
 
-            if type(model) is PyRNN.RNNTagger.RNNTagger:
-                tagscores = model(fwd_charIDs, bwd_charIDs, word_embs)
-                _, tagIDs = tagscores.max(dim=-1)
-            elif type(model) is PyRNN.CRFTagger.CRFTagger:
-                tagIDs = model(fwd_charIDs, bwd_charIDs, word_embs)
-            else:
-                sys.exit("Error in function annotate_sentence")
+            with torch.no_grad():
+                if type(model) is PyRNN.RNNTagger.RNNTagger:
+                    tagscores = model(fwd_charIDs, bwd_charIDs, word_embs)
+                    _, tagIDs = tagscores.max(dim=-1)
+                elif type(model) is PyRNN.CRFTagger.CRFTagger:
+                    tagIDs = model(fwd_charIDs, bwd_charIDs, word_embs)
+                else:
+                    sys.exit("Error in function annotate_sentence")
 
             tags = data.IDs2tags(tagIDs)
             return tags
@@ -190,7 +191,8 @@ class RNNLemmatizer(Module):
         def process_batch(batch):
             # see RNNTagger/PyNMT/nmt-translate.py
             src_words, sent_idx, (src_wordIDs, src_len) = batch
-            tgt_wordIDs, _ = self.model.translate(src_wordIDs, src_len, beam_size)
+            with torch.no_grad():
+                tgt_wordIDs, _ = self.model.translate(src_wordIDs, src_len, beam_size)
             # undo the sorting of sentences by length
             tgt_wordIDs = [tgt_wordIDs[i] for i in sent_idx]
 
@@ -365,13 +367,14 @@ class RedewiedergabeTagger(Module):
 
         for chunk in get_chunks():
             chunk = list(chunk)
-            pred = [{} for _ in chunk]
+            pred = [list() for _ in chunk]
             for rw_type, model in self.models.items():
                 sent_obj = Sentence([tok.word for tok in chunk])
-                model.predict(sent_obj)
+                with torch.no_grad():
+                    model.predict(sent_obj)
                 for i, label in enumerate(sent_obj.to_dict('cat')['cat']):
-                    pred[i][rw_type] = label
-                    pred[i][rw_type]['value'] = 'no' if label['value'] == 'x' else 'yes'
+                    if label['value'] != 'x':
+                        pred[i].append(rw_type)
 
             for tok, p in zip(chunk, pred):
                 tok.set_field('redewiedergabe', self.name, p)
@@ -403,7 +406,8 @@ class FLERTNERTagger(Module):
                 batch_size=mini_batch_size,
             )
             for batch in dataloader:
-                self._annotate_batch(batch)
+                with torch.no_grad():
+                    self._annotate_batch(batch)
                 for sentence in batch:
                     yield sentence
 
@@ -452,7 +456,7 @@ class FLERTNERTagger(Module):
                 result = [list() for _ in sentence]
                 for span in tagged_sentence.get_spans('ner'):
                     for tok in span.tokens:
-                        result[tok.idx-1].append(span.tag)
+                        result[tok.idx - 1].append(span.tag)
                 for res, tok in zip(result, sentence):
                     tok.set_field('ner', self.name, ','.join(res) if len(res) > 0 else None)
             else:

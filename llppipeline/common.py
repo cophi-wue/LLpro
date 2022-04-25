@@ -36,7 +36,10 @@ class Token:
 
     def get_field(self, field, module_name=None, default=None):
         if module_name is not None:
-            return self.fields[(field, module_name)]
+            if default is not None:
+                return self.fields.get((field, module_name), default)
+            else:
+                return self.fields[(field, module_name)]
 
         candidates = [(field_key, field_module_name) for field_key, field_module_name in self.fields.keys() if
                       field_key == field]

@@ -2,7 +2,6 @@ import argparse
 import collections
 import json
 import math
-import flair
 
 from llppipeline.pipeline import *
 
