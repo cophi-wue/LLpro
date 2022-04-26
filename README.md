@@ -7,14 +7,12 @@ This pipeline currently performs
 * POS tagging via [SoMeWeTa](https://github.com/tsproisl/SoMeWeTa) [(Proisl 2018)](#ref-proisl_someweta_2018)
 * Lemmatization and Morphological Analysis via [RNNTagger](https://www.cis.uni-muenchen.de/~schmid/tools/RNNTagger/) [(Schmid 2019)](#ref-schmid_deep_2019)
 * Dependency Parsing via [ParZu](https://github.com/rsennrich/ParZu) ([Sennrich, Schneider, Volk, Warin 2009](#ref-sennrich_new_2009); [Sennrich, Volk, Schneider 2013](#ref-sennrich_exploiting_2013); [Sennrich, Kunz 2014](#ref-sennrich_zmorge_2014))
-
-See [Model Selection](./doc/MODEL_SELECTION.md) for a discussion on this choice of language models.
-
-Modules open to implement are:
-* Named Entity Recognition via Flair embeddings
-* Semantic Role Labeling via InVeRo-XL [(Conia, Orlando, Cecconi, Navigli 2021)](#ref-conia_invero-xl-2021)
+* Named Entity Recognition via [FLERT](https://github.com/flairNLP/flair) [(Schweter, Akbik 2021)](#ref-schweter_flert_2021)
 * Coreference Resolution via BERT Embeddings [(Schröder, Hatzel, Biemann 2021)](#ref-schroder_neural_2021)
 * Tagging of German speech, thought and writing representation (STWR) via Flair/BERT embeddings [(Brunner, Tu, Weimer, Jannidis 2020)](#ref-brunner_bert_2021)
+* OPTIONAL: Semantic Role Labeling via InVeRo-XL [(Conia, Orlando, Cecconi, Navigli 2021)](#ref-conia_invero-xl-2021)
+
+See [Model Selection](./doc/MODEL_SELECTION.md) for a discussion on this choice of language models.
 
 ## Usage
 
@@ -37,10 +35,22 @@ options:
                         tokens to a separate file in DIR
 ```
 
-## Docker Module
+## Installation
 
-We strongly recommend using Docker to run the pipeline. With the provided Dockerfile, all dependencies and prerequisites
-are downloaded automatically.
+The LLP-Pipeline can be run either locally or as a Docker container. Running
+the pipelie using Docker is strongly recommended.
+
+In both alternatives, Semantic Role Labeling can be enabled by requesting and
+downloading a copy of the InVeRo-XL Docker image `invero-xl-span-cuda:2.0.0`
+from `http://nlp.uniroma1.it/resources/`. Before continuing, place the extracted Docker image file
+`invero-xl-span-cuda-2.0.0.tar` into the folder `resources/`. (Verify that the
+tarfile contains the file `manifest.json`.)
+
+### Building and running the Docker image
+
+We strongly recommend using Docker to run the pipeline. With the provided
+Dockerfile, all (freely available) dependencies and prerequisites are downloaded
+automatically. Before building, place the InVeRo-XL Docker image into the folder `resources/`, if desired.
 
 ```shell
 docker build --tag cophiwue/llp-pipeline .
@@ -51,7 +61,10 @@ Example usage:
 ```shell
 mkdir -p files/in files/out
 # copy files into ./files/in to be processed
-docker run --interactive \
+docker run \
+    --cpus 4 \
+    --runtime nvidia \
+    --interactive \
     --tty \
     -a stdout \
     -a stderr \
@@ -60,9 +73,9 @@ docker run --interactive \
 # processed files are located in ./files/out
 ```
 
-## Prerequisites
+### Installing locally
 
-Running the LLP-Pipeline without Docker requires the following prerequisites:
+Verify that the following dependencies are installed:
 
 * Python (tested on version 3.7)
 * For RNNTagger
@@ -70,27 +83,16 @@ Running the LLP-Pipeline without Docker requires the following prerequisites:
 * For Parzu:
   * SWI-Prolog >= 5.6
   * SFST >= 1.4
+* OPTIONAL: Docker to extract the InVeRo-XL image
 
-## Preparation
+Execute `./prepare.sh`. The script downloads all remaining prerequisites.
 
-Execute `./prepare.sh`, or perform following commands:
+Example usage:
 
 ```shell
-pip install -r requirements.txt
-python -c 'import nltk; nltk.download("punkt")
-
-cd resources
-wget 'https://corpora.linguistik.uni-erlangen.de/someweta/german_newspaper_2020-05-28.model'
-wget 'https://pub.cl.uzh.ch/users/sennrich/zmorge/transducers/zmorge-20150315-smor_newlemma.ca.zip'
-unzip zmorge-20150315-smor_newlemma.ca.zip
-wget 'https://www.cis.uni-muenchen.de/~schmid/tools/RNNTagger/data/RNNTagger-1.3.zip'
-unzip -uo RNNTagger-1.3.zip
-find ./RNNTagger/lib/ -type f ! -name '*german*' -delete # remove unncessesary models
-wget 'http://www.redewiedergabe.de/models/models.zip' -O rwtagger_models.zip
-unzip rwtagger_models.zip -d rwtagger_models
-
-# TODO steps to generate "improved statistics" from Tüba-D/Z from Parzu
+python ./main.py -v --writefiles files/out files/in
 ```
+
 
 ## Developer Guide
 
@@ -160,6 +162,12 @@ Schmid, Helmut. 2019. <span>“Deep Learning-Based Morphological Taggers and Lem
 <div id="ref-schroder_neural_2021" class="csl-entry" role="doc-biblioentry">
 
 Schröder, Fynn, Hans Ole Hatzel, and Chris Biemann. 2021. <span>“Neural End-to-End Coreference Resolution for German in Different Domains.”</span> In <em>Proceedings of the 17th Conference on Natural Language Processing (<span>KONVENS</span> 2021)</em>, 170–81. Düsseldorf, Germany: <span>KONVENS</span> 2021 Organizers. <a href="https://aclanthology.org/2021.konvens-1.15">https://aclanthology.org/2021.konvens-1.15</a>.
+
+</div>
+
+<div id="ref-schweter_flert_2021" class="csl-entry" role="doc-biblioentry">
+
+Schweter, Stefan, and Alan Akbik. 2021. <span>“<span>FLERT</span>: Document-Level Features for Named Entity Recognition.”</span> <em><span>arXiv</span>:2011.06993 [Cs]</em>, May. <a href="http://arxiv.org/abs/2011.06993">http://arxiv.org/abs/2011.06993</a>.
 
 </div>
 

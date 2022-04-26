@@ -14,4 +14,22 @@ unzip -uo RNNTagger-1.3.zip
 find ./RNNTagger/lib/ -type f ! -name '*german*' -delete # remove unncessesary models
 $WGET 'http://www.redewiedergabe.de/models/models.zip' -O rwtagger_models.zip
 unzip rwtagger_models.zip -d rwtagger_models
+$WGET 'https://github.com/uhh-lt/neural-coref/releases/download/konvens/droc_incremental_no_segment_distance.mar'
+unzip droc_incremental_no_segment_distance.mar model_droc_incremental_no_segment_distance_May02_17-32-58_1800.bin
 
+invero_tarfile="invero-xl-span-cuda-2.0.0.tar"
+if [ -f "$invero_tarfile" ]; then
+    if tar tf "$invero_tarfile" manifest.json >/dev/null; then
+        echo >&2 'Found invero image'
+    else
+        echo >&2 "WARNING: resources folder contains $invero_tarfile but is not a Docker image!"
+        echo >&2 "You might need to untar the archive to extract the Docker image"
+        exit 1
+    fi
+    tar xf "$invero_tarfile" \
+        dfd58a13d4e570b36f9cf854db2b874261d06617729eff20d6634db0d15c24d0/layer.tar -O \
+    | tar xf - -C ./inveroxl/resources/model --strip-components 3 \
+        app/resources/model
+else
+    echo >&2 "WARNING: Docker image $invero_tarfile not found - pipeline will be unable to run semantic role labeling"
+fi

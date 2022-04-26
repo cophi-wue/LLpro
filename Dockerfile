@@ -2,10 +2,9 @@ FROM nvidia/cuda:11.4.1-base-ubuntu20.04
 
 WORKDIR /LL-Pipeline
 
-RUN apt-get update -y
 ARG DEBIAN_FRONTEND=noninteractive
 ENV TZ=Europe/Berlin
-RUN apt-get -y install \
+RUN apt-get update -y && apt-get -y install \
     python3 \
     python3-pip \
     swi-prolog \
@@ -13,10 +12,11 @@ RUN apt-get -y install \
     unzip \
     wget
 
-RUN mkdir resources
+COPY resources resources
 COPY prepare.sh .
 COPY requirements.txt .
 RUN sh prepare.sh
 COPY . .
+RUN rm -rf resources/invero-xl-span-cuda-2.0.0.tar
 
 ENTRYPOINT ["python3", "main.py"]
