@@ -2,6 +2,7 @@ import argparse
 import collections
 import json
 import math
+import os.path
 
 from llppipeline.pipeline import *
 
@@ -52,9 +53,13 @@ if __name__ == "__main__":
     rw_tagger = RedewiedergabeTagger()
     ner_tagger = FLERTNERTagger()
     coref_tagger = CorefIncrementalTagger()
-    srl_tagger = InVeRoXL()
+    modules = [pos_tagger, morph_tagger, lemmatizer, parzu, rw_tagger, ner_tagger, coref_tagger]
 
-    modules = [pos_tagger, morph_tagger, lemmatizer, parzu, rw_tagger, ner_tagger, coref_tagger, srl_tagger]
+    srl_tagger = None
+    if os.path.exists('resources/inveroxl/resources/model/weights.pt'):
+        srl_tagger = InVeRoXL()
+        modules.append(srl_tagger)
+
     for filename, processed_tokens in pipeline_process(tokenizer, modules, list(filenames)):
         output = []
         if args.format == 'conll':
@@ -67,11 +72,12 @@ if __name__ == "__main__":
                         misc_items.append('NER=' + tok.get_field('ner', ner_tagger.name, None))
                     for cluster_id in tok.get_field('coref_clusters', coref_tagger.name, default=[]):
                         misc_items.append(f'CorefID={cluster_id}')
-                    for frame in tok.get_field('srl', srl_tagger.name, default=[]):
-                        if 'sense' in frame.keys():
-                            misc_items.append(f'SemanticRole={frame["id"]}:{frame["sense"]}')
-                        else:
-                            misc_items.append(f'SemanticRole={frame["id"]}:{frame["role"]}')
+                    if srl_tagger is not None:
+                        for frame in tok.get_field('srl', srl_tagger.name, default=[]):
+                            if 'sense' in frame.keys():
+                                misc_items.append(f'SemanticRole={frame["id"]}:{frame["sense"]}')
+                            else:
+                                misc_items.append(f'SemanticRole={frame["id"]}:{frame["role"]}')
                     field_strings = [tok.id, tok.word,
                                      tok.get_field('lemma', lemmatizer.name, default='_'),
                                      '_',  # UPOS
