@@ -4,6 +4,7 @@ WGET="wget --show-progress --progress=bar:force:noscroll"
 
 pip3 install --no-cache-dir -r requirements.txt
 python3 -c 'import nltk; nltk.download("punkt")'
+python3 -c 'import flair.models; flair.models.SequenceTagger.load("flair/ner-german-large")'
 
 cd resources
 $WGET 'https://corpora.linguistik.uni-erlangen.de/someweta/german_newspaper_2020-05-28.model'
