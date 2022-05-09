@@ -50,14 +50,14 @@ if __name__ == "__main__":
     parzu = ParallelizedModule(lambda: ParzuParser(pos_source=pos_tagger.name),
                                num_processes=math.floor(get_cpu_limit()),
                                tokens_per_process=1000, name='ParzuParser')
-    rw_tagger = RedewiedergabeTagger()
-    ner_tagger = FLERTNERTagger()
-    coref_tagger = CorefIncrementalTagger()
+    rw_tagger = RedewiedergabeTagger(device_on_run=True)
+    ner_tagger = FLERTNERTagger(device_on_run=True)
+    coref_tagger = CorefIncrementalTagger(device_on_run=True)
     modules = [pos_tagger, morph_tagger, lemmatizer, parzu, rw_tagger, ner_tagger, coref_tagger]
 
     srl_tagger = None
     if os.path.exists('resources/inveroxl/resources/model/weights.pt'):
-        srl_tagger = InVeRoXL()
+        srl_tagger = InVeRoXL(device_on_run=True)
         modules.append(srl_tagger)
 
     for filename, processed_tokens in pipeline_process(tokenizer, modules, list(filenames)):

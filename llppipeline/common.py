@@ -182,9 +182,17 @@ class Module:
         def my_update_fn(x: int):
             pbar.update(x)
 
+        self.before_run()
         self.process(tokens, my_update_fn, **kwargs)
         pbar.update(len(tokens) - pbar.n)
+        self.after_run()
         pbar.close()
+
+    def before_run(self):
+        pass
+
+    def after_run(self):
+        pass
 
     @abstractmethod
     def process(self, tokens: Sequence[Token], update_fn: Callable[[int], None], **kwargs) -> None:

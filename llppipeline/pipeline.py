@@ -5,6 +5,7 @@ import sys
 import unicodedata
 from pathlib import Path
 
+import flair
 import regex
 import torch
 from flair.data import Sentence
@@ -335,25 +336,43 @@ class ParzuParser(Module):
 
 class RedewiedergabeTagger(Module):
 
-    def __init__(self, model_paths=None, use_cuda=True):
+    def __init__(self, model_paths=None, use_cuda=True, device_on_run=False):
         import torch
         from flair.models import SequenceTagger
+        flair.device = 'cpu'
 
         self.model_paths = model_paths if model_paths is not None else \
             {'direct': 'resources/rwtagger_models/models/direct/final-model.pt',
              'indirect': 'resources/rwtagger_models/models/indirect/final-model.pt',
              'reported': 'resources/rwtagger_models/models/reported/final-model.pt',
              'freeIndirect': 'resources/rwtagger_models/models/freeIndirect/final-model.pt'}
+        self.device_on_run = device_on_run
+        self.device = torch.device('cuda' if torch.cuda.is_available() and use_cuda else "cpu")
 
         self.models: Dict[str, SequenceTagger] = {}
         for rw_type, model_path in self.model_paths.items():
             model = SequenceTagger.load(model_path)
-            if torch.cuda.is_available() and use_cuda:
-                model = model.cuda()
             model = model.eval()
             self.models[rw_type] = model
-        logging.info(
-            f"{self.name} using devices {','.join(str(next(m.parameters()).device) for m in self.models.values())}")
+
+        if not self.device_on_run:
+            for model in self.models.values():
+                model.to(self.device)
+            logging.info(
+                f"{self.name} using devices {','.join(str(next(m.parameters()).device) for m in self.models.values())}")
+
+    def before_run(self):
+        flair.device = self.device
+        if self.device_on_run:
+            for model in self.models.values():
+                model.to(self.device)
+            logging.info(
+                f"{self.name} using devices {','.join(str(next(m.parameters()).device) for m in self.models.values())}")
+
+    def after_run(self):
+        for model in self.models.values():
+            model.to('cpu')
+            torch.cuda.empty_cache()  # TODO
 
     def process(self, tokens: Sequence[Token], update_fn: Callable[[int], None], **kwargs) -> None:
         from flair.data import Sentence
@@ -395,13 +414,16 @@ class RedewiedergabeTagger(Module):
 
 class FLERTNERTagger(Module):
 
-    def __init__(self, mini_batch_size=8):
+    def __init__(self, mini_batch_size=8, use_cuda=True, device_on_run=False):
+        self.device_on_run = device_on_run
+        self.device = torch.device('cuda' if torch.cuda.is_available() and use_cuda else "cpu")
+
         from flair.models import SequenceTagger
         from flair.data import Sentence
         from flair.datasets import DataLoader
         from flair.datasets import FlairDatapointDataset
         # see https://github.com/flairNLP/flair/issues/2650#issuecomment-1063785119
-
+        flair.device = 'cpu'
         self.tagger = SequenceTagger.load("flair/ner-german-large")
 
         def myprocessor(sentences: Sequence[Sentence]) -> Iterable[Sentence]:
@@ -417,6 +439,21 @@ class FLERTNERTagger(Module):
                         sentence.clear_embeddings()
 
         self.processor = myprocessor
+
+        if not self.device_on_run:
+            self.tagger.to(self.device)
+            logging.info(f"{self.name} using device {str(next(self.tagger.parameters()).device)}")
+
+    def before_run(self):
+        if self.device_on_run:
+            flair.device = self.device
+            self.tagger.to(self.device)
+            logging.info(f"{self.name} using device {str(next(self.tagger.parameters()).device)}")
+
+    def after_run(self):
+        if self.device_on_run:
+            self.tagger.to('cpu')
+            torch.cuda.empty_cache()  # TODO
 
     def _annotate_batch(self, batch):
         from flair.models.sequence_tagger_utils.bioes import get_spans_from_bio
@@ -477,10 +514,12 @@ class CorefIncrementalTagger(Module):
     def __init__(self, coref_home='resources/uhh-lt-neural-coref',
                  model='resources/model_droc_incremental_no_segment_distance_May02_17-32-58_1800.bin',
                  config_name='droc_incremental_no_segment_distance',
-                 use_cuda=True):
+                 use_cuda=True,
+                 device_on_run=False):
         self.device = torch.device('cuda' if torch.cuda.is_available() and use_cuda else "cpu")
         self.coref_home = Path(coref_home)
         self.model_path = Path(model)
+        self.device_on_run = device_on_run
         sys.path.insert(0, str(self.coref_home))
         from tensorize import Tensorizer
         from transformers import BertTokenizer, ElectraTokenizer
@@ -490,10 +529,12 @@ class CorefIncrementalTagger(Module):
         self.config = self.initialize_config(config_name)
         assert self.config['incremental']
         self.model = IncrementalCorefModel(self.config, self.device)
-        self.model.to(self.device)
         self.tensorizer = Tensorizer(self.config)
-        self.model.load_state_dict(torch.load(str(model), map_location=self.device))
+        self.model.load_state_dict(torch.load(str(model), map_location='cpu'))
         self.model.eval()
+        if not self.device_on_run:
+            self.model.to(self.device)
+            logging.info(f"{self.name} using device {next(self.model.parameters()).device}")
         self.window_size = 384  # fixed hyperparameter, should be read out of config from MAR file
 
         self.tensorizer = Tensorizer(self.config)
@@ -505,12 +546,21 @@ class CorefIncrementalTagger(Module):
 
         # apparently without effect as neither "keep" nor "discard" are recognized
         self.tensorizer.long_doc_strategy = "keep"
-        logging.info(f"{self.name} using device {next(self.model.parameters()).device}")
 
     def initialize_config(self, config_name):
         import pyhocon
         config = pyhocon.ConfigFactory.parse_file(str(self.coref_home / "experiments.conf"))[config_name]
         return config
+
+    def before_run(self):
+        if self.device_on_run:
+            self.model.to(self.device)
+            logging.info(f"{self.name} using device {next(self.model.parameters()).device}")
+
+    def after_run(self):
+        if self.device_on_run:
+            self.model.to('cpu')
+            torch.cuda.empty_cache()  # TODO
 
     # cf. resources/uhh-lt-neural-coref/model.py
     def get_predictions_incremental(self, input_ids, input_mask, speaker_ids, sentence_len, genre, sentence_map,
@@ -583,15 +633,31 @@ class CorefIncrementalTagger(Module):
 
 class InVeRoXL(Module):
 
-    def __init__(self, inveroxl_home='resources/inveroxl', use_cuda=True):
+    def __init__(self, inveroxl_home='resources/inveroxl', use_cuda=True, device_on_run=False):
         self.device = torch.device('cuda' if torch.cuda.is_available() and use_cuda else "cpu")
         self.inveroxl_home = Path(inveroxl_home)
+        self.device_on_run = device_on_run
         sys.path.insert(0, str(self.inveroxl_home))
         from inference import Invero
 
-        self.model = Invero(device=self.device, model_name=str(self.inveroxl_home / "resources" / "model"),
+        self.model = Invero(device='cpu', model_name=str(self.inveroxl_home / "resources" / "model"),
                             languages='de')
-        logging.info(f"{self.name} using device {next(self.model.srl_model.model.parameters()).device}")
+        if not self.device_on_run:
+            self.model.srl_model.device = self.device
+            self.model.srl_model.model.to(self.device)
+            logging.info(f"{self.name} using device {next(self.model.srl_model.model.parameters()).device}")
+
+    def before_run(self):
+        if self.device_on_run:
+            self.model.srl_model.device = self.device
+            self.model.srl_model.model.to(self.device)
+            logging.info(f"{self.name} using device {next(self.model.srl_model.model.parameters()).device}")
+
+    def after_run(self):
+        if self.device_on_run:
+            self.model.srl_model.model.to('cpu')
+            self.model.srl_model.device = 'cpu'
+            torch.cuda.empty_cache()  # TODO
 
     def prepare_docs(self, tokens):
         from sapienzanlp.data.model_io.word import Word
