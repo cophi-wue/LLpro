@@ -1,3 +1,4 @@
+import logging
 import pickle
 import re
 import sys
@@ -356,29 +357,32 @@ class RedewiedergabeTagger(Module):
 
     def process(self, tokens: Sequence[Token], update_fn: Callable[[int], None], **kwargs) -> None:
         from flair.data import Sentence
-        max_seq_length = 512
+        max_seq_length = 510  # inc. [CLS} and [SEP]
 
-        def get_chunks():
+        def gen_sentences():
             for sentence in Token.get_sentences(tokens):
-                for chunk in Token.get_chunks(sentence, max_chunk_len=max_seq_length,
+                for sent_part in Token.get_chunks(sentence, max_chunk_len=max_seq_length,
                                               sequence_length_function=lambda x: self.bert_sequence_length(x),
                                               borders='tokens'):
-                    yield chunk
+                    yield sent_part
 
-        for chunk in get_chunks():
-            chunk = list(chunk)
-            pred = [list() for _ in chunk]
+        for chunk in more_itertools.chunked(gen_sentences(), n=10):
+            chunk = [list(sent) for sent in chunk]
+            pred = [list() for sent in chunk for _ in sent]
             for rw_type, model in self.models.items():
-                sent_obj = Sentence([tok.word for tok in chunk])
+                sent_objs = [Sentence([tok.word for tok in sent]) for sent in chunk]
                 with torch.no_grad():
-                    model.predict(sent_obj)
-                for i, label in enumerate(sent_obj.to_dict('cat')['cat']):
-                    if label['value'] != 'x':
-                        pred[i].append(rw_type)
+                    model.predict(sent_objs)
+                i = 0
+                for sent in sent_objs:
+                    for label in sent.to_dict('cat')['cat']:
+                        if label['value'] != 'x':
+                            pred[i].append(rw_type)
+                        i = i + 1
 
-            for tok, p in zip(chunk, pred):
+            for tok, p in zip(itertools.chain.from_iterable(chunk), pred):
                 tok.set_field('redewiedergabe', self.name, p)
-            update_fn(len(chunk))
+            update_fn(sum(len(sent) for sent in chunk))
 
     def bert_sequence_length(self, seq):
         from flair.embeddings import BertEmbeddings
@@ -391,7 +395,7 @@ class RedewiedergabeTagger(Module):
 
 class FLERTNERTagger(Module):
 
-    def __init__(self, mini_batch_size=32):
+    def __init__(self, mini_batch_size=8):
         from flair.models import SequenceTagger
         from flair.data import Sentence
         from flair.datasets import DataLoader
@@ -405,11 +409,12 @@ class FLERTNERTagger(Module):
                 dataset=FlairDatapointDataset(sentences),
                 batch_size=mini_batch_size,
             )
-            for batch in dataloader:
-                with torch.no_grad():
+            with torch.no_grad():
+                for batch in dataloader:
                     self._annotate_batch(batch)
-                for sentence in batch:
-                    yield sentence
+                    for sentence in batch:
+                        yield sentence
+                        sentence.clear_embeddings()
 
         self.processor = myprocessor
 
@@ -454,14 +459,16 @@ class FLERTNERTagger(Module):
         for sentence, tagged_sentence in zip(sentences, self.processor(flair_sentences)):
             if self.tagger.predict_spans:
                 result = [list() for _ in sentence]
+                # TODO enumerate spans?
                 for span in tagged_sentence.get_spans('ner'):
                     for tok in span.tokens:
                         result[tok.idx - 1].append(span.tag)
                 for res, tok in zip(result, sentence):
-                    tok.set_field('ner', self.name, ','.join(res) if len(res) > 0 else None)
+                    tok.set_field('ner', self.name, res)
             else:
                 for tok, tagged_tok in zip(sentence, tagged_sentence):
-                    tok.set_field('ner', self.name, tagged_tok.get_label('ner').value)
+                    value = tagged_tok.get_label('ner').value
+                    tok.set_field('ner', self.name, value)
             update_fn(len(sentence))
 
 
@@ -563,14 +570,14 @@ class CorefIncrementalTagger(Module):
         def my_update_fn(start, end):
             update_fn(subtoken_map[end - 1] - 1 - subtoken_map[start])
 
-        _, _, _, predicted_clusters = self.get_predictions_incremental(*tensorized, update_fn=my_update_fn)
-        for i, cluster in enumerate(predicted_clusters):
-            for mention_start, mention_end in cluster:
-                for r in range(mention_start, mention_end + 1):
-                    mentions[subtoken_map[r]].add(i)
+        with torch.no_grad():
+            _, _, _, predicted_clusters = self.get_predictions_incremental(*tensorized, update_fn=my_update_fn)
+            for i, cluster in enumerate(predicted_clusters):
+                for mention_start, mention_end in cluster:
+                    for r in range(mention_start, mention_end + 1):
+                        mentions[subtoken_map[r]].add(i)
 
-        for mention_set, tok in zip(mentions, tokens):
-            if len(mention_set) > 0:
+            for mention_set, tok in zip(mentions, tokens):
                 tok.set_field('coref_clusters', self.name, list(mention_set))
 
 
@@ -603,14 +610,16 @@ class InVeRoXL(Module):
         assert len(annotated_doc.tokens) == len(tokens)
 
         frames = [list() for _ in tokens]
-        annotations = [(an.token_index, an.verbatlas) for an in annotated_doc.annotations if
+        annotations = [(an.token_index, an.verbatlas, an) for an in annotated_doc.annotations if
                        an.verbatlas.frame_name != '_']
-        for i, (token_index, an) in enumerate(annotations):
+        for i, (token_index, an, orig) in enumerate(annotations):
+            if token_index >= len(tokens):
+                logging.warning(f'InVeRo returns annotation out of bound: {orig}')
+                continue
             frames[token_index].append({'id': i, 'sense': an.frame_name})
             for r in an.roles:
                 for j in range(*r.span):
                     frames[j].append({'id': i, 'role': r.role})
 
         for tok_frames, tok in zip(frames, tokens):
-            if len(tok_frames) > 0:
-                tok.set_field('srl', self.name, tok_frames)
+            tok.set_field('srl', self.name, tok_frames)

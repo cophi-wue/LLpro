@@ -34,7 +34,7 @@ class Invero:
         #         )
         #         sys.exit(4)
         self.inventories = ["ca", "cs", "de", "en", "es", "va", "zh"]
-        self.batch_size = int(os.getenv("BATCH_SIZE", 8))
+        self.batch_size = 5
         # models stuff
         # logger.info(f"Device in use: {device}")
         self.srl_model = SemanticRoleLabeler.from_pretrained(
