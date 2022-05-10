@@ -11,7 +11,6 @@ from typing import Iterable, Sequence, Dict, Tuple, Any, Callable, Union
 
 import more_itertools
 from tqdm import tqdm
-from tqdm.contrib.logging import logging_redirect_tqdm
 
 
 class Token:
@@ -33,6 +32,12 @@ class Token:
 
     def update(self, d):
         self.fields.update(d)
+
+    def has_field(self, field, module_name=None):
+        if module_name is not None:
+            return (field, module_name) in self.fields.keys()
+        else:
+            return any(f == field for f, _ in self.fields.keys())
 
     def get_field(self, field, module_name=None, default=None):
         if module_name is not None:
@@ -138,6 +143,35 @@ class Token:
 
             if len_fn(process_chunk) > 0:
                 yield process_chunk
+
+    @staticmethod
+    def to_conll(processed_tokens, **module_names) -> Iterable[str]:
+        for sent in Token.get_sentences(processed_tokens):
+            for tok in sent:
+                misc_items = []
+                for rw_type in tok.get_field('redewiedergabe', module_names.get('redewiedergabe', None), default=[]):
+                    misc_items.append(f'STWR{rw_type}=yes')
+                for ner in tok.get_field('ner', module_names.get('ner', None), default=[]):
+                    misc_items.append(f'NER={ner}')
+                for cluster_id in tok.get_field('coref_clusters', module_names.get('coref_clusters', None), default=[]):
+                    misc_items.append(f'CorefID={cluster_id}')
+                for frame in tok.get_field('srl', module_names.get('srl', None), default=[]):
+                    if 'sense' in frame.keys():
+                        misc_items.append(f'SemanticRole={frame["id"]}:{frame["sense"]}')
+                    else:
+                        misc_items.append(f'SemanticRole={frame["id"]}:{frame["role"]}')
+                field_strings = [tok.id, tok.word,
+                                 tok.get_field('lemma', module_names.get('lemmatizer', None), default='_'),
+                                 '_',  # UPOS
+                                 tok.get_field('pos', module_names.get('pos', None), default='_'),
+                                 tok.get_field('morph', module_names.get('morph', None), default='_'),
+                                 tok.get_field('head', module_names.get('head', None), default='_'),
+                                 tok.get_field('deprel', module_names.get('deprel', None), default='_'),
+                                 '_',  # DEPS
+                                 '|'.join(misc_items)
+                                 ]
+                yield '\t'.join([str(x) for x in field_strings])
+            yield ''
 
 
 class Tokenizer:
@@ -303,6 +337,7 @@ def pipeline_process(tokenizer: Tokenizer, modules: Iterable[Module], filenames:
     module_pbar_opts = module_pbar_opts if module_pbar_opts is not None else {}
 
     file_sizes = [os.path.getsize(f) for f in filenames]
+    from tqdm.contrib.logging import logging_redirect_tqdm
     with logging_redirect_tqdm():
         file_pbar = tqdm(total=sum(file_sizes), position=0, unit='B', unit_scale=True, dynamic_ncols=True,
                          **file_pbar_opts)
