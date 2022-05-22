@@ -70,7 +70,7 @@ if __name__ == "__main__":
                 for (field, module), value in tok.fields.items():
                     obj[field][module] = value
                 output.append(json.dumps(obj))
-            output = '\n'.join(output)
+        output = '\n'.join(output)
 
         if args.writefiles is not None:
             with open(os.path.join(args.writefiles, os.path.basename(filename)), 'w') as out:
