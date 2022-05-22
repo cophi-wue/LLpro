@@ -46,6 +46,12 @@ from `http://nlp.uniroma1.it/resources/`. Before continuing, place the extracted
 `invero-xl-span-cuda-2.0.0.tar` into the folder `resources/`. (Verify that the
 tarfile contains the file `manifest.json`.)
 
+**WINDOWS USERS**: For building the Docker image, clone using
+```shell
+git clone https://github.com/aehrm/LLP-Pipeline --config core.autocrlf=input
+```
+to preserve line endings.
+
 ### Building and running the Docker image
 
 We strongly recommend using Docker to run the pipeline. With the provided
@@ -63,7 +69,7 @@ mkdir -p files/in files/out
 # copy files into ./files/in to be processed
 docker run \
     --cpus 4 \
-    --runtime nvidia \
+    --gpus all \
     --interactive \
     --tty \
     -a stdout \
