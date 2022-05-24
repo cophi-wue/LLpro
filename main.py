@@ -19,7 +19,6 @@ def get_cpu_limit():
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='NLP Pipeline for literary texts written in German.')
     parser.add_argument('-v', '--verbose', action="store_const", dest="loglevel", const=logging.INFO)
-    parser.add_argument('--format', choices=['json', 'conll'], default='json')
     group = parser.add_mutually_exclusive_group()
     group.add_argument('--stdout', default=True, help='Write all processed tokens to stdout',
                        action='store_const', dest='outtype', const='stdout')
@@ -42,7 +41,7 @@ if __name__ == "__main__":
                 filenames.extend([os.path.join(root, m) for m in members])
 
     logging.info('Loading modules')
-    tokenizer = NLTKPunktTokenizer()
+    tokenizer = SoMaJoTokenizer()
     pos_tagger = SoMeWeTaTagger()
     morph_tagger = RNNTagger()
     lemmatizer = RNNLemmatizer()
@@ -61,15 +60,8 @@ if __name__ == "__main__":
 
     for filename, processed_tokens in pipeline_process(tokenizer, modules, list(filenames)):
         output = []
-        if args.format == 'conll':
-            output = Token.to_conll(processed_tokens, pos=pos_tagger.name, morph=morph_tagger.name,
-                                    lemmatizer=lemmatizer.name)
-        else:
-            for tok in processed_tokens:
-                obj = collections.defaultdict(lambda: {})
-                for (field, module), value in tok.fields.items():
-                    obj[field][module] = value
-                output.append(json.dumps(obj))
+        for tok in processed_tokens:
+            output.append(json.dumps(tok.to_object()))
         output = '\n'.join(output)
 
         if args.writefiles is not None:

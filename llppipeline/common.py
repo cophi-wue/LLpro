@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import collections
 import itertools
 import logging
 import logging.handlers
@@ -25,13 +26,19 @@ class Token:
     deprel: str
     fields: Dict[Tuple[str, str], Any]
 
-    def __init__(self, fields: Dict[Tuple[str, str], Any] = None):
+    def __init__(self, fields: Dict[Tuple[str, str], Any] = None, metadata: Dict[Tuple[str, str], Dict] = None):
         self.fields = {}
+        self.metadata = {}
         if fields is not None:
-            self.update(fields)
+            self.update_fields(fields)
+        if metadata is not None:
+            self.update_metadata(metadata)
 
-    def update(self, d):
+    def update_fields(self, d):
         self.fields.update(d)
+
+    def update_metadata(self, d):
+        self.metadata.update(d)
 
     def has_field(self, field, module_name=None):
         if module_name is not None:
@@ -57,8 +64,13 @@ class Token:
                 return '_'
         return self.fields[candidates[0]]
 
-    def set_field(self, field, module_name, value):
+    def get_metadata(self, field, module_name):
+        return self.metadata.get((field, module_name), None)
+
+    def set_field(self, field, module_name, value, **metadata):
         self.fields[(field, module_name)] = value
+        if metadata is not None and type(metadata) == dict and len(metadata.keys()) > 0:
+            self.metadata[(field, module_name)] = metadata
 
     def __setattr__(self, field, value):
         if field in ['id', 'doc', 'word', 'sentence', 'lemma', 'pos', 'morph', 'head', 'deprel']:
@@ -173,6 +185,13 @@ class Token:
                 yield '\t'.join([str(x) for x in field_strings])
             yield ''
 
+    def to_object(self):
+        obj = collections.defaultdict(lambda: collections.defaultdict(dict))
+        for (field, module), value in self.fields.items():
+            obj[field][module]['value'] = value
+        for (field, module), meta in self.metadata.items():
+            obj[field][module]['metadata'] = meta
+        return obj
 
 class Tokenizer:
 
@@ -307,7 +326,8 @@ class ParallelizedModule(Module):
                     break
 
         for tok, modified_tok in zip(tokens, itertools.chain.from_iterable(processed_chunks)):
-            tok.update(modified_tok.fields)
+            tok.update_fields(modified_tok.fields)
+            tok.update_metadata(modified_tok.metadata)
 
     @staticmethod
     def _init_worker(module_constructor):

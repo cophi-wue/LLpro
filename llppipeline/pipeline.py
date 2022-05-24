@@ -1,3 +1,5 @@
+import copy
+import itertools
 import logging
 import pickle
 import re
@@ -68,8 +70,9 @@ class SoMaJoTokenizer(Tokenizer):
         sentences = self.tokenizer.tokenize_text(paragraphs=[content])
         for sent_id, sent in enumerate(sentences):
             for word_id, word in enumerate(sent):
+                # TODO spans rekonstruieren?
                 tok = Token()
-                tok.set_field('word', self.name, word.text)
+                tok.set_field('word', self.name, word.text, space_after=word.space_after, token_class=word.token_class)
                 tok.set_field('sentence', self.name, sent_id + 1)
                 tok.set_field('id', self.name, word_id)
                 if filename is not None:
@@ -132,14 +135,15 @@ class RNNTagger(Module):
             with torch.no_grad():
                 if type(model) is PyRNN.RNNTagger.RNNTagger:
                     tagscores = model(fwd_charIDs, bwd_charIDs, word_embs)
-                    _, tagIDs = tagscores.max(dim=-1)
+                    softmax_probs = torch.nn.functional.softmax(tagscores, dim=-1)    # ae: added softmax transform to get meaningful probabilities
+                    best_prob, tagIDs = softmax_probs.max(dim=-1)
+                    tags = data.IDs2tags(tagIDs)
+                    return [{'tag': t, 'prob': p.item()} for t, p in zip(tags, best_prob.cpu())]
                 elif type(model) is PyRNN.CRFTagger.CRFTagger:
                     tagIDs = model(fwd_charIDs, bwd_charIDs, word_embs)
+                    return [{'tag': t} for t in data.IDs2tags(tagIDs)]
                 else:
-                    sys.exit("Error in function annotate_sentence")
-
-            tags = data.IDs2tags(tagIDs)
-            return tags
+                    raise RuntimeError("Error in function annotate_sentence")
 
         def myprocessor(iterable_of_sentences):
             for sent in iterable_of_sentences:
@@ -153,6 +157,11 @@ class RNNTagger(Module):
     def process(self, tokens: Sequence[Token], update_fn, **kwargs):
         it = iter(tokens)
         for tok, tag in self.processor(Token.get_sentences(tokens)):
+            if 'prob' in tag.keys():
+                tag, prob = tag['tag'], tag['prob']
+            else:
+                tag = tag['tag']
+                prob = None
             maintag = tag.split(".")[0]
             stts = "$." if maintag == "$" else maintag
 
@@ -160,8 +169,12 @@ class RNNTagger(Module):
             assert tok == token.word
             # TODO systematischer parsen?
             morph = re.search(r'^[^\.]+\.(.+)$', tag).group(1) if '.' in tag and not stts.startswith('$') else None
-            token.set_field('morph', self.name, morph)
-            token.set_field('pos', self.name, stts)
+            if prob is not None:
+                token.set_field('morph', self.name, morph, prob=prob)
+                token.set_field('pos', self.name, stts, prob=prob)
+            else:
+                token.set_field('morph', self.name, morph)
+                token.set_field('pos', self.name, stts)
             update_fn(1)
 
 
@@ -194,13 +207,13 @@ class RNNLemmatizer(Module):
             # see RNNTagger/PyNMT/nmt-translate.py
             src_words, sent_idx, (src_wordIDs, src_len) = batch
             with torch.no_grad():
-                tgt_wordIDs, _ = self.model.translate(src_wordIDs, src_len, beam_size)
+                tgt_wordIDs, tgt_logprobs = self.model.translate(src_wordIDs, src_len, beam_size)
             # undo the sorting of sentences by length
             tgt_wordIDs = [tgt_wordIDs[i] for i in sent_idx]
 
-            for swords, twordIDs in zip(src_words, tgt_wordIDs):
+            for swords, twordIDs, logprob in zip(src_words, tgt_wordIDs, tgt_logprobs):
                 twords = self.vector_mappings.target_words(rstrip_zeros(twordIDs))
-                yield ''.join(twords)
+                yield ''.join(twords), torch.exp(logprob).cpu().item()
 
         def format_batch(tokens):
             # see RNNTagger/scripts/reformat.pl
@@ -221,48 +234,46 @@ class RNNLemmatizer(Module):
 
         def myprocessor(tokens_batch):
             assert len(tokens_batch) <= self.vector_mappings.batch_size
-            for out in process_batch(format_batch(list(tokens_batch))):
-                yield out
+            for out, prob in process_batch(format_batch(list(tokens_batch))):
+                yield out, prob
 
         self.processor = myprocessor
 
     def process(self, tokens: Sequence[Token], update_fn, **kwargs):
-        for document in Token.get_documents(tokens):
-            # for each document, use a cache to skip tokens already lemmatized
-            cached = {}
-            it = iter(document)
-            done = False
+        cached = {}
+        it = iter(tokens)
+        done = False
 
-            while not done:
-                current_batch = []
-                current_batch_is_cached = []
-                try:
-                    while sum(1 - x for x in current_batch_is_cached) < self.vector_mappings.batch_size:
-                        tok = next(it)
-                        cache_key = (
-                            tok.word, tok.get_field('pos', self.pos_module), tok.get_field('morph', self.morph_module))
-                        current_batch.append(tok)
-                        if cache_key in cached.keys():
-                            current_batch_is_cached.append(1)
-                        else:
-                            current_batch_is_cached.append(0)
-                except StopIteration:
-                    done = True
-                    pass
-
-                lemmas = iter(self.processor(
-                    [tok for tok, is_cached in zip(current_batch, current_batch_is_cached) if not is_cached]))
-                for tok, is_cached in zip(current_batch, current_batch_is_cached):
+        while not done:
+            current_batch = []
+            current_batch_is_cached = []
+            try:
+                while sum(1 - x for x in current_batch_is_cached) < self.vector_mappings.batch_size:
+                    tok = next(it)
                     cache_key = (
                         tok.word, tok.get_field('pos', self.pos_module), tok.get_field('morph', self.morph_module))
-                    if is_cached:
-                        lemma = cached[cache_key]
-                        tok.set_field('lemma', self.name, lemma)
+                    current_batch.append(tok)
+                    if cache_key in cached.keys():
+                        current_batch_is_cached.append(1)
                     else:
-                        lemma = next(lemmas)
-                        cached[cache_key] = lemma
-                        tok.set_field('lemma', self.name, lemma)
-                    update_fn(1)
+                        current_batch_is_cached.append(0)
+            except StopIteration:
+                done = True
+                pass
+
+            processed = iter(self.processor(
+                [tok for tok, is_cached in zip(current_batch, current_batch_is_cached) if not is_cached]))
+            for tok, is_cached in zip(current_batch, current_batch_is_cached):
+                cache_key = (
+                    tok.word, tok.get_field('pos', self.pos_module), tok.get_field('morph', self.morph_module))
+                if is_cached:
+                    lemma, prob = cached[cache_key]
+                    tok.set_field('lemma', self.name, lemma, prob=prob)
+                else:
+                    lemma, prob = next(processed)
+                    cached[cache_key] = (lemma, prob)
+                    tok.set_field('lemma', self.name, lemma, prob=prob)
+                update_fn(1)
 
 
 class ParzuParser(Module):
@@ -387,20 +398,16 @@ class RedewiedergabeTagger(Module):
 
         for chunk in more_itertools.chunked(gen_sentences(), n=10):
             chunk = [list(sent) for sent in chunk]
-            pred = [list() for sent in chunk for _ in sent]
             for rw_type, model in self.models.items():
                 sent_objs = [Sentence([tok.word for tok in sent]) for sent in chunk]
                 with torch.no_grad():
                     model.predict(sent_objs)
-                i = 0
-                for sent in sent_objs:
-                    for label in sent.to_dict('cat')['cat']:
-                        if label['value'] != 'x':
-                            pred[i].append(rw_type)
-                        i = i + 1
 
-            for tok, p in zip(itertools.chain.from_iterable(chunk), pred):
-                tok.set_field('redewiedergabe', self.name, p)
+                labels = itertools.chain.from_iterable(sent.to_dict('cat')['cat'] for sent in sent_objs)
+                for label, tok in zip(labels, itertools.chain.from_iterable(chunk)):
+                    value = 'no' if label['value'] == 'x' else 'yes'
+                    tok.set_field(f'speech_{rw_type}', self.name, value, prob=label['confidence'])
+
             update_fn(sum(len(sent) for sent in chunk))
 
     def bert_sequence_length(self, seq):
@@ -491,21 +498,25 @@ class FLERTNERTagger(Module):
                     token.add_label(typename=self.tagger.tag_type, value=label[0], score=label[1])
 
     def process(self, tokens: Sequence[Token], update_fn: Callable[[int], None], **kwargs) -> None:
+        span_id = 0
         sentences = [list(s) for s in Token.get_sentences(tokens)]
         flair_sentences = [Sentence([tok.word for tok in s]) for s in sentences]
         for sentence, tagged_sentence in zip(sentences, self.processor(flair_sentences)):
             if self.tagger.predict_spans:
                 result = [list() for _ in sentence]
-                # TODO enumerate spans?
                 for span in tagged_sentence.get_spans('ner'):
+                    span_id = span_id + 1
                     for tok in span.tokens:
-                        result[tok.idx - 1].append(span.tag)
+                        result[tok.idx - 1].append((span.tag, span.score, span_id))
                 for res, tok in zip(result, sentence):
-                    tok.set_field('ner', self.name, res)
+                    if len(res) == 0:
+                        continue
+                    tags, scores, ids = list(zip(*res))
+                    tok.set_field('ner', self.name, list(tags), scores=list(scores), ids=list(ids))
             else:
                 for tok, tagged_tok in zip(sentence, tagged_sentence):
                     value = tagged_tok.get_label('ner').value
-                    tok.set_field('ner', self.name, value)
+                    tok.set_field('ner', self.name, [value])
             update_fn(len(sentence))
 
 
@@ -689,3 +700,6 @@ class InVeRoXL(Module):
 
         for tok_frames, tok in zip(frames, tokens):
             tok.set_field('srl', self.name, tok_frames)
+
+#
+# class TagsetTranslator(Module):
