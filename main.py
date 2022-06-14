@@ -1,6 +1,4 @@
 import argparse
-import collections
-import json
 import math
 
 from llppipeline.pipeline import *
@@ -54,18 +52,14 @@ if __name__ == "__main__":
     modules = [pos_tagger, morph_tagger, lemmatizer, parzu, rw_tagger, ner_tagger, coref_tagger]
 
     srl_tagger = None
-    if os.path.exists('resources/inveroxl/resources/model/weights.pt'):
+    if Path('resources/inveroxl/resources/model/weights.pt').is_file():
         srl_tagger = InVeRoXL(device_on_run=True)
         modules.append(srl_tagger)
 
     for filename, processed_tokens in pipeline_process(tokenizer, modules, list(filenames)):
-        output = []
+        output_file = open(os.path.join(args.writefiles, os.path.basename(filename)), 'w') if args.writefiles else sys.stdout
         for tok in processed_tokens:
-            output.append(json.dumps(tok.to_object()))
-        output = '\n'.join(output)
+            print(tok.to_json(), file=output_file)
 
-        if args.writefiles is not None:
-            with open(os.path.join(args.writefiles, os.path.basename(filename)), 'w') as out:
-                print(output, file=out)
-        else:
-            print(output)
+        if args.writefiles:
+            output_file.close()

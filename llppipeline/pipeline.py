@@ -91,7 +91,7 @@ class SoMeWeTaTagger(Module):
         from someweta import ASPTagger
 
         self.tagger = ASPTagger()
-        self.tagger.load(model)
+        self.tagger.load(str(Path(model)))
 
         def myprocessor(sent):
             return self.tagger.tag_sentence([tok.word for tok in sent])
@@ -374,7 +374,7 @@ class RedewiedergabeTagger(Module):
 
         self.models: Dict[str, SequenceTagger] = {}
         for rw_type, model_path in self.model_paths.items():
-            model = SequenceTagger.load(model_path)
+            model = SequenceTagger.load(str(Path(model_path)))
             model = model.eval()
             self.models[rw_type] = model
 

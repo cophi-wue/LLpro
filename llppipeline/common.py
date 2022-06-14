@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import collections
 import itertools
+import json
 import logging
 import logging.handlers
 import multiprocessing
@@ -218,7 +219,6 @@ class Token:
     @staticmethod
     def from_json(json_str):
         return Token.from_dict(json.loads(json_str))
-
 
 
 class Tokenizer:
