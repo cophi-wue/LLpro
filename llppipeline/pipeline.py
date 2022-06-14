@@ -6,6 +6,7 @@ import re
 import sys
 import unicodedata
 from pathlib import Path
+from typing import Union
 
 import flair
 import regex
@@ -13,6 +14,7 @@ import torch
 from flair.data import Sentence
 
 from .common import *
+from .stts2upos import conv_table as stts2upos
 
 IRREGULAR_CHARACTERS = regex.compile(
     r'[^\P{dt}\p{dt=canonical}]|[^\p{Latin}\pN-"‚‘„“.?!,;:\-–—*()\[\]{}/\'«‹›»’+&%# \t\n]',
@@ -99,7 +101,9 @@ class SoMeWeTaTagger(Module):
             assert len(tagged) == len(tagged)
             for token, (tok, tag) in zip(sentence, tagged):
                 assert token.word == tok
+                upos, ufeats = stts2upos[tag]
                 token.set_field('pos', self.name, tag)
+                token.set_field('upos', self.name, upos)
                 update_fn(1)
 
 
@@ -169,12 +173,17 @@ class RNNTagger(Module):
             assert tok == token.word
             # TODO systematischer parsen?
             morph = re.search(r'^[^\.]+\.(.+)$', tag).group(1) if '.' in tag and not stts.startswith('$') else None
+            upos, ufeats = stts2upos[stts]
             if prob is not None:
                 token.set_field('morph', self.name, morph, prob=prob)
                 token.set_field('pos', self.name, stts, prob=prob)
+                token.set_field('upos', self.name, upos, prob=prob)
+                # token.set_field('ufeats', self.name, ufeats, prob=prob)
             else:
                 token.set_field('morph', self.name, morph)
                 token.set_field('pos', self.name, stts)
+                token.set_field('upos', self.name, upos)
+                # token.set_field('ufeats', self.name, ufeats)
             update_fn(1)
 
 
