@@ -9,6 +9,7 @@ from pathlib import Path
 from typing import Union
 
 import flair
+import more_itertools
 import regex
 import torch
 from flair.data import Sentence

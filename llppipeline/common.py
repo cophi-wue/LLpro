@@ -6,12 +6,12 @@ import logging
 import logging.handlers
 import multiprocessing
 import os.path
+import re
 import time
 from abc import abstractmethod
 from typing import Iterable, Sequence, Dict, Tuple, Any, Callable, Union
 
-import more_itertools
-from tqdm import tqdm
+import pandas
 
 
 class Token:
@@ -93,6 +93,7 @@ class Token:
         Splits tokens at sentence boundaries.
         Given an iterable of tokens, this generator yields an iterable of tokens for every sentence.
         """
+        import more_itertools
         return more_itertools.split_when(tokens, lambda a, b: a.sentence != b.sentence)
 
     @staticmethod
@@ -101,6 +102,7 @@ class Token:
         Splits tokens at document boundaries.
         Given an iterable of tokens, this generator yields an iterable of tokens for every document.
         """
+        import more_itertools
         return more_itertools.split_when(tokens, lambda a, b: a.doc != b.doc)
 
     @staticmethod
@@ -185,13 +187,39 @@ class Token:
                 yield '\t'.join([str(x) for x in field_strings])
             yield ''
 
-    def to_object(self):
+    @staticmethod
+    def to_dataframe(processed_tokens):
+        df = pandas.json_normalize([tok.to_dict() for tok in processed_tokens])
+        df.columns = df.columns.map(lambda x: re.sub(r'^(\w+)\.(\w+)\.value', r'\1.\2', x))
+        return df
+
+    def to_dict(self):
         obj = collections.defaultdict(lambda: collections.defaultdict(dict))
         for (field, module), value in self.fields.items():
             obj[field][module]['value'] = value
         for (field, module), meta in self.metadata.items():
             obj[field][module]['metadata'] = meta
         return obj
+
+    def to_json(self):
+        return json.dumps(self.to_dict())
+
+    @staticmethod
+    def from_dict(tok_dict):
+        tok = Token()
+        for field, module_objs in tok_dict.items():
+            for module, module_obj in module_objs.items():
+                if 'value' in module_obj.keys():
+                    tok.fields[(field, module)] = tok_dict[field][module]['value']
+                if 'metadata' in module_obj.keys():
+                    tok.metadata[(field, module)] = tok_dict[field][module]['metadata']
+        return tok
+
+    @staticmethod
+    def from_json(json_str):
+        return Token.from_dict(json.loads(json_str))
+
+
 
 class Tokenizer:
 
@@ -222,7 +250,8 @@ class Module:
     def name(self) -> str:
         return type(self).__name__
 
-    def run(self, tokens: Sequence[Token], pbar: tqdm = None, pbar_opts=None, **kwargs) -> None:
+    def run(self, tokens: Sequence[Token], pbar=None, pbar_opts=None, **kwargs) -> None:
+        from tqdm import tqdm
         """
         Convenience method. Runs ``self.process`` while printing progress on a tqdm progress bar.
         :param pbar: (Optional.) Use supplied progress bar instead of constructing one.
@@ -357,6 +386,7 @@ def pipeline_process(tokenizer: Tokenizer, modules: Iterable[Module], filenames:
     module_pbar_opts = module_pbar_opts if module_pbar_opts is not None else {}
 
     file_sizes = [os.path.getsize(f) for f in filenames]
+    from tqdm import tqdm
     from tqdm.contrib.logging import logging_redirect_tqdm
     with logging_redirect_tqdm():
         file_pbar = tqdm(total=sum(file_sizes), position=0, unit='B', unit_scale=True, dynamic_ncols=True,
