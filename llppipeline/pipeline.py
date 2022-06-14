@@ -27,6 +27,8 @@ class NLTKPunktTokenizer(Tokenizer):
     def __init__(self, normalize=True, check_characters=True):
         self.normalize = normalize
         self.check_characters = check_characters
+        import nltk
+        nltk.download('punkt')
 
     def tokenize(self, content: str, filename: str = None) -> Iterable[Token]:
         from nltk.tokenize import word_tokenize, sent_tokenize
@@ -711,5 +713,10 @@ class InVeRoXL(Module):
         for tok_frames, tok in zip(frames, tokens):
             tok.set_field('srl', self.name, tok_frames)
 
-#
-# class TagsetTranslator(Module):
+
+def preload_all_modules():
+    CorefIncrementalTagger()
+    FLERTNERTagger()
+    NLTKPunktTokenizer()
+    if Path('resources/inveroxl/resources/model/config.json').exists():
+        InVeRoXL()

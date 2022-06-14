@@ -12,11 +12,9 @@ RUN apt-get update -y && apt-get -y install \
     unzip \
     wget
 
-COPY resources resources
-COPY prepare.sh .
-COPY requirements.txt .
-RUN sh prepare.sh
+
 COPY . .
+RUN sh prepare.sh
 RUN rm -rf resources/invero-xl-span-cuda-2.0.0.tar
 
 ENTRYPOINT ["python3", "main.py"]

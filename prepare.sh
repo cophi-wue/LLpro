@@ -2,10 +2,6 @@
 set -e
 WGET="wget --show-progress --progress=bar:force:noscroll"
 
-pip3 install --no-cache-dir -r requirements.txt
-python3 -c 'import nltk; nltk.download("punkt")'
-python3 -c 'import flair.models; flair.models.SequenceTagger.load("flair/ner-german-large")'
-
 cd resources
 $WGET 'https://corpora.linguistik.uni-erlangen.de/someweta/german_newspaper_2020-05-28.model'
 $WGET 'https://pub.cl.uzh.ch/users/sennrich/zmorge/transducers/zmorge-20150315-smor_newlemma.ca.zip'
@@ -34,3 +30,7 @@ if [ -f "$invero_tarfile" ]; then
 else
     echo >&2 "WARNING: Docker image $invero_tarfile not found - pipeline will be unable to run semantic role labeling"
 fi
+
+cd ..
+pip3 install --no-cache-dir -r requirements.txt
+python3 -c 'import llppipeline.pipeline; llppipeline.pipeline.preload_all_modules();'
