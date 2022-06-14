@@ -1,5 +1,6 @@
 import argparse
 import math
+import torch
 
 from llppipeline.pipeline import *
 
@@ -29,6 +30,11 @@ if __name__ == "__main__":
     for hdl in logging.getLogger('flair').handlers:
         logging.getLogger('flair').removeHandler(hdl)
     logging.getLogger('flair').propagate = True
+
+    if torch.cuda.is_available():
+        logging.info(f'torch: CUDA available, version {torch.version.cuda}, architectures {torch.cuda.get_arch_list()}')
+    else:
+        logging.info('torch: CUDA not available')
 
     filenames = []
     for f in args.infiles:

@@ -63,8 +63,12 @@ automatically. Before building, place the InVeRo-XL Docker image into the folder
 ```shell
 docker build --tag cophiwue/llp-pipeline .
 ```
+Optionally, NVIDIA Apex can be installed inside the Docker image for faster GPU inference.
+```shell
+docker build --build-arg=INSTALL_APEX=1 --tag cophiwue/llp-pipeline .
+```
 
-Example usage:
+After building, the Docker image can be run like this:
 
 ```shell
 mkdir -p files/in files/out
