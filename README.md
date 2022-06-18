@@ -3,7 +3,7 @@
 A modular NLP Pipeline for German literary texts. Work in progress.
 
 This pipeline currently performs
-* Tokenization and Sentence Splitting via [NLTK](https://www.nltk.org/_modules/nltk/tokenize/punkt.html) [(Bird, Klein, Loper 2009)](#ref-bird_natural_2009)
+* Tokenization and Sentence Splitting via [SoMaJo](https://github.com/tsproisl/SoMaJo)  [(Proisl, Uhrig 2016)](#ref-proisl_somajo_2016).
 * POS tagging via [SoMeWeTa](https://github.com/tsproisl/SoMeWeTa) [(Proisl 2018)](#ref-proisl_someweta_2018)
 * Lemmatization and Morphological Analysis via [RNNTagger](https://www.cis.uni-muenchen.de/~schmid/tools/RNNTagger/) [(Schmid 2019)](#ref-schmid_deep_2019)
 * Dependency Parsing via [ParZu](https://github.com/rsennrich/ParZu) ([Sennrich, Schneider, Volk, Warin 2009](#ref-sennrich_new_2009); [Sennrich, Volk, Schneider 2013](#ref-sennrich_exploiting_2013); [Sennrich, Kunz 2014](#ref-sennrich_zmorge_2014))
@@ -137,12 +137,6 @@ GNU General Public License for more details.
 
 ## References
 
-<div id="ref-bird_natural_2009" class="csl-entry" role="doc-biblioentry">
-
-Bird, Steven, Ewan Klein, and Edward Loper. 2009. <em>Natural Language Processing with Python</em>. Cambridge, Mass.: O’Reilly.
-
-</div>
-
 <div id="ref-brunner_bert_2021" class="csl-entry" role="doc-biblioentry">
 
 Brunner, Annelen, Ngoc Duyen Tanja Tu, Lukas Weimer, and Fotis Jannidis. 2021. <span>“To <span>BERT</span> or Not to <span>BERT</span> – Comparing Contextual Embeddings in a Deep Learning Architecture for the Automatic Recognition of Four Types of Speech, Thought and Writing Representation.”</span> In <em>Proceedings of the 5th Swiss Text Analytics Conference (<span>SwissText</span>) &amp; 16th Conference on Natural Language Processing (<span>KONVENS</span>)</em>, 2624:11. <span>CEUR</span> Workshop Proceedings. Zurich, Switzerland. <a href="http://ceur-ws.org/Vol-2624/paper5.pdf">http://ceur-ws.org/Vol-2624/paper5.pdf</a>.
@@ -164,6 +158,12 @@ Ortmann, Katrin, A. Roussel, and Stefanie Dipper. 2019. <span>“Evaluating Off-
 <div id="ref-proisl_someweta_2018" class="csl-entry" role="doc-biblioentry">
 
 Proisl, Thomas. 2018. <span>“<span>SoMeWeTa</span>: A Part-of-Speech Tagger for German Social Media and Web Texts.”</span> In <em>Proceedings of the Eleventh International Conference on Language Resources and Evaluation (<span>LREC</span> 2018)</em>, 665–70. Miyazaki, Japan: European Language Resources Association <span>ELRA</span>. <a href="http://www.lrec-conf.org/proceedings/lrec2018/pdf/49.pdf">http://www.lrec-conf.org/proceedings/lrec2018/pdf/49.pdf</a>.
+
+</div>
+
+<div id="ref-proisl_somajo_2016" class="csl-entry" role="doc-biblioentry">
+
+Proisl, Thomas, and Peter Uhrig. 2016. <span>“<span>SoMaJo</span>: State-of-the-Art Tokenization for German Web and Social Media Texts.”</span> In <em>Proceedings of the 10th Web as Corpus Workshop</em>, 57–62. Berlin: Association for Computational Linguistics. <a href="https://doi.org/10.18653/v1/W16-2607">https://doi.org/10.18653/v1/W16-2607</a>.
 
 </div>
 

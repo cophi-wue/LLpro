@@ -1,8 +1,9 @@
 # Model Selection
 
-The selection of the language models / NLP tools for the LLP pipeline was primarily guided by the “Evaluation of off-the-shelf NLP tools for German” by [Ortmann, Roussel, Dipper (2019)](#ref-ortmann_evaluating_2019). We refer to the publication for details on the evaluated systems. Additionally, we perform evaluations on the same dataset for 
+The selection of the language models / NLP tools for the LLP pipeline was primarily guided by the “Evaluation of off-the-shelf NLP tools for German” by [Ortmann, Roussel, Dipper (2019)](#ref-ortmann_evaluating_2019). We refer to the publication for details on the evaluated systems. We only use the `wikipedia` and `novelettte` gold coropra for our evaluation. Additionally, we perform evaluations on the same dataset for 
 
 - latest Spacy v3.2,
+- latest SoMaJo v2.2.1,
 - ParZu, with “improved statistic” derived from the non-free [Tüba-D/Z](https://uni-tuebingen.de/en/faculties/faculty-of-humanities/departments/modern-languages/department-of-linguistics/chairs/general-and-computational-linguistics/ressources/corpora/tueba-dz/) corpus.
 
 ![](accplot_new.png)
@@ -10,9 +11,9 @@ Overall F1 scores (for tokens and sentences) or accuracy (otherwise) for all sys
 
 On the basis of these evaluations, the models selected for the default LLP pipeline are
 
-* Tokenization and Sentence Splitting via **NLTK** [(Bird, Klein, Loper 2009)](#ref-bird_natural_2009):
+* Tokenization and Sentence Splitting via **SoMaJo** [(Proisl, Uhrig 2016)](#ref-proisl_somajo_2016):
 
-  NLTK implements tokenization and sentence splitting via the PUNKT algorithm [(Kiss, Strunk 2006)](#ref-kiss_unsupervised_2006). [Webpage](https://www.nltk.org/_modules/nltk/tokenize/punkt.html). This system gives the best performance when considering both tokenization and sentence splitting (and hence appears to perform better than, e.g., SoMaJo)
+  SoMaJo is a rule-based tokenizer and sentence splitter. [Github](https://github.com/tsproisl/SoMaJo). This system gives the best performance when considering both tokenization and sentence splitting.
 
 
 * POS tagging via **SoMeWeTa** [(Proisl 2018)](#ref-proisl_someweta_2018):
@@ -49,12 +50,6 @@ Additionally, the following models have been integrated for further text process
 
 ## References
 
-<div id="ref-bird_natural_2009" class="csl-entry" role="doc-biblioentry">
-
-Bird, Steven, Ewan Klein, and Edward Loper. 2009. <em>Natural Language Processing with Python</em>. Cambridge, Mass.: O’Reilly.
-
-</div>
-
 <div id="ref-brunner_bert_2021" class="csl-entry" role="doc-biblioentry">
 
 Brunner, Annelen, Ngoc Duyen Tanja Tu, Lukas Weimer, and Fotis Jannidis. 2021. <span>“To <span>BERT</span> or Not to <span>BERT</span> – Comparing Contextual Embeddings in a Deep Learning Architecture for the Automatic Recognition of Four Types of Speech, Thought and Writing Representation.”</span> In <em>Proceedings of the 5th Swiss Text Analytics Conference (<span>SwissText</span>) &amp; 16th Conference on Natural Language Processing (<span>KONVENS</span>)</em>, 2624:11. <span>CEUR</span> Workshop Proceedings. Zurich, Switzerland. <a href="http://ceur-ws.org/Vol-2624/paper5.pdf">http://ceur-ws.org/Vol-2624/paper5.pdf</a>.
@@ -78,6 +73,13 @@ Ortmann, Katrin, A. Roussel, and Stefanie Dipper. 2019. <span>“Evaluating Off-
 Proisl, Thomas. 2018. <span>“<span>SoMeWeTa</span>: A Part-of-Speech Tagger for German Social Media and Web Texts.”</span> In <em>Proceedings of the Eleventh International Conference on Language Resources and Evaluation (<span>LREC</span> 2018)</em>, 665–70. Miyazaki, Japan: European Language Resources Association <span>ELRA</span>. <a href="http://www.lrec-conf.org/proceedings/lrec2018/pdf/49.pdf">http://www.lrec-conf.org/proceedings/lrec2018/pdf/49.pdf</a>.
 
 </div>
+
+<div id="ref-proisl_somajo_2016" class="csl-entry" role="doc-biblioentry">
+
+Proisl, Thomas, and Peter Uhrig. 2016. <span>“<span>SoMaJo</span>: State-of-the-Art Tokenization for German Web and Social Media Texts.”</span> In <em>Proceedings of the 10th Web as Corpus Workshop</em>, 57–62. Berlin: Association for Computational Linguistics. <a href="https://doi.org/10.18653/v1/W16-2607">https://doi.org/10.18653/v1/W16-2607</a>.
+
+</div>
+
 
 <div id="ref-schmid_deep_2019" class="csl-entry" role="doc-biblioentry">
 
