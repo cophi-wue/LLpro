@@ -14,6 +14,8 @@ This pipeline currently performs
 
 See [Model Selection](./doc/MODEL_SELECTION.md) for a discussion on this choice of language models.
 
+See [Output Formats](./doc/OUTPUT_FORMATS.md) for a description of the output format and a reference of the used tagsets.
+
 ## Usage
 
 ```text
@@ -103,6 +105,8 @@ python ./main.py -v --writefiles files/out files/in
 ## Developer Guide
 
 See the separate [Developer Guide](./doc/DEVELOPING.md)
+
+See also the separate document about [Output Formats](./doc/OUTPUT_FORMATS.md) for a description of the output format and a reference of the used tagsets.
 
 ## License
 

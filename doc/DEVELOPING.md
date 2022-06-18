@@ -32,10 +32,27 @@ Access to the fields is implemented in multiple ways:
 - `tok.id`, `tok.doc`, ...: shorthand for `tok.get_field('id')`, ... Applicable for
   fields `id, doc, word, sentence, lemma, pos, morph, head, deprel`.
 
+Note: By the contract of the `Tokenizer` (see below), a token is uniquely indexed by the
+tuple `(tok.doc, tok.id, tok.sentence)`.
+
+
 Adding an annotation to a field is implemented by `tok.set_field(field, module_name, value)`.
 
-By the contract of the `Tokenizer` (see below), a token is uniquely indexed by the
-tuple `(tok.doc, tok.id, tok.sentence)`.
+### Metadata
+
+In a similar way, the object stores metadata for the respective fields/modules in a dictionary `metadata: Dict[Tuple[str, str], Any]` with the interpretation that values in `metadata` are associated with the values in `fields` with the same key.
+
+Access to the metadata is implemented in a similar way: `tok.get_metadata(field, module_name)`, `tok.set_metadata(field, module_name, metadata_value)`.
+
+Assigning field value and metadata can be done simultaneously using keyword arguments, e.g., 
+```python
+tok.set_field(field, module, value, meta_key1=val1, meta_key2=val2)
+```
+which is equivalent to
+```python
+tok.set_field(field, module, value)
+tok.set_metadata(field, module, {"meta_key1": val1, "meta_key2": val2)
+```
 
 ## The Class `Tokenizer`
 
