@@ -9,10 +9,12 @@ import multiprocessing
 import os.path
 import re
 import time
+import unicodedata
 from abc import abstractmethod
 from typing import Iterable, Sequence, Dict, Tuple, Any, Callable, Union
 
 import pandas
+import regex as re
 
 
 class Token:
@@ -223,6 +225,15 @@ class Token:
 
 class Tokenizer:
 
+    IRREGULAR_CHARACTERS = re.compile(
+        r'[^\P{dt}\p{dt=canonical}]|[^\p{Latin}\pN-"‚‘„“.?!,;:\-–—*()\[\]{}/\'«‹›»’+&%# \t\n]',
+        flags=re.UNICODE | re.MULTILINE)
+
+    def __init__(self, normalize=True, check_characters=True, paragraph_separator=None):
+        self.normalize = normalize
+        self.check_characters = check_characters
+        self.paragraph_separator = paragraph_separator
+
     def __str__(self):
         return self.name
 
@@ -239,6 +250,21 @@ class Tokenizer:
         self.name): s})``), and finally yield these tokens.
         """
         raise NotImplementedError
+
+    def to_paragraphs(self, content: str, filename: str = None) -> Iterable[str]:
+        if self.normalize:
+            content = unicodedata.normalize('NFKC', content)
+
+        if self.check_characters:
+            irr = [unicodedata.name(x) for x in set(self.IRREGULAR_CHARACTERS.findall(content))]
+            if len(irr) > 0:
+                logging.warning(f'Found irregular characters in {filename}: {", ".join(irr)}')
+
+        if self.paragraph_separator is None:
+            return [content]
+
+        return re.split(self.paragraph_separator, content, flags=re.UNICODE | re.MULTILINE)
+
 
 
 class Module:

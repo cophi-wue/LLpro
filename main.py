@@ -18,12 +18,13 @@ def get_cpu_limit():
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='NLP Pipeline for literary texts written in German.')
     parser.add_argument('-v', '--verbose', action="store_const", dest="loglevel", const=logging.INFO)
+    parser.add_argument('--paragraph-separator', metavar='PAT', type=str, default=None, help='Optional paragraph separator pattern. Paragraph separators are removed, and sentences always terminate on paragraph boundaries.')
     group = parser.add_mutually_exclusive_group()
-    group.add_argument('--stdout', default=True, help='Write all processed tokens to stdout',
+    group.add_argument('--stdout', default=True, help='Write all processed tokens to stdout.',
                        action='store_const', dest='outtype', const='stdout')
     group.add_argument('--writefiles', metavar='DIR',
-                       help='For each input file, write processed tokens to a separate file in DIR', default=None)
-    parser.add_argument('infiles', metavar='FILE', type=str, nargs='+', help='Input files, or directories')
+                       help='For each input file, write processed tokens to a separate file in DIR.', default=None)
+    parser.add_argument('infiles', metavar='FILE', type=str, nargs='+', help='Input files, or directories.')
     parser.set_defaults(outtype='stdout')
     args = parser.parse_args()
     logging.basicConfig(level=args.loglevel)
@@ -45,7 +46,7 @@ if __name__ == "__main__":
                 filenames.extend([os.path.join(root, m) for m in members])
 
     logging.info('Loading modules')
-    tokenizer = SoMaJoTokenizer()
+    tokenizer = SoMaJoTokenizer(paragraph_separator=args.paragraph_separator)
     pos_tagger = SoMeWeTaTagger()
     morph_tagger = RNNTagger()
     lemmatizer = RNNLemmatizer()

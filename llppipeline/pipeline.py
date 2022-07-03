@@ -17,62 +17,47 @@ from flair.data import Sentence
 from .common import *
 from .stts2upos import conv_table as stts2upos
 
-IRREGULAR_CHARACTERS = regex.compile(
-    r'[^\P{dt}\p{dt=canonical}]|[^\p{Latin}\pN-"‚‘„“.?!,;:\-–—*()\[\]{}/\'«‹›»’+&%# \t\n]',
-    flags=regex.UNICODE | regex.MULTILINE)
-
 
 class NLTKPunktTokenizer(Tokenizer):
 
-    def __init__(self, normalize=True, check_characters=True):
-        self.normalize = normalize
-        self.check_characters = check_characters
+    def __init__(self, normalize=True, check_characters=True, paragraph_separator=None):
+        super().__init__(normalize, check_characters, paragraph_separator)
         import nltk
         nltk.download('punkt')
 
     def tokenize(self, content: str, filename: str = None) -> Iterable[Token]:
         from nltk.tokenize import word_tokenize, sent_tokenize
-        if self.normalize:
-            content = unicodedata.normalize('NFKC', content)
 
-        if self.check_characters:
-            irr = [unicodedata.name(x) for x in set(IRREGULAR_CHARACTERS.findall(content))]
-            if len(irr) > 0:
-                logging.warning(f'Found irregular characters in {filename}: {", ".join(irr)}')
-
-        sentences = sent_tokenize(content, language="german")
-        for sent_id, sent in enumerate(sentences):
-            for word_id, word in enumerate(word_tokenize(sent, language="german")):
-                # property of the TreebankWordTokenizer
-                word = word.replace("``", '"').replace("''", '"')
-                tok = Token()
-                tok.set_field('word', self.name, word)
-                tok.set_field('sentence', self.name, sent_id + 1)
-                tok.set_field('id', self.name, word_id)
-                if filename is not None:
-                    tok.set_field('doc', self.name, filename)
-                yield tok
+        sent_id = 0
+        paragraphs = self.to_paragraphs(content, filename)
+        for para in paragraphs:
+            sentences = sent_tokenize(para, language="german")
+            for sent in sentences:
+                sent_id = sent_id + 1
+                for word_id, word in enumerate(word_tokenize(sent, language="german")):
+                    # property of the TreebankWordTokenizer
+                    word = word.replace("``", '"').replace("''", '"')
+                    tok = Token()
+                    tok.set_field('word', self.name, word)
+                    tok.set_field('sentence', self.name, sent_id)
+                    tok.set_field('id', self.name, word_id)
+                    if filename is not None:
+                        tok.set_field('doc', self.name, filename)
+                    yield tok
 
 
 class SoMaJoTokenizer(Tokenizer):
 
-    def __init__(self, normalize=True, check_characters=True):
-        self.normalize = normalize
-        self.check_characters = check_characters
+    def __init__(self, normalize=True, check_characters=True, paragraph_separator=None):
+        super().__init__(normalize, check_characters, paragraph_separator)
         from somajo import SoMaJo
 
         self.tokenizer = SoMaJo("de_CMC", split_camel_case=True)
 
     def tokenize(self, content: str, filename: str = None) -> Iterable[Token]:
-        if self.normalize:
-            content = unicodedata.normalize('NFKC', content)
+        paragraphs = self.to_paragraphs(content, filename)
 
-        if self.check_characters:
-            irr = [unicodedata.name(x) for x in set(IRREGULAR_CHARACTERS.findall(content))]
-            if len(irr) > 0:
-                logging.warning(f'Found irregular characters in {filename}: {", ".join(irr)}')
-
-        sentences = self.tokenizer.tokenize_text(paragraphs=[content])
+        sentences = self.tokenizer.tokenize_text(paragraphs=paragraphs)
         for sent_id, sent in enumerate(sentences):
             for word_id, word in enumerate(sent):
                 # TODO spans rekonstruieren?
