@@ -541,12 +541,16 @@ class CorefIncrementalTagger(Module):
         sys.path.insert(0, str(self.coref_home))
         from tensorize import Tensorizer
         from transformers import BertTokenizer, ElectraTokenizer
-        from model import IncrementalCorefModel
+        from model import CorefModel, IncrementalCorefModel
 
         # cf. resources/uhh-lt-neural-coref/torch_serve/model_handler.py
         self.config = self.initialize_config(config_name)
-        assert self.config['incremental']
-        self.model = IncrementalCorefModel(self.config, self.device)
+        # assert self.config['incremental']
+        # self.model = IncrementalCorefModel(self.config, self.device)
+        if self.config['incremental']:
+            self.model = IncrementalCorefModel(self.config, self.device)
+        else:
+            self.model = CorefModel(self.config, self.device)
         self.tensorizer = Tensorizer(self.config)
         self.model.load_state_dict(torch.load(str(model), map_location='cpu'))
         self.model.eval()
@@ -563,7 +567,10 @@ class CorefIncrementalTagger(Module):
             self.tokenizer = BertTokenizer.from_pretrained(self.config['bert_tokenizer_name'])
 
         # apparently without effect as neither "keep" nor "discard" are recognized
-        self.tensorizer.long_doc_strategy = "keep"
+        if self.config['incremental']:
+            self.tensorizer.long_doc_strategy = "keep"
+        else:
+            self.tensorizer.long_doc_strategy = "discard"
 
     def initialize_config(self, config_name):
         import pyhocon
@@ -617,7 +624,23 @@ class CorefIncrementalTagger(Module):
         starts, ends, mention_to_cluster_id, predicted_clusters = cpu_entities.get_result(
             remove_singletons=not self.config['incremental_singletons']
         )
-        return starts, ends, mention_to_cluster_id, predicted_clusters
+        # return starts, ends, mention_to_cluster_id, predicted_clusters
+        return predicted_clusters
+
+    def get_predictions_c2f(self, input_ids, input_mask, speaker_ids, sentence_len, genre, sentence_map,
+                                    is_training, update_fn=None):
+        output = self.model.get_predictions_and_loss(input_ids.to(self.device),
+                                                           input_mask.to(self.device), speaker_ids.to(self.device),
+                                                           sentence_len.to(self.device), genre.to(self.device),
+                                                           sentence_map.to(self.device), is_training.to(self.device))
+        _, _, _, span_starts, span_ends, antecedent_idx, antecedent_scores = output
+        predicted_clusters, _, _ = self.model.get_predicted_clusters(
+            span_starts.cpu().numpy(),
+            span_ends.cpu().numpy(),
+            antecedent_idx.cpu().numpy(),
+            antecedent_scores.detach().cpu().numpy()
+        )
+        return predicted_clusters
 
     def _tensorize(self, tokens):
         nested_list = [[tok.word for tok in sent] for sent in Token.get_sentences(tokens)]
@@ -639,7 +662,10 @@ class CorefIncrementalTagger(Module):
             update_fn(subtoken_map[end - 1] - 1 - subtoken_map[start])
 
         with torch.no_grad():
-            _, _, _, predicted_clusters = self.get_predictions_incremental(*tensorized, update_fn=my_update_fn)
+            if self.config['incremental']:
+                predicted_clusters = self.get_predictions_incremental(*tensorized, update_fn=my_update_fn)
+            else:
+                predicted_clusters = self.get_predictions_c2f(*tensorized, update_fn=my_update_fn)
             for i, cluster in enumerate(predicted_clusters):
                 for mention_start, mention_end in cluster:
                     for r in range(mention_start, mention_end + 1):
