@@ -3,10 +3,11 @@ import itertools
 import logging
 import pickle
 import re
+import gc
 import sys
 import unicodedata
 from pathlib import Path
-from typing import Union
+from typing import Union, List
 
 import flair
 import more_itertools
@@ -378,8 +379,9 @@ class RedewiedergabeTagger(Module):
                 f"{self.name} using devices {','.join(str(next(m.parameters()).device) for m in self.models.values())}")
 
     def after_run(self):
-        for model in self.models.values():
-            model.to('cpu')
+        if self.device_on_run:
+            for model in self.models.values():
+                model.to('cpu')
             torch.cuda.empty_cache()  # TODO
 
     def process(self, tokens: Sequence[Token], update_fn: Callable[[int], None], **kwargs) -> None:
@@ -430,19 +432,26 @@ class FLERTNERTagger(Module):
         flair.device = 'cpu'
         self.tagger = SequenceTagger.load("flair/ner-german-large")
 
-        def myprocessor(sentences: Sequence[Sentence]) -> Iterable[Sentence]:
+        def myprocessor(sentence_batch: Sequence[Sentence]) -> List[Sentence]:
+            flair_sentences = [Sentence([tok.word for tok in s]) for s in sentence_batch]
             dataloader = DataLoader(
-                dataset=FlairDatapointDataset(sentences),
-                batch_size=mini_batch_size,
+                dataset=FlairDatapointDataset(flair_sentences),
+                batch_size=len(sentence_batch),
             )
+
+            output = []
             with torch.no_grad():
                 for batch in dataloader:
                     self._annotate_batch(batch)
-                    for sentence in batch:
-                        yield sentence
-                        sentence.clear_embeddings()
+                    for s in batch:
+                        s.clear_embeddings()
+                        output.append(s)
+            del dataloader
+            del flair_sentences
+            gc.collect()
+            return output
 
-        self.processor = myprocessor
+        self.batch_processor = myprocessor
 
         if not self.device_on_run:
             self.tagger.to(self.device)
@@ -494,11 +503,12 @@ class FLERTNERTagger(Module):
                         continue
                     token.add_label(typename=self.tagger.tag_type, value=label[0], score=label[1])
 
+
     def process(self, tokens: Sequence[Token], update_fn: Callable[[int], None], **kwargs) -> None:
         span_id = 0
         sentences = [list(s) for s in Token.get_sentences(tokens)]
-        flair_sentences = [Sentence([tok.word for tok in s]) for s in sentences]
-        for sentence, tagged_sentence in zip(sentences, self.processor(flair_sentences)):
+        tagged_sentences = itertools.chain.from_iterable(self.batch_processor(batch) for batch in more_itertools.chunked(sentences, n=8))
+        for sentence, tagged_sentence in zip(sentences, tagged_sentences):
             if self.tagger.predict_spans:
                 result = [list() for _ in sentence]
                 for span in tagged_sentence.get_spans('ner'):
