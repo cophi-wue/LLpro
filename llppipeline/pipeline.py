@@ -686,6 +686,7 @@ class InVeRoXL(Module):
 
         self.model = Invero(device='cpu', model_name=str(self.inveroxl_home / "resources" / "model"),
                             languages='de')
+        self.model.batch_size = 4
         if not self.device_on_run:
             self.model.srl_model.device = self.device
             self.model.srl_model.model.to(self.device)

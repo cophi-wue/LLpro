@@ -3,6 +3,7 @@ import os
 import sys
 from collections import defaultdict, OrderedDict
 from typing import List
+import torch
 
 from objects import (
     WordOut,
@@ -63,6 +64,7 @@ class Invero:
             for inventory, outputs in model_outputs.items():
                 for b, output in zip(batch, outputs):
                     b.annotations[inventory] = output
+            torch.cuda.empty_cache()
         return self.clean_output(docs)
 
     # def preprocess_text(self, sentences_in: List[DocumentIn]) -> List[Doc]:
