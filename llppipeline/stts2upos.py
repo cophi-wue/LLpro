@@ -19,8 +19,10 @@ conv_table = {
     'KOUI': ('SCONJ', '_'),
     'KOUS': ('SCONJ', '_'),
     'NE': ('PROPN', '_'),
+    'NNE': ('PROPN', '_'),  # a TIGER tag for "Kombination aus Nomen und Eigenname"; somehow not mentioned in the official documentation
     'NN': ('NOUN', '_'),
     'PAV': ('ADV', 'PronType=Dem'),
+    'PROP': ('ADV', 'PronType=Dem'),  # TüBa-D/Z version of PAV
     'PDAT': ('DET', 'PronType=Dem'),
     'PDS': ('PRON', 'PronType=Dem'),
     'PIAT': ('DET', 'PronType=Ind,Neg,Tot'),
