@@ -82,6 +82,7 @@ After building, the Docker image can be run like this:
 mkdir -p files/in files/out
 # copy files into ./files/in to be processed
 docker run \
+    --rm \
     --cpus 4 \
     --gpus all \
     --interactive \
