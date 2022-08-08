@@ -19,22 +19,30 @@ See [Output Formats](./doc/OUTPUT_FORMATS.md) for a description of the output fo
 ## Usage
 
 ```text
-usage: main.py [-h] [-v] [--format {json,conll}]
+usage: main.py [-h] [-v] [--paragraph-pattern PAT] [--section-pattern PAT]
                [--stdout | --writefiles DIR]
                FILE [FILE ...]
 
 NLP Pipeline for literary texts written in German.
 
 positional arguments:
-  FILE
+  FILE                  Input files, or directories.
 
-options:
+optional arguments:
   -h, --help            show this help message and exit
   -v, --verbose
-  --format {json,conll}
-  --stdout              Write all processed tokens to stdout
-  --writefiles DIR      For each input file, write processed
-                        tokens to a separate file in DIR
+  --paragraph-pattern PAT
+                        Optional paragraph separator pattern. Paragraph
+                        separators are removed, and sentences always terminate
+                        on paragraph boundaries.
+  --section-pattern PAT
+                        Optional sectioning paragraph pattern. Paragraphs
+                        fully matching the pattern are removed, and increment
+                        the section id counter for tokens in intermediate
+                        paragraphs.
+  --stdout              Write all processed tokens to stdout.
+  --writefiles DIR      For each input file, write processed tokens to a
+                        separate file in DIR.
 ```
 
 ## Installation

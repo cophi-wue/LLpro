@@ -18,7 +18,12 @@ def get_cpu_limit():
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='NLP Pipeline for literary texts written in German.')
     parser.add_argument('-v', '--verbose', action="store_const", dest="loglevel", const=logging.INFO)
-    parser.add_argument('--paragraph-separator', metavar='PAT', type=str, default=None, help='Optional paragraph separator pattern. Paragraph separators are removed, and sentences always terminate on paragraph boundaries.')
+    parser.add_argument('--paragraph-pattern', metavar='PAT', type=str, default=None,
+                        help='Optional paragraph separator pattern. Paragraph separators are removed, and sentences '
+                             'always terminate on paragraph boundaries.')
+    parser.add_argument('--section-pattern', metavar='PAT', type=str, default=None,
+                        help='Optional sectioning paragraph pattern. Paragraphs fully matching the pattern are '
+                             'removed, and increment the section id counter for tokens in intermediate paragraphs.')
     group = parser.add_mutually_exclusive_group()
     group.add_argument('--stdout', default=True, help='Write all processed tokens to stdout.',
                        action='store_const', dest='outtype', const='stdout')
@@ -31,6 +36,7 @@ if __name__ == "__main__":
     for hdl in logging.getLogger('flair').handlers:
         logging.getLogger('flair').removeHandler(hdl)
     logging.getLogger('flair').propagate = True
+    logging.info('Picked up following arguments: ' + repr(vars(args)))
 
     if torch.cuda.is_available():
         logging.info(f'torch: CUDA available, version {torch.version.cuda}, architectures {torch.cuda.get_arch_list()}')
@@ -46,7 +52,7 @@ if __name__ == "__main__":
                 filenames.extend([os.path.join(root, m) for m in members])
 
     logging.info('Loading modules')
-    tokenizer = SoMaJoTokenizer(paragraph_separator=args.paragraph_separator)
+    tokenizer = SoMaJoTokenizer(paragraph_separator=args.paragraph_pattern, section_pattern=args.section_pattern)
     pos_tagger = SoMeWeTaTagger()
     morph_tagger = RNNTagger()
     lemmatizer = RNNLemmatizer()

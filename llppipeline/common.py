@@ -223,16 +223,20 @@ class Token:
         return Token.from_dict(json.loads(json_str))
 
 
+class Paragraph:
+
+    def __init__(self, text: str, **meta):
+        self.text = text
+        self.meta = meta
+
+    def __str__(self):
+        return self.text
+
+
 class Tokenizer:
 
-    IRREGULAR_CHARACTERS = re.compile(
-        r'[^\P{dt}\p{dt=canonical}]|[^\p{Latin}\pN-"‚‘„“.?!,;:\-–—*()\[\]{}/\'«‹›»’+&%# \t\n]',
-        flags=re.UNICODE | re.MULTILINE)
-
-    def __init__(self, normalize=True, check_characters=True, paragraph_separator=None):
-        self.normalize = normalize
-        self.check_characters = check_characters
-        self.paragraph_separator = paragraph_separator
+    def __init__(self):
+        pass
 
     def __str__(self):
         return self.name
@@ -251,7 +255,36 @@ class Tokenizer:
         """
         raise NotImplementedError
 
-    def to_paragraphs(self, content: str, filename: str = None) -> Iterable[str]:
+
+class ParagraphingTokenizer(Tokenizer):
+
+    IRREGULAR_CHARACTERS = re.compile(
+        r'[^\P{dt}\p{dt=canonical}]|[^\p{Latin}\pN-"‚‘„“.?!,;:\-–—*()\[\]{}/\'«‹›»’+&%# \t\n]',
+        flags=re.UNICODE | re.MULTILINE)
+
+    def __init__(self, normalize=True, check_characters=True, paragraph_separator=None, section_pattern=None):
+        super(ParagraphingTokenizer, self).__init__()
+        self.normalize = normalize
+        self.check_characters = check_characters
+        self.paragraph_separator = paragraph_separator
+        self.section_pattern = section_pattern
+
+    def tokenize(self, content: str, filename: str = None) -> Iterable[Token]:
+        paragraphs = self.to_paragraphs(content, filename)
+
+        sentence_id = 0
+        for para in paragraphs:
+            for sentence in Token.get_sentences(self.tokenize_paragraph(para)):
+                for tok in sentence:
+                    tok.set_field('sentence', self.name, sentence_id)  # re-enumerate sentences
+                    if filename is not None:
+                        tok.set_field('doc', self.name, filename)
+                    for k, v in para.meta.items():
+                        tok.set_field(k, self.name, v)
+                    yield tok
+                sentence_id = sentence_id + 1
+
+    def to_paragraphs(self, content: str, filename: str = None) -> Iterable[Paragraph]:
         if self.normalize:
             content = unicodedata.normalize('NFKC', content)
 
@@ -261,10 +294,28 @@ class Tokenizer:
                 logging.warning(f'Found irregular characters in {filename}: {", ".join(irr)}')
 
         if self.paragraph_separator is None:
-            return [content]
+            yield Paragraph(content)
+            return
 
-        return re.split(self.paragraph_separator, content, flags=re.UNICODE | re.MULTILINE)
+        paragraph_strings = list(re.split(self.paragraph_separator, content, flags=re.UNICODE | re.MULTILINE))
+        para_id = 0
+        section_id = 0
+        for para in paragraph_strings:
+            if self.section_pattern and re.fullmatch(self.section_pattern, para, flags=re.UNICODE | re.MULTILINE):
+                section_id = section_id + 1
+                continue
 
+            yield Paragraph(para, paragraph_id=para_id, section_id=section_id)
+            para_id = para_id + 1
+
+    def tokenize_paragraph(self, para: Paragraph) -> Iterable[Token]:
+        """
+        Splits ``para`` into tokens. The general contract of ``tokenize_paragraph`` is as follows: Implementations are
+        expected to initialize tokens, and set their `word`, `id` and `sent` field (i.e., initialize with
+        ``Token({('word', self.name): tok_word, ('id', self.name): i, ('sentence', self.name): s})``),
+        and finally yield these tokens.
+        """
+        raise NotImplementedError
 
 
 class Module:
