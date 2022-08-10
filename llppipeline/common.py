@@ -270,7 +270,15 @@ class ParagraphingTokenizer(Tokenizer):
         self.section_pattern = section_pattern
 
     def tokenize(self, content: str, filename: str = None) -> Iterable[Token]:
-        paragraphs = self.to_paragraphs(content, filename)
+        if self.normalize:
+            content = unicodedata.normalize('NFKC', content)
+
+        if self.check_characters:
+            irr = [unicodedata.name(x) for x in set(self.IRREGULAR_CHARACTERS.findall(content))]
+            if len(irr) > 0:
+                logging.warning(f'Found irregular characters in {filename}: {", ".join(irr)}')
+
+        paragraphs = self.to_paragraphs(content)
 
         sentence_id = 0
         for para in paragraphs:
@@ -284,15 +292,7 @@ class ParagraphingTokenizer(Tokenizer):
                     yield tok
                 sentence_id = sentence_id + 1
 
-    def to_paragraphs(self, content: str, filename: str = None) -> Iterable[Paragraph]:
-        if self.normalize:
-            content = unicodedata.normalize('NFKC', content)
-
-        if self.check_characters:
-            irr = [unicodedata.name(x) for x in set(self.IRREGULAR_CHARACTERS.findall(content))]
-            if len(irr) > 0:
-                logging.warning(f'Found irregular characters in {filename}: {", ".join(irr)}')
-
+    def to_paragraphs(self, content: str) -> Iterable[Paragraph]:
         if self.paragraph_separator is None:
             yield Paragraph(content)
             return
@@ -302,7 +302,8 @@ class ParagraphingTokenizer(Tokenizer):
         section_id = 0
         for para in paragraph_strings:
             if self.section_pattern and re.fullmatch(self.section_pattern, para, flags=re.UNICODE | re.MULTILINE):
-                section_id = section_id + 1
+                if para_id > 0:
+                    section_id = section_id + 1
                 continue
 
             yield Paragraph(para, paragraph_id=para_id, section_id=section_id)
