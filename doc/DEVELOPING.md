@@ -1,6 +1,6 @@
 # Developing
 
-This document contains information on how the LLP-Pipeline is constructed, and how it can be extended. In general, a
+This document contains information on how the LLpro pipeline is constructed, and how it can be extended. In general, a
 pipeline consists of:
 
 1. a `Tokenizer` that generates `Token` objects, and
@@ -8,14 +8,14 @@ pipeline consists of:
 
 The
 function
-```python
-llppipeline.common.pipeline_process(tokenizer: Tokenizer,
-                                   modules: Iterable[Module],
-                                   filenames: Sequence[str]) -> Tuple[str, Sequence[Token]]
+```
+llpro.common.pipeline_process(tokenizer: Tokenizer,
+                              modules: Iterable[Module],
+                              filenames: Sequence[str]) -> Tuple[str, Sequence[Token]]
 ```
 implements the pipeline by processing each file, performing file reading, tokenization using `tokenizer`, running each module
 from `modules` to annotate, and yielding the resulting annotated token sequence. See `main.py` on an example usage
-of `llppipeline.common.pipeline_process`.
+of `llpro.common.pipeline_process`.
 
 ## The Class `Token`
 

@@ -2,7 +2,7 @@
 
 ## Raw Pipeline Output
 
-The default implementation of the LLP-Pipeline writes one output file for each input file.
+The default implementation of the LLpro pipeline writes one output file for each input file.
 
 Each line in the output file corresponds to a JSON object, which contains the annotations of the fields and metadata.
 

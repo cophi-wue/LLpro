@@ -2,7 +2,7 @@ import argparse
 import math
 import torch
 
-from llppipeline.pipeline import *
+from llpro.pipeline import *
 
 
 def get_cpu_limit():

@@ -1,6 +1,6 @@
 # Model Selection
 
-The selection of the language models / NLP tools for the LLP pipeline was primarily guided by the “Evaluation of off-the-shelf NLP tools for German” by [Ortmann, Roussel, Dipper (2019)](#ref-ortmann_evaluating_2019). We refer to the publication for details on the evaluated systems. We only use the `wikipedia` and `novelettte` gold coropra for our evaluation. Additionally, we perform evaluations on the same dataset for 
+The selection of the language models / NLP tools for the LLpro pipeline was primarily guided by the “Evaluation of off-the-shelf NLP tools for German” by [Ortmann, Roussel, Dipper (2019)](#ref-ortmann_evaluating_2019). We refer to the publication for details on the evaluated systems. We only use the `wikipedia` and `novelettte` gold coropra for our evaluation. Additionally, we perform evaluations on the same dataset for 
 
 - latest Spacy v3.2,
 - latest SoMaJo v2.2.1,
@@ -9,7 +9,7 @@ The selection of the language models / NLP tools for the LLP pipeline was primar
 ![](accplot_new.png)
 Overall F1 scores (for tokens and sentences) or accuracy (otherwise) for all systems at annotation level. Data reproduced from [Ortmann, Roussel, Dipper (2019)](#ref-ortmann_evaluating_2019). Systems with * were not part of said evaluation and are supplied by own evaluation runs on the same dataset. The cells of the final model selection are boxed.
 
-On the basis of these evaluations, the models selected for the default LLP pipeline are
+On the basis of these evaluations, the models selected for the default LLpro pipeline are
 
 * Tokenization and Sentence Splitting via **SoMaJo** [(Proisl, Uhrig 2016)](#ref-proisl_somajo_2016):
 

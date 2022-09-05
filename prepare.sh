@@ -33,4 +33,4 @@ fi
 
 cd ..
 pip3 install --no-cache-dir -r requirements.txt
-python3 -c 'import llppipeline.pipeline; llppipeline.pipeline.preload_all_modules();'
+python3 -c 'import llpro.pipeline; llpro.pipeline.preload_all_modules();'

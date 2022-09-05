@@ -1,7 +1,7 @@
 import argparse
 import sys
 
-from llppipeline.common import Token
+from llpro.common import Token
 
 
 def read_tokens(infile):
@@ -9,7 +9,7 @@ def read_tokens(infile):
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='Converts raw JSON output file of the LLP pipeline into a tab-separated table')
+    parser = argparse.ArgumentParser(description='Converts raw JSON output file of the LLPro pipeline into a tab-separated table')
     parser.add_argument('infile', metavar='INFILE', type=str, nargs='?', default='-', help='Input file, or - for stdin')
     parser.add_argument('outfile', metavar='OUTFILE', type=str, nargs='?', default='-', help='Output file, or - for stdout')
     args = parser.parse_args()

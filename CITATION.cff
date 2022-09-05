@@ -1,0 +1,13 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+authors:
+- family-names: "Ehrmanntraut"
+  given-names: "Anton"
+- family-names: "Konle"
+  given-names: "Leonard"
+- family-names: "Jannidis"
+  given-names: "Fotis"
+title: "LLpro – A Literary Language Processing Pipeline for German Narrative Texts"
+date-released: "2022-09-05"
+license: GPL-3.0-or-later
+url: "https://github.com/aehrm/llpro"

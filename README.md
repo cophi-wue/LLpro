@@ -1,4 +1,4 @@
-# Literary Language Processing Pipeline (LLP-Pipeline)
+# LLpro – A Literary Language Processing Pipeline for German Narrative Texts
 
 A modular NLP Pipeline for German literary texts. Work in progress.
 
@@ -47,7 +47,7 @@ optional arguments:
 
 ## Installation
 
-The LLP-Pipeline can be run either locally or as a Docker container. Running
+The LLpro pipeline can be run either locally or as a Docker container. Running
 the pipelie using Docker is strongly recommended.
 
 In both alternatives, Semantic Role Labeling can be enabled by requesting and
@@ -58,7 +58,7 @@ tarfile contains the file `manifest.json`.)
 
 **WINDOWS USERS**: For building the Docker image, clone using
 ```shell
-git clone https://github.com/aehrm/LLP-Pipeline --config core.autocrlf=input
+git clone https://github.com/aehrm/LLpro --config core.autocrlf=input
 ```
 to preserve line endings.
 
@@ -69,11 +69,11 @@ Dockerfile, all (freely available) dependencies and prerequisites are downloaded
 automatically. Before building, place the InVeRo-XL Docker image into the folder `resources/`, if desired.
 
 ```shell
-docker build --tag cophiwue/llp-pipeline .
+docker build --tag cophiwue/llpro .
 ```
 Optionally, NVIDIA Apex can be installed inside the Docker image for faster GPU inference.
 ```shell
-docker build --build-arg=INSTALL_APEX=1 --tag cophiwue/llp-pipeline .
+docker build --build-arg=INSTALL_APEX=1 --tag cophiwue/llpro .
 ```
 
 After building, the Docker image can be run like this:
@@ -83,14 +83,14 @@ mkdir -p files/in files/out
 # copy files into ./files/in to be processed
 docker run \
     --rm \
-    --cpus 4 \
-    --gpus all \
+    --cpus 4 \ 
+    --gpus all \    # alternatively, e.g., --gpus '"device=0"'
     --interactive \
     --tty \
     -a stdout \
     -a stderr \
     -v "$(pwd)/files:/files" \
-    cophiwue/llp-pipeline -v --writefiles /files/out /files/in
+    cophiwue/llpro -v --writefiles /files/out /files/in
 # processed files are located in ./files/out
 ```
 
@@ -121,12 +121,19 @@ See the separate [Developer Guide](./doc/DEVELOPING.md)
 
 See also the separate document about [Output Formats](./doc/OUTPUT_FORMATS.md) for a description of the output format and a reference of the used tagsets.
 
+## Citing
+
+If you use the LLpro software for academic research, please consider citing the project:
+
+Ehrmanntraut, Anton, Leonard Konle, and Fotis Jannidis: *LLpro*, A Literary Language Processing Pipeline for German
+Narrative Texts. 2022. <https://github.com/aehrm/LLpro>
+
 ## License
 
 In accordance with the license terms of ParZu+Zmorge (GPL v2), and of SoMeWeTa
-(GPL v3) the LLP-Pipeline is licensed unter the terms of GPL v3. See
+(GPL v3) the LLpro pipeline is licensed under the terms of GPL v3. See
 [LICENSE](LICENSE.md). NOTICE: Some subsystems and resources used by the
-LLP-Pipeline have additional license terms:
+LLpro pipeline have additional license terms:
 
 * RNNTagger: see
   <https://www.cis.uni-muenchen.de/~schmid/tools/RNNTagger/Tagger-Licence>
