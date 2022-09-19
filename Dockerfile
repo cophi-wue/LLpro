@@ -26,5 +26,6 @@ RUN if [ "$INSTALL_APEX" = "1" ] ; then echo 'Building Apex' \
 
 
 WORKDIR /LL-Pipeline
+ENV TRANSFORMERS_OFFLINE=1
 
 ENTRYPOINT ["python3", "main.py"]
