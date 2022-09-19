@@ -1,0 +1,8 @@
+__pycache__/
+.vscode/
+.idea/
+model/
+predictions/
+slurm/
+venv/
+all_data
