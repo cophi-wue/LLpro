@@ -382,6 +382,7 @@ class FLERTNERTagger(Module):
 
     def __init__(self, mini_batch_size=8, use_cuda=True, device_on_run=False):
         self.device_on_run = device_on_run
+        self.mini_batch_size = mini_batch_size
         self.device = torch.device('cuda' if torch.cuda.is_available() and use_cuda else "cpu")
 
         from flair.models import SequenceTagger
@@ -467,7 +468,7 @@ class FLERTNERTagger(Module):
     def process(self, tokens: Sequence[Token], update_fn: Callable[[int], None], **kwargs) -> None:
         span_id = 0
         sentences = [list(s) for s in Token.get_sentences(tokens)]
-        tagged_sentences = itertools.chain.from_iterable(self.batch_processor(batch) for batch in more_itertools.chunked(sentences, n=8))
+        tagged_sentences = itertools.chain.from_iterable(self.batch_processor(batch) for batch in more_itertools.chunked(sentences, n=self.mini_batch_size))
         for sentence, tagged_sentence in zip(sentences, tagged_sentences):
             if self.tagger.predict_spans:
                 result = [list() for _ in sentence]
