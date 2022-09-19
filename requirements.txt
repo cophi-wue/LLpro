@@ -1,0 +1,3 @@
+jsonlines
+numpy
+allennlp==2.5.0
