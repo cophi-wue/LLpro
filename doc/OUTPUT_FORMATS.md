@@ -1,10 +1,10 @@
 # Output Formats
 
-## Raw Pipeline Output
+The default implementation of the pipeline can output the processed tokens in separate formats. The desired output format(s) can be specified as command line parameter(s): `--format jsonl` (default), or `--format tsv`.
 
-The default implementation of the LLpro pipeline writes one output file for each input file.
+## JSONL / Raw Pipeline Output
 
-Each line in the output file corresponds to a JSON object, which contains the annotations of the fields and metadata.
+This is the default output format of the pipeline. Each line in the output file corresponds to a JSON object, which contains the annotations of the fields and metadata.
 
 * `obj[field][module].value` holds the annotation value for `field` written by `module`, i.e. `tok.get_field(field, module)`.
 * `obj[field][module].metadata` holds the annotation value for `metadata` written by `module`, i.e. `tok.get_metadata(field, module)`.
@@ -13,17 +13,19 @@ Use, e.g., `tokens = [Token.read_json(line) for line in raw_output_file]` to ret
 
 ## Conversion to Tabular Output
 
-To facilitate IO of the output files, a conversion script is provided that converts the raw JSON output to a TSV file, containing a flat table of the JSON data (requires only `pandas`).
-
-```
-python ./format_tsv.py raw_output_file tsv_file
-```
+Alternatively, the pipeline can write the raw JSONL output in the form of a TSV file, containing a flat table of the associated JSON data.
 
 For example, the column names of the tabular output converted from raw output of the default pipeline look like this:
 
 * `pos.RNNTagger`, holds the value of the field `pos` from module `RNNTagger`.
 * `pos.RNNTagger.meta.prob`, holds the metadata value `prob` of the field `pos` from module `SoMaJoTokenizer`.
 * ...
+
+To facilitate IO of the output files, a conversion script is provided that converts the raw JSONL output to a TSV file, containing a flat table of the JSON data (requires only `pandas`).
+
+```
+python ./format_tsv.py raw_output_file tsv_file
+```
 
 Use, e.g., `Token.to_dataframe(Token.read_json(line) for line in raw_output_file)` to retrieve the processed tokens as Pandas DataFrame from a raw output file.
 
