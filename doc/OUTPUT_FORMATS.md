@@ -9,7 +9,7 @@ This is the default output format of the pipeline. Each line in the output file 
 * `obj[field][module].value` holds the annotation value for `field` written by `module`, i.e. `tok.get_field(field, module)`.
 * `obj[field][module].metadata` holds the annotation value for `metadata` written by `module`, i.e. `tok.get_metadata(field, module)`.
 
-Use, e.g., `tokens = [Token.read_json(line) for line in raw_output_file]` to retrieve the list of processed tokens from an output file.
+Use, e.g., `tokens = [Token.from_json(line) for line in raw_output_file]` to retrieve the list of processed tokens from an output file.
 
 ## Conversion to Tabular Output
 

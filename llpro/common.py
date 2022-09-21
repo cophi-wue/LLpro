@@ -11,7 +11,7 @@ import re
 import time
 import unicodedata
 from abc import abstractmethod
-from typing import Iterable, Sequence, Dict, Tuple, Any, Callable, Union
+from typing import Iterable, Sequence, Dict, Tuple, Any, Callable, Union, List
 
 import pandas
 import regex as re
@@ -91,7 +91,7 @@ class Token:
         return self.fields.__str__()
 
     @staticmethod
-    def get_sentences(tokens: Iterable[Token]) -> Iterable[Iterable[Token]]:
+    def get_sentences(tokens: Iterable[Token]) -> Iterable[List[Token]]:
         """
         Splits tokens at sentence boundaries.
         Given an iterable of tokens, this generator yields an iterable of tokens for every sentence.
@@ -100,7 +100,7 @@ class Token:
         return more_itertools.split_when(tokens, lambda a, b: a.sentence != b.sentence)
 
     @staticmethod
-    def get_documents(tokens: Iterable[Token]) -> Iterable[Iterable[Token]]:
+    def get_documents(tokens: Iterable[Token]) -> Iterable[List[Token]]:
         """
         Splits tokens at document boundaries.
         Given an iterable of tokens, this generator yields an iterable of tokens for every document.
@@ -110,7 +110,7 @@ class Token:
 
     @staticmethod
     def get_chunks(tokens: Iterable[Token], max_chunk_len=None, min_chunk_len=None, sequence_length_function=None,
-                   borders='sentences') -> Iterable[Iterable[Token]]:
+                   borders='sentences') -> Iterable[List[Token]]:
         if borders == 'sentences':
             chunks = list(Token.get_sentences(tokens))
         elif borders == 'tokens':

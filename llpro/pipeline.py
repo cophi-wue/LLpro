@@ -25,7 +25,7 @@ class SoMaJoTokenizer(ParagraphingTokenizer):
         for sent_id, sent in enumerate(sentences):
             for word_id, word in enumerate(sent):
                 tok = Token()
-                tok.set_field('word', self.name, word.text, space_after=word.space_after, token_class=word.token_class)
+                tok.set_field('word', self.name, word.text, space_after=word.space_after, token_class=word.token_class, original_spelling=word.original_spelling)
                 tok.set_field('sentence', self.name, sent_id + 1)
                 tok.set_field('id', self.name, word_id)
                 yield tok
@@ -47,7 +47,7 @@ class SoMeWeTaTagger(Module):
     def process(self, tokens: Sequence[Token], update_fn, **kwargs):
         for sentence in Token.get_sentences(tokens):
             tagged = self.processor(sentence)
-            assert len(tagged) == len(tagged)
+            assert len(sentence) == len(tagged)
             for token, (tok, tag) in zip(sentence, tagged):
                 assert token.word == tok
                 upos, ufeats = stts2upos[tag]
