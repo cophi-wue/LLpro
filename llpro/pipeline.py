@@ -697,8 +697,95 @@ class InVeRoXL(Module):
             tok.set_field('srl', self.name, tok_frames)
 
 
+class SceneSegmenter(Module):
+
+    def __init__(self, stss_se_home='resources/stss-se', model_path='extracted_model', use_cuda=True, device_on_run=False):
+        self.device = torch.device('cuda' if torch.cuda.is_available() and use_cuda else "cpu")
+        self.device_on_run = device_on_run
+        self.stss_se_home = Path(stss_se_home)
+        sys.path.insert(0, str(self.stss_se_home))
+        from stss_se_code.sequential_sentence_classification.model import SeqClassificationModel
+        from stss_se_code.sequential_sentence_classification.dataset_reader import SeqClassificationReader
+        import allennlp.models.archival
+        self.archive = allennlp.models.archival.load_archive(str(self.stss_se_home / model_path))
+        if not self.device_on_run:
+            self.archive.model.to(self.device)
+
+
+    def before_run(self):
+        if self.device_on_run:
+            self.archive.model.to(self.device)
+            logging.info(f"SceneSegmenter using device {self.archive.model._get_prediction_device()}")
+
+    def after_run(self):
+        if self.device_on_run:
+            self.archive.model.to('cpu')
+            torch.cuda.empty_cache()  # TODO
+
+    def process(self, tokens: Sequence[Token], update_fn: Callable[[int], None], **kwargs) -> None:
+        sentences = list(Token.get_sentences(tokens))
+        # Joining the words with ' ' should be a sufficiently good approximation of the original text,
+        # as the text is further tokenized by BERT in the scene segmenter anyway, which always splits at whitespace.
+        prepared_sentences = [ ' '.join(tok.word for tok in sent) for sent in sentences ]
+
+        # cf. resources/stss-se/stss_se_code/sequential_sentence_classification/predictor.py
+        sentence_counter = 0
+        pred_labels = []
+        for sentences_loop, _, _, _ in self.archive.dataset_reader.enforce_max_sent_per_example(prepared_sentences):
+            instance = self.archive.dataset_reader.text_to_instance(sentences_loop, predict=True)
+            self.archive.dataset_reader.apply_token_indexers(instance)
+            output = self.archive.model.forward_on_instance(instance)
+            idx = output['action_probs'].argmax(axis=1).tolist()
+            labels = [self.archive.model.vocab.get_token_from_index(i, namespace='labels') for i in idx]
+            for l in labels:
+                pred_labels.append((l, sentence_counter))
+                update_fn(len(sentences[sentence_counter]))
+                sentence_counter = sentence_counter + 1
+
+        scenes = self.postprocess(pred_labels)
+        for segment_counter, scene in enumerate(scenes):
+            for i in range(scene['begin'], scene['end']):
+                for tok in sentences[i]:
+                    tok.set_field('scene_segment', self.name, segment_counter)
+
+    def postprocess(self, pred_labels):
+        # cf. resources/stss-se/stss_se_code/utils/postprocess.py
+        scenes = []
+        group = {}
+        last_border = 0
+        for i, label_offset in enumerate(pred_labels):
+            label, offset = label_offset[0].replace("_label", ""), (label_offset[1], label_offset[1]+1)
+            if i == 0:
+                prev_l = label.replace("-B", "")
+                group = [offset]
+            else:
+                if "-B" in label:
+                    # Non-scene to non-scene change is not allowed so continue expanding last non-scene despite
+                    # prediction of Nonscene-B label
+                    if label == "Nonscene-B" and prev_l == "Nonscene":
+                        group.append(offset)
+                    else:  # scene change due to prediction of -B label
+                        scenes.append({"begin": last_border, "end": group[-1][-1], "type": prev_l})
+                        group = [offset]
+                        last_border = scenes[-1]["end"]
+                        prev_l = label.replace("-B", "")
+                else:
+                    if label == prev_l:
+                        group.append(offset)
+                    else:  # scene change despite lack of -B label
+                        scenes.append({"begin": last_border, "end": group[-1][-1], "type": prev_l})
+                        group = [offset]
+                        last_border = scenes[-1]["end"]
+                        prev_l = label.replace("-B", "")
+        if group:
+            scenes.append({"begin": last_border, "end": group[-1][-1], "type": prev_l})
+
+        return scenes
+
+
 def preload_all_modules():
     CorefIncrementalTagger()
     FLERTNERTagger()
+    SceneSegmenter()
     if Path('resources/inveroxl/resources/model/config.json').exists():
         InVeRoXL()

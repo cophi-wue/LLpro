@@ -2,6 +2,8 @@
 set -e
 WGET="wget --show-progress --progress=bar:force:noscroll"
 
+pip3 install --no-cache-dir -r requirements.txt
+
 cd resources
 $WGET 'https://corpora.linguistik.uni-erlangen.de/someweta/german_newspaper_2020-05-28.model'
 $WGET 'https://pub.cl.uzh.ch/users/sennrich/zmorge/transducers/zmorge-20150315-smor_newlemma.ca.zip'
@@ -13,6 +15,8 @@ $WGET 'http://www.redewiedergabe.de/models/models.zip' -O rwtagger_models.zip
 unzip rwtagger_models.zip -d rwtagger_models
 $WGET 'https://github.com/uhh-lt/neural-coref/releases/download/konvens/droc_incremental_no_segment_distance.mar'
 unzip droc_incremental_no_segment_distance.mar model_droc_incremental_no_segment_distance_May02_17-32-58_1800.bin
+gdown 1yayKtOT2pGD7YQpL-r9p3D-ErMt6rVeR -O resources/stss-se/model.tar.gz
+tar xf resources/stss-se/model.tar.gz -C resources/stss-se/extracted_model
 
 invero_tarfile="invero-xl-span-cuda-2.0.0.tar"
 if [ -f "$invero_tarfile" ]; then
@@ -32,5 +36,4 @@ else
 fi
 
 cd ..
-pip3 install --no-cache-dir -r requirements.txt
 python3 -c 'import llpro.pipeline; llpro.pipeline.preload_all_modules();'

@@ -73,7 +73,8 @@ if __name__ == "__main__":
     rw_tagger = RedewiedergabeTagger(device_on_run=True)
     ner_tagger = FLERTNERTagger(device_on_run=True)
     coref_tagger = CorefIncrementalTagger(device_on_run=True)
-    modules = [pos_tagger, morph_tagger, lemmatizer, parzu, rw_tagger, ner_tagger, coref_tagger]
+    scene_segmenter = SceneSegmenter(device_on_run=True)
+    modules = [pos_tagger, morph_tagger, lemmatizer, parzu, rw_tagger, ner_tagger, coref_tagger, scene_segmenter]
 
     srl_tagger = None
     if Path('resources/inveroxl/resources/model/weights.pt').is_file():
