@@ -1,6 +1,6 @@
 #!/usr/bin/bash
 set -e
-WGET="wget --show-progress --progress=bar:force:noscroll"
+WGET="wget --no-clobber --show-progress --progress=bar:force:noscroll"
 
 pip3 install --no-cache-dir -r requirements.txt
 
@@ -11,12 +11,12 @@ unzip zmorge-20150315-smor_newlemma.ca.zip
 $WGET 'https://www.cis.uni-muenchen.de/~schmid/tools/RNNTagger/data/RNNTagger-1.3.zip'
 unzip -uo RNNTagger-1.3.zip
 find ./RNNTagger/lib/ -type f ! -name '*german*' -delete # remove unncessesary models
-$WGET 'http://www.redewiedergabe.de/models/models.zip' -O rwtagger_models.zip
+test -f "rwtagger_models.zip" || $WGET 'http://www.redewiedergabe.de/models/models.zip' -O rwtagger_models.zip
 unzip rwtagger_models.zip -d rwtagger_models
 $WGET 'https://github.com/uhh-lt/neural-coref/releases/download/konvens/droc_incremental_no_segment_distance.mar'
 unzip droc_incremental_no_segment_distance.mar model_droc_incremental_no_segment_distance_May02_17-32-58_1800.bin
-gdown 1yayKtOT2pGD7YQpL-r9p3D-ErMt6rVeR -O resources/stss-se/model.tar.gz
-tar xf resources/stss-se/model.tar.gz -C resources/stss-se/extracted_model
+test -f "./stss-se/model.tar.gz" || gdown 1yayKtOT2pGD7YQpL-r9p3D-ErMt6rVeR -O ./stss-se/model.tar.gz
+tar xf ./stss-se/model.tar.gz -C ./stss-se/extracted_model
 
 invero_tarfile="invero-xl-span-cuda-2.0.0.tar"
 if [ -f "$invero_tarfile" ]; then
