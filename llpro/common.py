@@ -354,6 +354,12 @@ class Module:
     def after_run(self):
         pass
 
+    def close(self):
+        """
+        This method is invoked when the pipeline has processed all documents.
+        """
+        pass
+
     @abstractmethod
     def process(self, tokens: Sequence[Token], update_fn: Callable[[int], None], **kwargs) -> None:
         """
@@ -409,6 +415,11 @@ class ParallelizedModule(Module):
         self.pool = multiprocessing.Pool(processes=num_processes, initializer=ParallelizedModule._init_worker,
                                          initargs=(module,))
 
+    def close(self):
+        self.pool.close()
+        self.pool.join()
+        super().close()
+
     @property
     def name(self):
         return self._name
@@ -453,7 +464,7 @@ class ParallelizedModule(Module):
         return
 
 
-def pipeline_process(tokenizer: Tokenizer, modules: Iterable[Module], filenames: Sequence[str],
+def pipeline_process(tokenizer: Tokenizer, modules: Sequence[Module], filenames: Sequence[str],
                      file_pbar_opts=None, module_pbar_opts=None) -> Tuple[str, Sequence[Token]]:
     """
     Runs the specified tokenizer and modules on the specified files, displaying one progress bar for (global) file
@@ -490,3 +501,6 @@ def pipeline_process(tokenizer: Tokenizer, modules: Iterable[Module], filenames:
             file_pbar.set_description_str(f'{i + 1}/{len(filenames)}')
             yield filename, tokens
     file_pbar.close()
+
+    for module in modules:
+        module.close()
