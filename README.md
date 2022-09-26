@@ -106,11 +106,13 @@ Verify that the following dependencies are installed:
   * SFST >= 1.4
 * OPTIONAL: Docker to extract the InVeRo-XL image
 
-Execute `./prepare.sh`. The script downloads all remaining prerequisites.
+Execute `pip install -r requirements.txt` and `./prepare.sh`. The script downloads all remaining prerequisites.
 
 Example usage:
 
 ```shell
+pip install -r requirements.txt
+./prepare.sh
 python ./main.py -v --writefiles files/out files/in
 ```
 

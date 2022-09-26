@@ -14,9 +14,14 @@ RUN apt-get update -y && apt-get -y install \
     git
 
 
+COPY requirements.txt requirements.txt
+RUN sh -c 'pip3 install --no-cache-dir -r requirements.txt'
+
 COPY . .
 RUN sh prepare.sh
 RUN rm -rf resources/invero-xl-span-cuda-2.0.0.tar
+RUN python3 -c 'import llpro.pipeline; llpro.pipeline.preload_all_modules();'
+
 
 ARG INSTALL_APEX=0
 WORKDIR /tmp
