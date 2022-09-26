@@ -354,6 +354,12 @@ class Module:
     def after_run(self):
         pass
 
+    def close(self):
+        """
+        This method is invoked when the pipeline has processed all documents.
+        """
+        pass
+
     @abstractmethod
     def process(self, tokens: Sequence[Token], update_fn: Callable[[int], None], **kwargs) -> None:
         """
@@ -408,6 +414,11 @@ class ParallelizedModule(Module):
         logging.info(f"Starting {num_processes} processes of {self._name}")
         self.pool = multiprocessing.Pool(processes=num_processes, initializer=ParallelizedModule._init_worker,
                                          initargs=(module,))
+
+    def close(self):
+        self.pool.close()
+        self.pool.join()
+        super().close()
 
     @property
     def name(self):

@@ -100,3 +100,7 @@ if __name__ == "__main__":
                     print(tok.to_json(), file=sys.stdout)
             if 'tsv' in args.format:
                 print(Token.to_dataframe(processed_tokens).to_csv(None, sep='\t', index=False), file=sys.stdout)
+
+
+    for module in modules:
+        module.close()

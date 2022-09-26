@@ -32,5 +32,6 @@ RUN if [ "$INSTALL_APEX" = "1" ] ; then echo 'Building Apex' \
 
 WORKDIR /LL-Pipeline
 ENV TRANSFORMERS_OFFLINE=1
+ENV TOKENIZER_PARALLELISM=false
 
 ENTRYPOINT ["python3", "main.py"]
