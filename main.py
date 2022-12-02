@@ -1,8 +1,12 @@
 import argparse
-import math
-import torch
+import logging
+import multiprocessing
+import os
 
-from llpro.pipeline import *
+import spacy
+
+import llpro.components
+from llpro.components.tokenizer_somajo import SoMaJoTokenizer
 
 
 def get_cpu_limit():
@@ -35,72 +39,47 @@ if __name__ == "__main__":
     parser.add_argument('infiles', metavar='FILE', type=str, nargs='+', help='Input files, or directories.')
     parser.set_defaults(outtype='stdout')
     args = parser.parse_args()
-    if args.writefiles is not None:
-        args.outtype = 'files'
-    if not args.format or len(args.format) == 0:
-        args.format = ['jsonl']
-    logging.basicConfig(level=args.loglevel)
-    for hdl in logging.getLogger('flair').handlers:
-        logging.getLogger('flair').removeHandler(hdl)
-    logging.getLogger('flair').propagate = True
-    logging.info('Picked up following arguments: ' + repr(vars(args)))
+    # if args.writefiles is not None:
+    #     args.outtype = 'files'
+    # if not args.format or len(args.format) == 0:
+    #     args.format = ['jsonl']
+    # logging.basicConfig(level=args.loglevel)
+    # for hdl in logging.getLogger('flair').handlers:
+    #     logging.getLogger('flair').removeHandler(hdl)
+    # logging.getLogger('flair').propagate = True
+    # logging.info('Picked up following arguments: ' + repr(vars(args)))
+    #
+    # if len(set(args.format)) > 1 and not args.writefiles:
+    #     logging.error('Can only specify a single output format unless --writefiles is given.')
+    #     sys.exit(1)
+    #
+    # if torch.cuda.is_available():
+    #     logging.info(f'torch: CUDA available, version {torch.version.cuda}, architectures {torch.cuda.get_arch_list()}')
+    # else:
+    #     logging.info('torch: CUDA not available')
+    #
+    # filenames = []
+    # for f in args.infiles:
+    #     if os.path.isfile(f):
+    #         filenames.append(f)
+    #     else:
+    #         for root, dirs, members in os.walk(f, followlinks=True):
+    #             filenames.extend([os.path.join(root, m) for m in members])
 
-    if len(set(args.format)) > 1 and not args.writefiles:
-        logging.error('Can only specify a single output format unless --writefiles is given.')
-        sys.exit(1)
+    logging.info('Loading pipeline')
+    nlp = spacy.blank("de")
+    nlp.tokenizer = SoMaJoTokenizer()
+    # nlp.add_pipe('tagger_someweta')
+    # nlp.add_pipe('tagger_rnntagger')
+    # nlp.add_pipe('lemma_rnntagger')
+    # nlp.add_pipe('parser_parzu_parallelized', config={'num_processes': 1})
+    # nlp.add_pipe('speech_redewiedergabe')
+    # nlp.add_pipe('scenes_stss_se')
+    nlp.add_pipe('ner_flair')
+    nlp.analyze_pipes(pretty=True)
 
-    if torch.cuda.is_available():
-        logging.info(f'torch: CUDA available, version {torch.version.cuda}, architectures {torch.cuda.get_arch_list()}')
-    else:
-        logging.info('torch: CUDA not available')
+    text = open('./files/in/testfile1').read()
+    doc = nlp(text)
+    for tok in doc:
+        print(tok.text, tok.ent_iob_, tok.ent_type_)
 
-    filenames = []
-    for f in args.infiles:
-        if os.path.isfile(f):
-            filenames.append(f)
-        else:
-            for root, dirs, members in os.walk(f, followlinks=True):
-                filenames.extend([os.path.join(root, m) for m in members])
-
-    logging.info('Loading modules')
-    tokenizer = SoMaJoTokenizer(paragraph_separator=args.paragraph_pattern, section_pattern=args.section_pattern)
-    pos_tagger = SoMeWeTaTagger()
-    morph_tagger = RNNTagger()
-    lemmatizer = RNNLemmatizer()
-    parzu = ParallelizedModule(lambda: ParzuParser(pos_source=pos_tagger.name),
-                               num_processes=math.floor(get_cpu_limit()),
-                               tokens_per_process=1000, name='ParzuParser')
-    rw_tagger = RedewiedergabeTagger(device_on_run=True)
-    ner_tagger = FLERTNERTagger(device_on_run=True)
-    coref_tagger = CorefIncrementalTagger(device_on_run=True)
-    scene_segmenter = SceneSegmenter(device_on_run=True)
-    modules = [pos_tagger, morph_tagger, lemmatizer, parzu, rw_tagger, ner_tagger, coref_tagger, scene_segmenter]
-
-    srl_tagger = None
-    if Path('resources/inveroxl/resources/model/weights.pt').is_file():
-        srl_tagger = InVeRoXL(device_on_run=True)
-        modules.append(srl_tagger)
-
-    for filename, processed_tokens in pipeline_process(tokenizer, modules, list(filenames)):
-        if args.writefiles:
-            if 'jsonl' in args.format:
-                with open(os.path.join(args.writefiles, os.path.basename(filename) + '.jsonl'), 'w') as output_file:
-                    logging.info(f'writing processed tokens of {filename} to {output_file.name}')
-                    for tok in processed_tokens:
-                        print(tok.to_json(), file=output_file)
-
-            if 'tsv' in args.format:
-                with open(os.path.join(args.writefiles, os.path.basename(filename) + '.tsv'), 'w') as output_file:
-                    logging.info(f'writing processed tokens of {filename} to {output_file.name}')
-                    print(Token.to_dataframe(processed_tokens).to_csv(None, sep='\t', index=False), file=output_file)
-
-        if args.outtype == 'stdout':
-            if 'jsonl' in args.format:
-                for tok in processed_tokens:
-                    print(tok.to_json(), file=sys.stdout)
-            if 'tsv' in args.format:
-                print(Token.to_dataframe(processed_tokens).to_csv(None, sep='\t', index=False), file=sys.stdout)
-
-
-    for module in modules:
-        module.close()

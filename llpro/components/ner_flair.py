@@ -1,0 +1,127 @@
+import gc
+import itertools
+
+import flair
+import more_itertools
+import spacy
+import torch
+from typing import Iterable, List
+
+from spacy import Language
+from spacy.tokens import Doc, Span
+
+
+@Language.factory("ner_flair", assigns=['doc.ents', 'token.ent_iob', 'token.ent_type'], default_config={})
+def ner_flair(nlp, name):
+    return FLERTNERTagger(name)
+
+
+class FLERTNERTagger:
+
+    def __init__(self, name, mini_batch_size=8, use_cuda=True, device_on_run=False):
+        self.device_on_run = device_on_run
+        self.mini_batch_size = mini_batch_size
+        self.device = torch.device('cuda' if torch.cuda.is_available() and use_cuda else "cpu")
+
+        from flair.models import SequenceTagger
+        from flair.data import Sentence
+        from flair.datasets import DataLoader
+        from flair.datasets import FlairDatapointDataset
+        # see https://github.com/flairNLP/flair/issues/2650#issuecomment-1063785119
+        flair.device = 'cpu'
+        self.tagger = SequenceTagger.load("flair/ner-german-large")
+
+        def process_batch(sentence_batch: Iterable[spacy.tokens.Span]) -> List[flair.data.Span]:
+            flair_sentences = [Sentence([tok.text for tok in s]) for s in sentence_batch]
+            dataloader = DataLoader(
+                dataset=FlairDatapointDataset(flair_sentences),
+                batch_size=len(flair_sentences),
+            )
+
+            output = []
+            with torch.no_grad():
+                for batch in dataloader:
+                    self._annotate_batch(batch)
+                    for s in batch:
+                        s.clear_embeddings()
+                        output.append(s)
+            del dataloader
+            del flair_sentences
+            gc.collect()  # TODO
+            return output
+
+        self.batch_processor = process_batch
+
+    #     if not self.device_on_run:
+    #         self.tagger.to(self.device)
+    #         logging.info(f"{self.name} using device {str(next(self.tagger.parameters()).device)}")
+    #
+    # def before_run(self):
+    #     if self.device_on_run:
+    #         flair.device = self.device
+    #         self.tagger.to(self.device)
+    #         logging.info(f"{self.name} using device {str(next(self.tagger.parameters()).device)}")
+    #
+    # def after_run(self):
+    #     if self.device_on_run:
+    #         self.tagger.to('cpu')
+    #         torch.cuda.empty_cache()  # TODO
+
+    def _annotate_batch(self, batch):
+        from flair.models.sequence_tagger_utils.bioes import get_spans_from_bio
+        import torch
+
+        # cf. flair/models/sequence_tagger_model.py
+        # get features from forward propagation
+        features, gold_labels = self.tagger.forward(batch)
+
+        # Sort batch in same way as forward propagation
+        lengths = torch.LongTensor([len(sentence) for sentence in batch])
+        _, sort_indices = lengths.sort(dim=0, descending=True)
+        batch = [batch[i] for i in sort_indices]
+
+        # make predictions
+        if self.tagger.use_crf:
+            predictions, all_tags = self.tagger.viterbi_decoder.decode(features, False)
+        else:
+            predictions, all_tags = self.tagger._standard_inference(features, batch, False)
+
+        for sentence, sentence_predictions in zip(batch, predictions):
+            if self.tagger.predict_spans:
+                sentence_tags = [label[0] for label in sentence_predictions]
+                sentence_scores = [label[1] for label in sentence_predictions]
+                predicted_spans = get_spans_from_bio(sentence_tags, sentence_scores)
+                for predicted_span in predicted_spans:
+                    span = sentence[predicted_span[0][0]:predicted_span[0][-1] + 1]
+                    span.add_label(self.tagger.tag_type, value=predicted_span[2], score=predicted_span[1])
+
+            # token-labels can be added directly ("O" and legacy "_" predictions are skipped)
+            else:
+                for token, label in zip(sentence.tokens, sentence_predictions):
+                    if label[0] in ["O", "_"]:
+                        continue
+                    token.add_label(typename=self.tagger.tag_type, value=label[0], score=label[1])
+
+    def __call__(self, doc: Doc) -> Doc:
+        sentences = list(doc.sents)
+        entities = []
+        tagged_sentences = itertools.chain.from_iterable(
+            self.batch_processor(batch) for batch in more_itertools.chunked(sentences, n=self.mini_batch_size))
+        for sentence, tagged_sentence in zip(sentences, tagged_sentences):
+            if self.tagger.predict_spans:
+                for span in tagged_sentence.get_spans('ner'):
+                    new_span = sentence[span[0].idx-1:span[-1].idx]
+                    new_span = Span(doc, new_span.start, new_span.end, label=span.tag)
+                    entities.append(new_span)
+            else:
+                for tok, tagged_tok in zip(sentence, tagged_sentence):
+                    value = tagged_tok.get_label('ner').value
+                    if value in {'O', '_'}: continue
+                    new_span = Span(doc, tok.i, tok.i+1, label=value)
+                    entities.append(new_span)
+                    pass
+                    # tok.set_field('ner', self.name, [value])
+            # update_fn(len(sentence))
+
+        doc.set_ents(entities)
+        return doc
