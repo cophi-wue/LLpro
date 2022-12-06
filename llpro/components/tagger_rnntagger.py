@@ -9,18 +9,24 @@ import torch
 from spacy import Language
 from spacy.morphology import Morphology
 from spacy.tokens import Doc, Token, MorphAnalysis
+from typing import Callable
+
+from ..common import Module
 
 
-@Language.factory("tagger_rnntagger", assigns=['token._.rnntagger_tag', 'token.morph'], default_config={'rnntagger_home': 'resources/RNNTagger'})
+@Language.factory("tagger_rnntagger", assigns=['token._.rnntagger_tag', 'token.morph'], default_config={
+    'rnntagger_home': 'resources/RNNTagger', 'use_cuda': True, 'pbar_opts': None
+})
 def tagger_rnntagger(nlp, name, rnntagger_home):
     if not Token.has_extension('rnntagger_tag'):
         Token.set_extension('rnntagger_tag', default='')
-    return RNNTagger(rnntagger_home=rnntagger_home)
+    return RNNTagger(name=name, rnntagger_home=rnntagger_home)
 
 
-class RNNTagger:
+class RNNTagger(Module):
 
-    def __init__(self, rnntagger_home='resources/RNNTagger', use_cuda=True):
+    def __init__(self, name, rnntagger_home='resources/RNNTagger', use_cuda=True, pbar_opts=None):
+        super().__init__(name, pbar_opts=pbar_opts)
         self.rnntagger_home = Path(rnntagger_home)
         sys.path.insert(0, str(self.rnntagger_home))
         sys.path.insert(0, str(self.rnntagger_home / "PyNMT"))
@@ -63,7 +69,7 @@ class RNNTagger:
 
         self.annotate_sentence = annotate_sentence
 
-    def __call__(self, doc: Doc) -> Doc:
+    def process(self, doc: Doc, progress_fn: Callable[[int], None]) -> Doc:
         for sent in doc.sents:
             sent = list(sent)
             for token, out in zip(sent, self.annotate_sentence([t.text for t in sent])):
@@ -78,7 +84,7 @@ class RNNTagger:
                 morph = token.morph.to_dict()
                 morph.update(from_tigertag(tigertag))
                 token.set_morph(MorphAnalysis(token.vocab, morph))
-                # update_fn(1)
+                progress_fn(1)
 
         return doc
 

@@ -2,11 +2,17 @@ import argparse
 import logging
 import multiprocessing
 import os
+import sys
 
 import spacy
+import torch
+from spacy.tokens import Doc
+from tqdm import tqdm
 
 import llpro.components
 from llpro.components.tokenizer_somajo import SoMaJoTokenizer
+
+from tqdm.contrib.logging import logging_redirect_tqdm
 
 
 def get_cpu_limit():
@@ -17,6 +23,29 @@ def get_cpu_limit():
     container_cpus = cfs_quota_us // cfs_period_us
     cpus = multiprocessing.cpu_count() if container_cpus < 1 else container_cpus
     return cpus
+
+
+def run_pipeline_on_files(filenames, tokenizer, nlp):
+    file_sizes = [os.path.getsize(f) for f in filenames]
+
+    if not Doc.has_extension('filename'):
+        Doc.set_extension('filename', default=None)
+
+    with logging_redirect_tqdm():
+        file_pbar = tqdm(total=sum(file_sizes), position=1, unit='B', unit_scale=True, dynamic_ncols=True)
+        file_pbar.set_description_str(f'0/{len(filenames)}')
+        for i, (filename, size) in enumerate(zip(filenames, file_sizes)):
+            with open(filename) as f:
+                content = f.read()
+                doc = tokenizer(content)
+                doc._.filename = filename
+
+                nlp(doc)
+
+            file_pbar.update(size)
+            file_pbar.set_description_str(f'{i + 1}/{len(filenames)}')
+            yield filename, doc
+    file_pbar.close()
 
 
 if __name__ == "__main__":
@@ -39,47 +68,45 @@ if __name__ == "__main__":
     parser.add_argument('infiles', metavar='FILE', type=str, nargs='+', help='Input files, or directories.')
     parser.set_defaults(outtype='stdout')
     args = parser.parse_args()
-    # if args.writefiles is not None:
-    #     args.outtype = 'files'
-    # if not args.format or len(args.format) == 0:
-    #     args.format = ['jsonl']
-    # logging.basicConfig(level=args.loglevel)
-    # for hdl in logging.getLogger('flair').handlers:
-    #     logging.getLogger('flair').removeHandler(hdl)
-    # logging.getLogger('flair').propagate = True
-    # logging.info('Picked up following arguments: ' + repr(vars(args)))
-    #
-    # if len(set(args.format)) > 1 and not args.writefiles:
-    #     logging.error('Can only specify a single output format unless --writefiles is given.')
-    #     sys.exit(1)
-    #
-    # if torch.cuda.is_available():
-    #     logging.info(f'torch: CUDA available, version {torch.version.cuda}, architectures {torch.cuda.get_arch_list()}')
-    # else:
-    #     logging.info('torch: CUDA not available')
-    #
-    # filenames = []
-    # for f in args.infiles:
-    #     if os.path.isfile(f):
-    #         filenames.append(f)
-    #     else:
-    #         for root, dirs, members in os.walk(f, followlinks=True):
-    #             filenames.extend([os.path.join(root, m) for m in members])
+    if args.writefiles is not None:
+        args.outtype = 'files'
+    if not args.format or len(args.format) == 0:
+        args.format = ['jsonl']
+    logging.basicConfig(level=args.loglevel)
+    for hdl in logging.getLogger('flair').handlers:
+        logging.getLogger('flair').removeHandler(hdl)
+    logging.getLogger('flair').propagate = True
+    logging.info('Picked up following arguments: ' + repr(vars(args)))
+
+    if len(set(args.format)) > 1 and not args.writefiles:
+        logging.error('Can only specify a single output format unless --writefiles is given.')
+        sys.exit(1)
+
+    if torch.cuda.is_available():
+        logging.info(f'torch: CUDA available, version {torch.version.cuda}, architectures {torch.cuda.get_arch_list()}')
+    else:
+        logging.info('torch: CUDA not available')
+
+    filenames = []
+    for f in args.infiles:
+        if os.path.isfile(f):
+            filenames.append(f)
+        else:
+            for root, dirs, members in os.walk(f, followlinks=True):
+                filenames.extend([os.path.join(root, m) for m in members])
 
     logging.info('Loading pipeline')
     nlp = spacy.blank("de")
-    nlp.tokenizer = SoMaJoTokenizer()
-    # nlp.add_pipe('tagger_someweta')
+    nlp.add_pipe('tagger_someweta')
     # nlp.add_pipe('tagger_rnntagger')
     # nlp.add_pipe('lemma_rnntagger')
-    # nlp.add_pipe('parser_parzu_parallelized', config={'num_processes': 1})
+    nlp.add_pipe('parser_parzu_parallelized', config={'num_processes': 4})
     # nlp.add_pipe('speech_redewiedergabe')
     # nlp.add_pipe('scenes_stss_se')
-    nlp.add_pipe('ner_flair')
+    # nlp.add_pipe('coref_uhhlt')
+    # nlp.add_pipe('ner_flair')
     nlp.analyze_pipes(pretty=True)
 
-    text = open('./files/in/testfile1').read()
-    doc = nlp(text)
-    for tok in doc:
-        print(tok.text, tok.ent_iob_, tok.ent_type_)
-
+    tokenizer = SoMaJoTokenizer()
+    for filename, tagged_doc in run_pipeline_on_files(filenames, tokenizer, nlp):
+        pass

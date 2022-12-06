@@ -1,21 +1,28 @@
 import logging
 import multiprocessing
+import queue
 import sys
 
 import more_itertools
 from spacy import Language
 from spacy.tokens import Span, Doc
-from typing import List, Iterable
+from typing import List, Iterable, Callable
+
+from ..common import Module
 
 
-@Language.factory("parser_parzu_parallelized", requires=['token.tag'], assigns=['token.dep', 'token.head'], default_config={'parzu_home': 'resources/ParZu', 'num_processes': 1, 'tokens_per_process': 1000})
-def parser_parzu_parallelized(nlp, name, parzu_home, num_processes, tokens_per_process):
-    return ParzuParallelized(name=name, parzu_home=parzu_home, num_processes=num_processes, tokens_per_process=tokens_per_process)
+@Language.factory("parser_parzu_parallelized", requires=['token.tag'], assigns=['token.dep', 'token.head'], default_config={
+    'parzu_home': 'resources/ParZu', 'num_processes': 1, 'tokens_per_process': 1000, 'pbar_opts': None
+})
+def parser_parzu_parallelized(nlp, name, parzu_home, num_processes, tokens_per_process, pbar_opts):
+    return ParzuParallelized(name=name, parzu_home=parzu_home, num_processes=num_processes, tokens_per_process=tokens_per_process, pbar_opts=pbar_opts)
 
 
-class ParzuParallelized:
+class ParzuParallelized(Module):
 
-    def __init__(self, name, parzu_home='resources/ParZu', num_processes: int = 1, tokens_per_process: int = 1000):
+    def __init__(self, name, parzu_home='resources/ParZu', num_processes: int = 1, tokens_per_process: int = 1000,
+                 pbar_opts=None):
+        super().__init__(name, pbar_opts=pbar_opts)
         self.num_processes = num_processes
         self.tokens_per_process = tokens_per_process
         logging.info(f"Starting {num_processes} processes of {name}")
@@ -33,7 +40,7 @@ class ParzuParallelized:
             yield doc[sentences[0].start:sentences[-1].end]
 
 
-    def __call__(self, doc: Doc) -> Doc:
+    def process(self, doc: Doc, progress_fn: Callable[[int], None]) -> Doc:
         m = multiprocessing.Manager()
         q = m.Queue()
         process_chunks: List[Span] = list(self.split_doc_into_chunks(doc))
@@ -41,25 +48,14 @@ class ParzuParallelized:
         for i, span in enumerate(process_chunks):
             chunk_start, chunk_end = (span.start, span.end)
             results.append(self.pool.apply_async(ParzuParallelized._process_worker, (doc.vocab, doc.to_bytes(), chunk_start, chunk_end, i, q)))
-        # processed_chunks: List[Span] = [None] * len(process_chunks)
-        # while True:
-        #     kind, i, value = q.get()
-        #     if kind == 'update':
-        #         pass
-        #         # update_fn(value)
-        #     elif kind == 'result':
-        #         processed_chunks[i] = value
-        #         if not any(x is None for x in processed_chunks):
-        #             break
-        #
-        # for tok, modified_tok in zip(doc, itertools.chain.from_iterable(processed_chunks)):
-        #     # TODO
-        #     print(tok, modified_tok)
-        #     # tok.update_fields(modified_tok.fields)
-        #     # tok.update_metadata(modified_tok.metadata)
 
-        while any(not res.ready() for res in results):
-            pass
+        while any(not res.ready() for res in results) or not q.empty():
+            try:
+                kind, i, value = q.get(timeout=1)
+                if kind == 'update':
+                    progress_fn(value)
+            except queue.Empty:
+                pass
 
         for r in results:
             r = r.get()
@@ -81,10 +77,10 @@ class ParzuParallelized:
         span = doc[start:end]
         global _WORKER_MODULE
 
-        # def send_update(x):
-        #     out_queue.put(('update', i, x))
+        def send_update(x):
+            out_queue.put(('update', i, x))
 
-        result = _WORKER_MODULE.__call__(span)
+        result = _WORKER_MODULE.__call__(span, send_update)
         return result
 
 class ParzuWorker:
@@ -111,35 +107,37 @@ class ParzuWorker:
         )
         return output
 
-    def __call__(self, span: Span):
+    def __call__(self, span: Span, update_fn: Callable[[int], None]):
         result = []
         it = more_itertools.peekable(iter(span))
 
-        for processed_sent in self.process_parzu(span):
-            index_of_first_token = it.peek().i
-            for line in processed_sent.split('\n'):
-                if line.strip() == '':
-                    continue
-                tok = next(it)
-                (
-                    _,
-                    word,
-                    lemma,
-                    _,
-                    pos,
-                    feats,
-                    head,
-                    deprel,
-                    deps,
-                    misc,
-                ) = line.strip().split("\t")
-                if deprel == 'root':
-                    head = None
-                else:
-                    head = int(line.split('\t')[6])
+        for sentence in span.sents:
+            for processed_sent in self.process_parzu(sentence):
+                index_of_first_token = it.peek().i
+                for line in processed_sent.split('\n'):
+                    if line.strip() == '':
+                        continue
+                    tok = next(it)
+                    (
+                        _,
+                        word,
+                        lemma,
+                        _,
+                        pos,
+                        feats,
+                        head,
+                        deprel,
+                        deps,
+                        misc,
+                    ) = line.strip().split("\t")
+                    if deprel == 'root':
+                        head = None
+                    else:
+                        head = int(line.split('\t')[6])
 
-                result.append({'index': tok.i,
-                               'head': tok.i if head is None else index_of_first_token + int(head) - 1,
-                               'deprel': deprel})
+                    result.append({'index': tok.i,
+                                   'head': tok.i if head is None else index_of_first_token + int(head) - 1,
+                                   'deprel': deprel})
+                    update_fn(1)
 
         return result

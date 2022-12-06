@@ -1,24 +1,30 @@
 import gc
 import itertools
+import logging
 
 import flair
 import more_itertools
 import spacy
 import torch
-from typing import Iterable, List
+from typing import Iterable, List, Callable
 
 from spacy import Language
 from spacy.tokens import Doc, Span
 
-
-@Language.factory("ner_flair", assigns=['doc.ents', 'token.ent_iob', 'token.ent_type'], default_config={})
-def ner_flair(nlp, name):
-    return FLERTNERTagger(name)
+from ..common import Module
 
 
-class FLERTNERTagger:
+@Language.factory("ner_flair", assigns=['doc.ents', 'token.ent_iob', 'token.ent_type'], default_config={
+    'mini_batch_size': 8, 'use_cuda': True, 'device_on_run': False, 'pbar_opts': None
+})
+def ner_flair(nlp, name, mini_batch_size, use_cuda, device_on_run, pbar_opts):
+    return FLERTNERTagger(name, mini_batch_size, use_cuda, device_on_run, pbar_opts)
 
-    def __init__(self, name, mini_batch_size=8, use_cuda=True, device_on_run=False):
+
+class FLERTNERTagger(Module):
+
+    def __init__(self, name, mini_batch_size=8, use_cuda=True, device_on_run=False, pbar_opts=None):
+        super().__init__(name, pbar_opts=pbar_opts)
         self.device_on_run = device_on_run
         self.mini_batch_size = mini_batch_size
         self.device = torch.device('cuda' if torch.cuda.is_available() and use_cuda else "cpu")
@@ -52,20 +58,21 @@ class FLERTNERTagger:
 
         self.batch_processor = process_batch
 
-    #     if not self.device_on_run:
-    #         self.tagger.to(self.device)
-    #         logging.info(f"{self.name} using device {str(next(self.tagger.parameters()).device)}")
-    #
-    # def before_run(self):
-    #     if self.device_on_run:
-    #         flair.device = self.device
-    #         self.tagger.to(self.device)
-    #         logging.info(f"{self.name} using device {str(next(self.tagger.parameters()).device)}")
-    #
-    # def after_run(self):
-    #     if self.device_on_run:
-    #         self.tagger.to('cpu')
-    #         torch.cuda.empty_cache()  # TODO
+        if not self.device_on_run:
+            self.tagger.to(self.device)
+            flair.device = self.device
+            logging.info(f"{self.name} using device {str(next(self.tagger.parameters()).device)}")
+
+    def before_run(self):
+        if self.device_on_run:
+            flair.device = self.device
+            self.tagger.to(self.device)
+            logging.info(f"{self.name} using device {str(next(self.tagger.parameters()).device)}")
+
+    def after_run(self):
+        if self.device_on_run:
+            self.tagger.to('cpu')
+            torch.cuda.empty_cache()  # TODO
 
     def _annotate_batch(self, batch):
         from flair.models.sequence_tagger_utils.bioes import get_spans_from_bio
@@ -102,7 +109,7 @@ class FLERTNERTagger:
                         continue
                     token.add_label(typename=self.tagger.tag_type, value=label[0], score=label[1])
 
-    def __call__(self, doc: Doc) -> Doc:
+    def process(self, doc: Doc, progress_fn: Callable[[int], None]) -> Doc:
         sentences = list(doc.sents)
         entities = []
         tagged_sentences = itertools.chain.from_iterable(
@@ -119,9 +126,7 @@ class FLERTNERTagger:
                     if value in {'O', '_'}: continue
                     new_span = Span(doc, tok.i, tok.i+1, label=value)
                     entities.append(new_span)
-                    pass
-                    # tok.set_field('ner', self.name, [value])
-            # update_fn(len(sentence))
+            progress_fn(len(sentence))
 
         doc.set_ents(entities)
         return doc

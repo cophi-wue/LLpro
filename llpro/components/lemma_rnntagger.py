@@ -6,18 +6,24 @@ from pathlib import Path
 
 from spacy import Language
 from spacy.tokens import Token, Doc
+from typing import Callable
+
+from ..common import Module
 
 
-@Language.factory("lemma_rnntagger", requires=['token._.rnntagger_tag'], assigns=['token.lemma'], default_config={'rnntagger_home': 'resources/RNNTagger'})
-def lemma_rnntagger(nlp, name, rnntagger_home):
+@Language.factory("lemma_rnntagger", requires=['token._.rnntagger_tag'], assigns=['token.lemma'], default_config={
+    'rnntagger_home': 'resources/RNNTagger', 'use_cuda': True, 'pbar_opts': None
+})
+def lemma_rnntagger(nlp, name, rnntagger_home, use_cuda, pbar_opts):
     if not Token.has_extension('rnntagger_tag'):
         Token.set_extension('rnntagger_tag', default='')
-    return RNNLemmatizer(rnntagger_home=rnntagger_home)
+    return RNNLemmatizer(name=name, rnntagger_home=rnntagger_home, use_cuda=use_cuda, pbar_opts=pbar_opts)
 
 
-class RNNLemmatizer:
+class RNNLemmatizer(Module):
 
-    def __init__(self, rnntagger_home='resources/RNNTagger', use_cuda=True):
+    def __init__(self, name, rnntagger_home='resources/RNNTagger', use_cuda=True, pbar_opts=None):
+        super().__init__(name, pbar_opts=pbar_opts)
         self.rnntagger_home = Path(rnntagger_home)
         sys.path.insert(0, str(self.rnntagger_home))
         sys.path.insert(0, str(self.rnntagger_home / "PyNMT"))
@@ -70,7 +76,7 @@ class RNNLemmatizer:
 
         self.processor = myprocessor
 
-    def __call__(self, doc: Doc) -> Doc:
+    def process(self, doc: Doc, progress_fn: Callable[[int], None]) -> Doc:
         cached = {}
         it = iter(doc)
         done = False
@@ -102,4 +108,5 @@ class RNNLemmatizer:
                     lemma, prob = next(processed)
                     cached[cache_key] = (lemma, prob)
                     tok.lemma_ = lemma
+                progress_fn(1)
         return doc

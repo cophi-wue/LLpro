@@ -3,26 +3,31 @@ import logging
 from pathlib import Path
 
 import flair
-from typing import Dict
+from typing import Dict, Callable
 
 import more_itertools
 import torch
 from spacy import Language
 from spacy.tokens import Doc, Token
 
+from ..common import Module
 
-@Language.factory("speech_redewiedergabe", assigns=['token._.speech', 'token._.speech_prob'], default_config={'model_paths': None})
-def speech_redewiedergabe(nlp, name, model_paths):
+
+@Language.factory("speech_redewiedergabe", assigns=['token._.speech', 'token._.speech_prob'], default_config={
+    'model_paths': None, 'use_cuda': True, 'device_on_run': False, 'pbar_opts': None
+})
+def speech_redewiedergabe(nlp, name, model_paths, use_cuda, device_on_run, pbar_opts):
     if not Token.has_extension('speech'):
         Token.set_extension('speech', default=list())
     if not Token.has_extension('speech_prob'):
         Token.set_extension('speech_prob', default=dict())
-    return RedewiedergabeTagger(name=name, model_paths=model_paths)
+    return RedewiedergabeTagger(name=name, model_paths=model_paths, use_cuda=use_cuda, device_on_run=device_on_run, pbar_opts=pbar_opts)
 
 
-class RedewiedergabeTagger:
+class RedewiedergabeTagger(Module):
 
-    def __init__(self, name, model_paths=None, use_cuda=True, device_on_run=False):
+    def __init__(self, name, model_paths=None, use_cuda=True, device_on_run=False, pbar_opts=None):
+        super().__init__(name, pbar_opts=pbar_opts)
         import torch
         from flair.models import SequenceTagger
         flair.device = 'cpu'
@@ -41,27 +46,28 @@ class RedewiedergabeTagger:
             model = model.eval()
             self.models[rw_type] = model
 
-        # if not self.device_on_run:
-        #     for model in self.models.values():
-        #         model.to(self.device)
-        #     logging.info(
-        #         f"{name} using devices {','.join(str(next(m.parameters()).device) for m in self.models.values())}")
+        if not self.device_on_run:
+            for model in self.models.values():
+                model.to(self.device)
+            flair.device = self.device
+            logging.info(
+                f"{name} using devices {','.join(str(next(m.parameters()).device) for m in self.models.values())}")
 
-    # def before_run(self):
-    #     flair.device = self.device
-    #     if self.device_on_run:
-    #         for model in self.models.values():
-    #             model.to(self.device)
-    #         logging.info(
-    #             f"{self.name} using devices {','.join(str(next(m.parameters()).device) for m in self.models.values())}")
-    #
-    # def after_run(self):
-    #     if self.device_on_run:
-    #         for model in self.models.values():
-    #             model.to('cpu')
-    #         torch.cuda.empty_cache()
+    def before_run(self):
+        flair.device = self.device
+        if self.device_on_run:
+            for model in self.models.values():
+                model.to(self.device)
+            logging.info(
+                f"{self.name} using devices {','.join(str(next(m.parameters()).device) for m in self.models.values())}")
 
-    def __call__(self, doc: Doc) -> Doc:
+    def after_run(self):
+        if self.device_on_run:
+            for model in self.models.values():
+                model.to('cpu')
+            torch.cuda.empty_cache()
+
+    def process(self, doc: Doc, progress_fn: Callable[[int], None]) -> Doc:
         from flair.data import Sentence
         max_seq_length = 510  # inc. [CLS] and [SEP]
         it = iter(doc)
@@ -87,7 +93,7 @@ class RedewiedergabeTagger:
                         tok._.speech.append(rw_type)
                         tok._.speech_prob[rw_type] = label['confidence']
 
-            # update_fn(sum(len(sent) for sent in chunk))
+            progress_fn(sum(len(sent) for sent in chunk))
         return doc
 
     def bert_sequence_length(self, seq):

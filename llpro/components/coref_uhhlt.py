@@ -1,12 +1,15 @@
+import logging
 import sys
 from dataclasses import dataclass
 from pathlib import Path
 
 import torch
-from typing import Iterable
+from typing import Iterable, Callable
 
 from spacy import Language
 from spacy.tokens import Span, Doc, Token, SpanGroup
+
+from ..common import Module
 
 
 def add_extension(cls, ext, **kwargs):
@@ -18,8 +21,11 @@ def add_extension(cls, ext, **kwargs):
                   default_config={
                       'coref_home': 'resources/uhh-lt-neural-coref',
                       'model': 'resources/model_droc_incremental_no_segment_distance_May02_17-32-58_1800.bin',
-                      'config_name': 'droc_incremental_no_segment_distance' })
-def coref_uhhlt(nlp, name, coref_home, model, config_name):
+                      'config_name': 'droc_incremental_no_segment_distance',
+                      'pbar_opts': None,
+                      'use_cuda': True,
+                      'device_on_run': False})
+def coref_uhhlt(nlp, name, coref_home, model, config_name, pbar_opts, use_cuda, device_on_run):
     add_extension(Doc, "has_coref", default=False)
     add_extension(Doc, "coref_clusters", default=list())
     # add_extension(Doc, "coref_resolved")
@@ -30,7 +36,7 @@ def coref_uhhlt(nlp, name, coref_home, model, config_name):
     add_extension(Token, "in_coref", default=False)
     add_extension(Token, "coref_clusters", default=list())
 
-    return CorefIncrementalTagger(name, coref_home=coref_home, model=model, config_name=config_name)
+    return CorefIncrementalTagger(name=name, coref_home=coref_home, model=model, config_name=config_name, pbar_opts=pbar_opts, use_cuda=use_cuda, device_on_run=device_on_run)
 
 
 @dataclass
@@ -38,13 +44,12 @@ class Cluster:
     mentions: SpanGroup
 
 
-class CorefIncrementalTagger:
+class CorefIncrementalTagger(Module):
 
     def __init__(self, name, coref_home='resources/uhh-lt-neural-coref',
                  model='resources/model_droc_incremental_no_segment_distance_May02_17-32-58_1800.bin',
-                 config_name='droc_incremental_no_segment_distance',
-                 use_cuda=True,
-                 device_on_run=False):
+                 config_name='droc_incremental_no_segment_distance', use_cuda=True, device_on_run=False, pbar_opts=None):
+        super().__init__(name, pbar_opts)
         self.device = torch.device('cuda' if torch.cuda.is_available() and use_cuda else "cpu")
         self.coref_home = Path(coref_home)
         self.model_path = Path(model)
@@ -65,9 +70,9 @@ class CorefIncrementalTagger:
         self.tensorizer = Tensorizer(self.config)
         self.model.load_state_dict(torch.load(str(model), map_location='cpu'))
         self.model.eval()
-        # if not self.device_on_run:
-        #     self.model.to(self.device)
-        #     logging.info(f"{self.name} using device {next(self.model.parameters()).device}")
+        if not self.device_on_run:
+            self.model.to(self.device)
+            logging.info(f"{self.name} using device {next(self.model.parameters()).device}")
         self.window_size = 384  # fixed hyperparameter, should be read out of config from MAR file
 
         self.tensorizer = Tensorizer(self.config)
@@ -88,15 +93,15 @@ class CorefIncrementalTagger:
         config = pyhocon.ConfigFactory.parse_file(str(self.coref_home / "experiments.conf"))[config_name]
         return config
 
-    # def before_run(self):
-    #     if self.device_on_run:
-    #         self.model.to(self.device)
-    #         logging.info(f"{self.name} using device {next(self.model.parameters()).device}")
-    #
-    # def after_run(self):
-    #     if self.device_on_run:
-    #         self.model.to('cpu')
-    #         torch.cuda.empty_cache()  # TODO
+    def before_run(self):
+        if self.device_on_run:
+            self.model.to(self.device)
+            logging.info(f"{self.name} using device {next(self.model.parameters()).device}")
+
+    def after_run(self):
+        if self.device_on_run:
+            self.model.to('cpu')
+            torch.cuda.empty_cache()
 
     # cf. resources/uhh-lt-neural-coref/model.py
     def get_predictions_incremental(self, input_ids, input_mask, speaker_ids, sentence_len, genre, sentence_map,
@@ -164,12 +169,11 @@ class CorefIncrementalTagger:
         tensorized = [torch.tensor(e) for e in example[:7]]
         return tensorized, token_map
 
-    def __call__(self, doc: Doc) -> Doc:
+    def process(self, doc: Doc, progress_fn: Callable[[int], None]) -> Doc:
         tensorized, subtoken_map = self._tensorize(doc.sents)
 
         def my_update_fn(start, end):
-            pass
-            # update_fn(subtoken_map[end - 1] - 1 - subtoken_map[start])
+            progress_fn(subtoken_map[end - 1] - 1 - subtoken_map[start])
 
         with torch.no_grad():
             if self.config['incremental']:
@@ -177,9 +181,6 @@ class CorefIncrementalTagger:
             else:
                 predicted_clusters = self.get_predictions_c2f(*tensorized, update_fn=my_update_fn)
 
-            # predicted_clusters = [Cluster(mentions=SpanGroup(doc, spans=[doc[mention_start:mention_end + 1] for
-            #                                                              mention_start, mention_end in cluster])) for
-            #                       cluster in predicted_clusters]
             clusters = []
             for cluster in predicted_clusters:
                 spans = []
@@ -190,13 +191,9 @@ class CorefIncrementalTagger:
                 clusters.append(Cluster(mentions=SpanGroup(doc, spans=spans)))
 
 
-            # initialise Token-level cluster lists
             for token in doc:
                 token._.coref_clusters = []
 
-            # TODO subtoken map!!!
-
-            # fill Doc, Span, Token properties
             doc._.has_coref = True
             doc._.coref_clusters = clusters
             for cluster in clusters:
@@ -209,11 +206,4 @@ class CorefIncrementalTagger:
                         if cluster not in token._.coref_clusters:
                             token._.coref_clusters.append(cluster)
 
-            # for i, cluster in enumerate(predicted_clusters):
-            #     for mention_start, mention_end in cluster:
-            #         for r in range(mention_start, mention_end + 1):
-            #             mentions[subtoken_map[r]].add(i)
-            #
-            # for mention_set, tok in zip(mentions, tokens):
-            #     tok.set_field('coref_clusters', self.name, list(mention_set))
         return doc

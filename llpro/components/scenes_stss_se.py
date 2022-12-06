@@ -1,20 +1,28 @@
+import logging
 import sys
 from pathlib import Path
 
 import torch
 from spacy import Language
 from spacy.tokens import Doc, Span
+from typing import Callable
 
-@Language.factory("scenes_stss_se", assigns=['doc._.scenes'], default_config={'stss_se_home': 'resources/stss-se', 'model_path': 'extracted_model'})
+from ..common import Module
+
+
+@Language.factory("scenes_stss_se", assigns=['doc._.scenes'], default_config={
+    'stss_se_home': 'resources/stss-se', 'model_path': 'extracted_model', 'use_cuda': True, 'device_on_run': False, 'pbar_opts': None
+})
 def scenes_stss_se(nlp, name, stss_se_home, model_path):
     if not Doc.has_extension('scenes'):
         Doc.set_extension('scenes', default=list())
     return SceneSegmenter(stss_se_home=stss_se_home, model_path=model_path)
 
-class SceneSegmenter:
 
-    def __init__(self, stss_se_home='resources/stss-se', model_path='extracted_model', use_cuda=True,
-                 device_on_run=False):
+class SceneSegmenter(Module):
+
+    def __init__(self, name, stss_se_home='resources/stss-se', model_path='extracted_model', use_cuda=True, device_on_run=False, pbar_opts=None):
+        super().__init__(name, pbar_opts=pbar_opts)
         self.device = torch.device('cuda' if torch.cuda.is_available() and use_cuda else "cpu")
         self.device_on_run = device_on_run
         self.stss_se_home = Path(stss_se_home)
@@ -23,20 +31,20 @@ class SceneSegmenter:
         from stss_se_code.sequential_sentence_classification.dataset_reader import SeqClassificationReader
         import allennlp.models.archival
         self.archive = allennlp.models.archival.load_archive(str(self.stss_se_home / model_path))
-        # if not self.device_on_run:
-        #     self.archive.model.to(self.device)
+        if not self.device_on_run:
+            self.archive.model.to(self.device)
 
-    # def before_run(self):
-    #     if self.device_on_run:
-    #         self.archive.model.to(self.device)
-    #         logging.info(f"SceneSegmenter using device {self.archive.model._get_prediction_device()}")
-    #
-    # def after_run(self):
-    #     if self.device_on_run:
-    #         self.archive.model.to('cpu')
-    #         torch.cuda.empty_cache()  # TODO
+    def before_run(self):
+        if self.device_on_run:
+            self.archive.model.to(self.device)
+            logging.info(f"SceneSegmenter using device {self.archive.model._get_prediction_device()}")
 
-    def __call__(self, doc: Doc) -> Doc:
+    def after_run(self):
+        if self.device_on_run:
+            self.archive.model.to('cpu')
+            torch.cuda.empty_cache()
+
+    def process(self, doc: Doc, progress_fn: Callable[[int], None]) -> Doc:
         sentences = list(doc.sents)
         # Joining the words with ' ' should be a sufficiently good approximation of the original text,
         # as the text is further tokenized by BERT in the scene segmenter anyway, which always splits at whitespace.
@@ -53,7 +61,7 @@ class SceneSegmenter:
             labels = [self.archive.model.vocab.get_token_from_index(i, namespace='labels') for i in idx]
             for l in labels:
                 pred_labels.append((l, sentence_counter))
-                # update_fn(len(sentences[sentence_counter]))
+                progress_fn(len(sentences[sentence_counter]))
                 sentence_counter = sentence_counter + 1
 
         scenes = self.postprocess(pred_labels)
