@@ -1,0 +1,8 @@
+CAMTA_*
+__pycache__
+*.pyc
+.mypy_cache
+outputs
+runs
+data
+mlruns
