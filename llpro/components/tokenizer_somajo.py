@@ -13,7 +13,8 @@ IRREGULAR_CHARACTERS = re.compile(
 
 class SoMaJoTokenizer:
 
-    def __init__(self, normalize=True, check_characters=True, paragraph_separator=None):
+    def __init__(self, vocab: Vocab, normalize=True, check_characters=True, paragraph_separator=None):
+        self.vocab = vocab
         self.normalize = normalize
         self.check_characters = check_characters
         self.paragraph_separator = paragraph_separator
@@ -44,7 +45,7 @@ class SoMaJoTokenizer:
                 spaces.extend([tok.space_after for tok in sent])
                 sent_starts.extend([True] + [False]*(len(sent)-1))
 
-        doc = Doc(Vocab(), words=words, spaces=spaces, sent_starts=sent_starts)
+        doc = Doc(self.vocab, words=words, spaces=spaces, sent_starts=sent_starts)
         for tok, p in zip(iter(doc), para_starts):
             tok._.is_para_start = p
 

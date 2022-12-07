@@ -100,6 +100,7 @@ if __name__ == "__main__":
 
     logging.info('Loading pipeline')
     nlp = spacy.blank("de")
+    # nlp = spacy.load('de_dep_news_trf', exclude=['ner', 'lemmatizer', 'textcat', 'morphologizer', 'attribute_ruler'])
     nlp.add_pipe('tagger_someweta')
     # nlp.add_pipe('tagger_rnntagger')
     # nlp.add_pipe('lemma_rnntagger')
@@ -111,6 +112,6 @@ if __name__ == "__main__":
     nlp.add_pipe('events_uhhlt')
     nlp.analyze_pipes(pretty=True)
 
-    tokenizer = SoMaJoTokenizer()
+    tokenizer = SoMaJoTokenizer(nlp.vocab)
     for filename, tagged_doc in run_pipeline_on_files(filenames, nlp, tokenizer):
         pass
