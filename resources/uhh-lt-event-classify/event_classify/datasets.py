@@ -11,7 +11,7 @@ from enum import Enum
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, NamedTuple, Optional, Tuple
 
-import catma_gitlab as catma
+# import catma_gitlab as catma
 import torch
 from torch.utils.data import Dataset
 from transformers import PreTrainedTokenizer

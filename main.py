@@ -25,8 +25,11 @@ def get_cpu_limit():
     return cpus
 
 
-def run_pipeline_on_files(filenames, tokenizer, nlp):
+def run_pipeline_on_files(filenames, nlp, tokenizer=None):
     file_sizes = [os.path.getsize(f) for f in filenames]
+
+    if tokenizer is None:
+        tokenizer = nlp.tokenizer
 
     if not Doc.has_extension('filename'):
         Doc.set_extension('filename', default=None)
@@ -105,8 +108,9 @@ if __name__ == "__main__":
     # nlp.add_pipe('scenes_stss_se')
     # nlp.add_pipe('coref_uhhlt')
     # nlp.add_pipe('ner_flair')
+    nlp.add_pipe('events_uhhlt')
     nlp.analyze_pipes(pretty=True)
 
     tokenizer = SoMaJoTokenizer()
-    for filename, tagged_doc in run_pipeline_on_files(filenames, tokenizer, nlp):
+    for filename, tagged_doc in run_pipeline_on_files(filenames, nlp, tokenizer):
         pass

@@ -4,7 +4,7 @@ import math
 import os
 from typing import List, NamedTuple
 
-import catma_gitlab as catma
+# import catma_gitlab as catma
 import torch
 import typer
 from torch.utils.data import DataLoader, random_split

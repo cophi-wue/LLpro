@@ -1,14 +1,14 @@
-import itertools
-import sys
-
+# import itertools
+# import sys
+#
 import spacy
 from spacy.language import Language
 from spacy.tokens import Doc, Token
+#
+# from event_classify.parser import HermaParser, ParZuParser
 
-from event_classify.parser import HermaParser, ParZuParser
-
-Doc.set_extension("events", default=[])
-Token.set_extension("custom_dep", default=None)
+# Doc.set_extension("events", default=[])
+# Token.set_extension("custom_dep", default=None)
 
 
 def to_ranges(tokens):
@@ -36,7 +36,7 @@ def is_english_verb(tag):
     return tag.startswith("VB") and len(tag) != 2
 
 
-@Language.component("event_segmentation")
+# @Language.component("event_segmentation")
 def event_segmentation(doc):
     processed = set()
     for token in doc:
@@ -127,17 +127,16 @@ def helper_recurse_children(tokens, blacklist=(), whitelist=()):
             continue
         if t.dep_ == "cj" and (has_verb_child or is_verb):
             continue
-        if t._.custom_dep:
-            # if t._.custom_dep.lower() == "gmod" and t.tag_.startswith("V") and t.tag_.endswith("FIN"):
-            #     continue
-            if t.tag_.lower() == "kon" and has_verb_child:
-                continue
-            if t._.custom_dep.lower() == "rel" and has_verb_child:
-                continue
-            if t._.custom_dep.lower() == "neb" and has_verb_child:
-                continue
-            if t._.custom_dep.lower() == "par" and has_verb_child:
-                continue
+        # if t._.custom_dep.lower() == "gmod" and t.tag_.startswith("V") and t.tag_.endswith("FIN"):
+        #     continue
+        if t.tag_.lower() == "kon" and has_verb_child:
+            continue
+        if t.dep_.lower() == "rel" and has_verb_child:
+            continue
+        if t.dep_.lower() == "neb" and has_verb_child:
+            continue
+        if t.dep_.lower() == "par" and has_verb_child:
+            continue
         if t not in blacklist:
             yield t
         yield from helper_recurse_children(t.lefts, blacklist=blacklist)

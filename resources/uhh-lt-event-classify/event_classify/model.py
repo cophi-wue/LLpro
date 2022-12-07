@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import Optional
 
-import mlflow
+# import mlflow
 import torch
 from torch import nn
 from transformers import ElectraModel, ElectraPreTrainedModel, ElectraTokenizer
@@ -32,8 +32,8 @@ class MultiLossLayer(nn.Module):
 
     def forward(self, losses: torch.Tensor):
         loss_scalers = 1 / (2 * torch.exp(self.log_sigmas))
-        for i, loss_scaler in enumerate(loss_scalers):
-            mlflow.log_metric(f"Scale loss {i}", float(loss_scalers[i].item()))
+        # for i, loss_scaler in enumerate(loss_scalers):
+        #     mlflow.log_metric(f"Scale loss {i}", float(loss_scalers[i].item()))
         return torch.mean(loss_scalers * losses + self.log_sigmas)
 
 
