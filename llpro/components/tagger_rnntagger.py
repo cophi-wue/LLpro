@@ -57,7 +57,8 @@ class RNNTagger(Module):
             with torch.no_grad():
                 if type(self.model) is PyRNN.RNNTagger.RNNTagger:
                     tagscores = self.model(fwd_charIDs, bwd_charIDs, word_embs)
-                    softmax_probs = torch.nn.functional.softmax(tagscores, dim=-1)    # ae: added softmax transform to get meaningful probabilities
+                    softmax_probs = torch.nn.functional.softmax(tagscores,
+                                                                dim=-1)  # ae: added softmax transform to get meaningful probabilities
                     best_prob, tagIDs = softmax_probs.max(dim=-1)
                     tags = data.IDs2tags(tagIDs)
                     return [{'tag': t, 'prob': p.item()} for t, p in zip(tags, best_prob.cpu())]
@@ -106,6 +107,7 @@ definite = partial(feature, "Definite")
 person = partial(feature, "Person")
 tense = partial(feature, "Tense")
 mood = partial(feature, "Mood")
+
 
 def from_tigertag(tigertag):
     """Extract morphological information from a TIGER tag."""

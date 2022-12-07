@@ -12,11 +12,13 @@ from typing import List, Iterable, Callable, Tuple
 from ..common import Module
 
 
-@Language.factory("parser_parzu_parallelized", requires=['token.tag'], assigns=['token.dep', 'token.head'], default_config={
-    'parzu_home': 'resources/ParZu', 'num_processes': 1, 'tokens_per_process': 1000, 'pbar_opts': None
-})
+@Language.factory("parser_parzu_parallelized", requires=['token.tag'], assigns=['token.dep', 'token.head'],
+                  default_config={
+                      'parzu_home': 'resources/ParZu', 'num_processes': 1, 'tokens_per_process': 1000, 'pbar_opts': None
+                  })
 def parser_parzu_parallelized(nlp, name, parzu_home, num_processes, tokens_per_process, pbar_opts):
-    return ParzuParallelized(name=name, parzu_home=parzu_home, num_processes=num_processes, tokens_per_process=tokens_per_process, pbar_opts=pbar_opts)
+    return ParzuParallelized(name=name, parzu_home=parzu_home, num_processes=num_processes,
+                             tokens_per_process=tokens_per_process, pbar_opts=pbar_opts)
 
 
 class ParzuParallelized(Module):
@@ -27,7 +29,8 @@ class ParzuParallelized(Module):
         self.num_processes = num_processes
         self.tokens_per_process = tokens_per_process
         logging.info(f"Starting {num_processes} processes of {name}")
-        self.pool = multiprocessing.Pool(processes=num_processes, initializer=ParzuParallelized._init_worker, initargs=({'parzu_home': parzu_home},))
+        self.pool = multiprocessing.Pool(processes=num_processes, initializer=ParzuParallelized._init_worker,
+                                         initargs=({'parzu_home': parzu_home},))
 
     def close(self):
         self.pool.close()
@@ -37,9 +40,9 @@ class ParzuParallelized(Module):
         def sentlist_len(list_of_sents):
             return sum(len(x) for x in list_of_sents)
 
-        for sentences in more_itertools.constrained_batches(doc.sents, max_size=self.tokens_per_process, get_len=sentlist_len):
+        for sentences in more_itertools.constrained_batches(doc.sents, max_size=self.tokens_per_process,
+                                                            get_len=sentlist_len):
             yield doc[sentences[0].start:sentences[-1].end]
-
 
     def process(self, doc: Doc, progress_fn: Callable[[int], None]) -> Doc:
         m = multiprocessing.Manager()
@@ -81,6 +84,7 @@ class ParzuParallelized(Module):
 
         result = _WORKER_MODULE.__call__(serialized_span, send_update)
         return result
+
 
 class ParzuWorker:
 

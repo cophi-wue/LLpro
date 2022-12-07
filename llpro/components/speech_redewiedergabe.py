@@ -21,7 +21,8 @@ def speech_redewiedergabe(nlp, name, model_paths, use_cuda, device_on_run, pbar_
         Token.set_extension('speech', default=list())
     if not Token.has_extension('speech_prob'):
         Token.set_extension('speech_prob', default=dict())
-    return RedewiedergabeTagger(name=name, model_paths=model_paths, use_cuda=use_cuda, device_on_run=device_on_run, pbar_opts=pbar_opts)
+    return RedewiedergabeTagger(name=name, model_paths=model_paths, use_cuda=use_cuda, device_on_run=device_on_run,
+                                pbar_opts=pbar_opts)
 
 
 class RedewiedergabeTagger(Module):

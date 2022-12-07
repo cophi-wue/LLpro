@@ -117,14 +117,14 @@ class FLERTNERTagger(Module):
         for sentence, tagged_sentence in zip(sentences, tagged_sentences):
             if self.tagger.predict_spans:
                 for span in tagged_sentence.get_spans('ner'):
-                    new_span = sentence[span[0].idx-1:span[-1].idx]
+                    new_span = sentence[span[0].idx - 1:span[-1].idx]
                     new_span = Span(doc, new_span.start, new_span.end, label=span.tag)
                     entities.append(new_span)
             else:
                 for tok, tagged_tok in zip(sentence, tagged_sentence):
                     value = tagged_tok.get_label('ner').value
                     if value in {'O', '_'}: continue
-                    new_span = Span(doc, tok.i, tok.i+1, label=value)
+                    new_span = Span(doc, tok.i, tok.i + 1, label=value)
                     entities.append(new_span)
             progress_fn(len(sentence))
 

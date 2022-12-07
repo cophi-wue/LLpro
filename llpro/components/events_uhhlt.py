@@ -119,10 +119,10 @@ class EventClassifier(Module):
             for name in ["speech_type", "thought_representation"]:
                 all_predictions[name].append(getattr(out, name).cpu())
 
-            new_progress_counter = doc.char_span(annotations[0].start, annotations[-1].end).end  # token index of the last processed span
+            new_progress_counter = doc.char_span(annotations[0].start,
+                                                 annotations[-1].end).end  # token index of the last processed span
             progress_fn(new_progress_counter - progress_counter)
             progress_counter = new_progress_counter
-
 
         all_predictions = {
             name: torch.cat(values) for name, values in all_predictions.items()

@@ -17,7 +17,8 @@ def add_extension(cls, ext, **kwargs):
         cls.set_extension(ext, **kwargs)
 
 
-@Language.factory("coref_uhhlt", assigns=['token._.in_coref', 'token._.coref_clusters', 'doc._.has_coref', 'doc._.coref_clusters'],
+@Language.factory("coref_uhhlt",
+                  assigns=['token._.in_coref', 'token._.coref_clusters', 'doc._.has_coref', 'doc._.coref_clusters'],
                   default_config={
                       'coref_home': 'resources/uhh-lt-neural-coref',
                       'model': 'resources/model_droc_incremental_no_segment_distance_May02_17-32-58_1800.bin',
@@ -36,7 +37,8 @@ def coref_uhhlt(nlp, name, coref_home, model, config_name, pbar_opts, use_cuda, 
     add_extension(Token, "in_coref", default=False)
     add_extension(Token, "coref_clusters", default=list())
 
-    return CorefIncrementalTagger(name=name, coref_home=coref_home, model=model, config_name=config_name, pbar_opts=pbar_opts, use_cuda=use_cuda, device_on_run=device_on_run)
+    return CorefIncrementalTagger(name=name, coref_home=coref_home, model=model, config_name=config_name,
+                                  pbar_opts=pbar_opts, use_cuda=use_cuda, device_on_run=device_on_run)
 
 
 @dataclass
@@ -48,7 +50,8 @@ class CorefIncrementalTagger(Module):
 
     def __init__(self, name, coref_home='resources/uhh-lt-neural-coref',
                  model='resources/model_droc_incremental_no_segment_distance_May02_17-32-58_1800.bin',
-                 config_name='droc_incremental_no_segment_distance', use_cuda=True, device_on_run=False, pbar_opts=None):
+                 config_name='droc_incremental_no_segment_distance', use_cuda=True, device_on_run=False,
+                 pbar_opts=None):
         super().__init__(name, pbar_opts)
         self.device = torch.device('cuda' if torch.cuda.is_available() and use_cuda else "cpu")
         self.coref_home = Path(coref_home)
@@ -186,10 +189,9 @@ class CorefIncrementalTagger(Module):
                 spans = []
                 for mention_start, mention_end in cluster:
                     tok_start_idx = subtoken_map[mention_start]
-                    tok_end_idx = subtoken_map[mention_end+1]
+                    tok_end_idx = subtoken_map[mention_end + 1]
                     spans.append(doc[tok_start_idx:tok_end_idx])
                 clusters.append(Cluster(mentions=SpanGroup(doc, spans=spans)))
-
 
             for token in doc:
                 token._.coref_clusters = []

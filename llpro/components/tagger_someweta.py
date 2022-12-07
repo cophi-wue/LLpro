@@ -10,7 +10,8 @@ from ..stts2upos import conv_table
 from ..common import Module
 
 
-@Language.factory("tagger_someweta", assigns=['token.pos', 'token.tag', 'token.morph'], default_config={'model': 'resources/german_newspaper_2020-05-28.model', 'pbar_opts': None})
+@Language.factory("tagger_someweta", assigns=['token.pos', 'token.tag', 'token.morph'],
+                  default_config={'model': 'resources/german_newspaper_2020-05-28.model', 'pbar_opts': None})
 def tagger_someweta(nlp, name, model, pbar_opts):
     return SoMeWeTaTagger(name=name, model=model, pbar_opts=pbar_opts)
 

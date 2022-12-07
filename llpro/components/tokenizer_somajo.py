@@ -39,11 +39,11 @@ class SoMaJoTokenizer:
 
         for para in self.to_paragraphs(text):
             sentences = list(self.tokenizer.tokenize_text(paragraphs=[str(para)]))
-            para_starts.extend([True] + [False]*(sum(map(len, sentences))-1))
+            para_starts.extend([True] + [False] * (sum(map(len, sentences)) - 1))
             for sent in sentences:
                 words.extend([tok.text for tok in sent])
                 spaces.extend([tok.space_after for tok in sent])
-                sent_starts.extend([True] + [False]*(len(sent)-1))
+                sent_starts.extend([True] + [False] * (len(sent) - 1))
 
         doc = Doc(self.vocab, words=words, spaces=spaces, sent_starts=sent_starts)
         for tok, p in zip(iter(doc), para_starts):
