@@ -91,7 +91,7 @@ class RedewiedergabeTagger(Module):
                 for tok, label in zip(tokens, labels):
                     if label['value'] != 'x':
                         tok._.speech.append(rw_type)
-                        tok._.speech_prob[rw_type] = label['confidence']
+                    tok._.speech_prob[rw_type] = label['confidence']
 
             progress_fn(sum(len(sent) for sent in chunk))
         return doc
