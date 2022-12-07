@@ -1,3 +1,4 @@
+import itertools
 import logging
 import multiprocessing
 import queue
@@ -6,7 +7,7 @@ import sys
 import more_itertools
 from spacy import Language
 from spacy.tokens import Span, Doc
-from typing import List, Iterable, Callable
+from typing import List, Iterable, Callable, Tuple
 
 from ..common import Module
 
@@ -46,8 +47,8 @@ class ParzuParallelized(Module):
         process_chunks: List[Span] = list(self.split_doc_into_chunks(doc))
         results = []
         for i, span in enumerate(process_chunks):
-            chunk_start, chunk_end = (span.start, span.end)
-            results.append(self.pool.apply_async(ParzuParallelized._process_worker, (doc.vocab, doc.to_bytes(), chunk_start, chunk_end, i, q)))
+            serialized = [[(tok.i, tok.text, tok.tag_) for tok in sent] for sent in span.sents]
+            results.append(self.pool.apply_async(ParzuParallelized._process_worker, (serialized, i, q)))
 
         while any(not res.ready() for res in results) or not q.empty():
             try:
@@ -72,15 +73,13 @@ class ParzuParallelized(Module):
         _WORKER_MODULE = ParzuWorker(**worker_kwargs)
 
     @staticmethod
-    def _process_worker(vocab, tokens, start, end, i, out_queue):
-        doc = Doc(vocab).from_bytes(tokens)
-        span = doc[start:end]
+    def _process_worker(serialized_span, i, out_queue):
         global _WORKER_MODULE
 
         def send_update(x):
             out_queue.put(('update', i, x))
 
-        result = _WORKER_MODULE.__call__(span, send_update)
+        result = _WORKER_MODULE.__call__(serialized_span, send_update)
         return result
 
 class ParzuWorker:
@@ -92,32 +91,29 @@ class ParzuWorker:
         self.opts = process_arguments(commandline=False)
         self.parser = Parser(self.opts, timeout=1000)
 
-    def process_parzu(self, span: Span):
+    def process_parzu(self, serialized_sentence: List[Tuple]):
         newinput = []
-        for sent in span.sents:
-            sent_strs = []
-            for tok in sent:
-                sent_strs.append(tok.text + '\t' + tok.tag_)
+        for _, text, tag in serialized_sentence:
+            newinput.append(text + '\t' + tag)
 
-            newinput.append("\n".join(sent_strs))
-        reformatted_input = "\n\n".join(newinput)
+        reformatted_input = "\n".join(newinput)
 
         output = self.parser.main(
             reformatted_input, inputformat="tagged", outputformat="conll"
         )
         return output
 
-    def __call__(self, span: Span, update_fn: Callable[[int], None]):
+    def __call__(self, serialized_span: List[List[Tuple]], update_fn: Callable[[int], None]):
         result = []
-        it = more_itertools.peekable(iter(span))
+        it = more_itertools.peekable(itertools.chain(*serialized_span))
 
-        for sentence in span.sents:
+        for sentence in serialized_span:
             for processed_sent in self.process_parzu(sentence):
-                index_of_first_token = it.peek().i
+                index_of_first_token, _, _ = it.peek()
                 for line in processed_sent.split('\n'):
                     if line.strip() == '':
                         continue
-                    tok = next(it)
+                    i, _, _ = next(it)
                     (
                         _,
                         word,
@@ -135,8 +131,8 @@ class ParzuWorker:
                     else:
                         head = int(line.split('\t')[6])
 
-                    result.append({'index': tok.i,
-                                   'head': tok.i if head is None else index_of_first_token + int(head) - 1,
+                    result.append({'index': i,
+                                   'head': i if head is None else index_of_first_token + int(head) - 1,
                                    'deprel': deprel})
                     update_fn(1)
 
