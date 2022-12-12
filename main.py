@@ -10,6 +10,7 @@ from spacy.tokens import Doc
 from tqdm import tqdm
 
 import llpro.components
+from llpro.common import spacy_doc_to_dataframe
 from llpro.components.tokenizer_somajo import SoMaJoTokenizer
 
 from tqdm.contrib.logging import logging_redirect_tqdm
@@ -91,18 +92,23 @@ if __name__ == "__main__":
 
     logging.info('Loading pipeline')
     nlp = spacy.blank("de")
-    # nlp = spacy.load('de_dep_news_trf', exclude=['ner', 'lemmatizer', 'textcat', 'morphologizer', 'attribute_ruler'])
+    # nlp = spacy.load('de_dep_news_trf', exclude=['ner', 'lemmatizer', 'textcat', 'morphologizer', 'attribute_ruler', 'parser'])
     nlp.add_pipe('tagger_someweta')
-    # nlp.add_pipe('tagger_rnntagger')
-    # nlp.add_pipe('lemma_rnntagger')
+    nlp.add_pipe('tagger_rnntagger')
+    nlp.add_pipe('lemma_rnntagger')
     nlp.add_pipe('parser_parzu_parallelized', config={'num_processes': 4})
-    # nlp.add_pipe('speech_redewiedergabe')
-    # nlp.add_pipe('scenes_stss_se')
-    # nlp.add_pipe('coref_uhhlt')
-    # nlp.add_pipe('ner_flair')
+    nlp.add_pipe('speech_redewiedergabe')
+    nlp.add_pipe('scenes_stss_se')
+    nlp.add_pipe('coref_uhhlt')
+    nlp.add_pipe('ner_flair')
     nlp.add_pipe('events_uhhlt')
     nlp.analyze_pipes(pretty=True)
 
     tokenizer = SoMaJoTokenizer(nlp.vocab)
     for filename, tagged_doc in run_pipeline_on_files(filenames, nlp, tokenizer):
-        pass
+        if args.writefiles:
+            with open(os.path.join(args.writefiles, os.path.basename(filename) + '.tsv'), 'w') as output_file:
+                logging.info(f'writing processed tokens of {filename} to {output_file.name}')
+                print(spacy_doc_to_dataframe(tagged_doc).to_csv(None, sep='\t', index=True), file=output_file)
+        elif args.outtype == 'stdout':
+            print(spacy_doc_to_dataframe(tagged_doc).to_csv(None, sep='\t', index=True), file=sys.stdout)

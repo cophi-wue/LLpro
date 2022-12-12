@@ -1,6 +1,9 @@
+import collections
 import logging
 import time
 
+import regex as re
+import pandas
 from spacy.tokens import Doc
 from typing import Callable
 
@@ -47,3 +50,47 @@ class Module:
 
     def after_run(self):
         pass
+
+
+def spacy_doc_to_dataframe(doc):
+    token_attribute_dictionary = collections.defaultdict(lambda: list())
+
+    def get_value(tok, attr):
+        if attr.startswith('_.'):
+            return getattr(tok._, attr[2:], None)
+
+        if attr in ["head"]:
+            return getattr(tok, attr).i
+
+        return getattr(tok, attr)
+
+    for tok in doc:
+        for column in ["i", "text", "._.is_sent_start", "_.is_para_start", "tag_", "lemma_", "dep_", "head"]:
+            token_attribute_dictionary[column].append(get_value(tok, column))
+
+    for tok in doc:
+        ent_str = 'O' if tok.ent_iob_ == 'O' else tok.ent_iob_ + '-' + tok.ent_type_
+        token_attribute_dictionary['entity'].append(ent_str)
+
+    if hasattr(doc._, 'coref_clusters'):
+        for tok in doc:
+            token_attribute_dictionary['coref_clusters'].append(','.join([str(cluster.attrs['id']) for cluster in tok._.coref_clusters]))
+
+    df = pandas.DataFrame(token_attribute_dictionary).set_index('i')
+
+    if hasattr(doc._, 'scenes'):
+        df['scene'] = '_'
+        for scene in doc._.scenes:
+            for tok in scene:
+                df.loc[tok.i, 'scene'] = f'ID={scene.id}|Label={scene.label_}'
+
+    if hasattr(doc._, 'events'):
+        df['event'] = '_'
+        for i, event in enumerate(doc._.events):
+            label = f'ID={i}|EventType={event.attrs["event_types"]}|SpeechType={event.attrs["speech_type"]}|ThoughtRepresentation={event.attrs["thought_representation"]}'
+            for span in event:
+                for tok in span:
+                    df.loc[tok.i, 'event'] = label
+
+    df = df.rename(columns=lambda x: re.sub(r'(_$|^_\.)', '', x))
+    return df
