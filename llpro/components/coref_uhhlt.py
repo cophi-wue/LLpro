@@ -1,6 +1,5 @@
 import logging
 import sys
-from dataclasses import dataclass
 from pathlib import Path
 
 import torch
@@ -41,11 +40,6 @@ def coref_uhhlt(nlp, name, coref_home, model, config_name, pbar_opts, use_cuda, 
                                   pbar_opts=pbar_opts, use_cuda=use_cuda, device_on_run=device_on_run)
 
 
-@dataclass
-class Cluster:
-    mentions: SpanGroup
-
-
 class CorefIncrementalTagger(Module):
 
     def __init__(self, name, coref_home='resources/uhh-lt-neural-coref',
@@ -58,9 +52,9 @@ class CorefIncrementalTagger(Module):
         self.model_path = Path(model)
         self.device_on_run = device_on_run
         sys.path.insert(0, str(self.coref_home))
-        from tensorize import Tensorizer
+        from neural_coref.tensorize import Tensorizer
         from transformers import BertTokenizer, ElectraTokenizer
-        from model import CorefModel, IncrementalCorefModel
+        from neural_coref.model import CorefModel, IncrementalCorefModel
 
         # cf. resources/uhh-lt-neural-coref/torch_serve/model_handler.py
         self.config = self.initialize_config(config_name)
@@ -112,7 +106,7 @@ class CorefIncrementalTagger(Module):
         max_segments = 5
 
         entities = None
-        from entities import IncrementalEntities
+        from neural_coref.entities import IncrementalEntities
         cpu_entities = IncrementalEntities(conf=self.config, device="cpu")
 
         offset = 0
@@ -164,7 +158,7 @@ class CorefIncrementalTagger(Module):
     def _tensorize(self, sentences: Iterable[Span]):
         nested_list = [[tok.text for tok in sent] for sent in sentences]
 
-        from preprocess import get_document
+        from neural_coref.preprocess import get_document
         document = get_document('_', nested_list, 'german', self.window_size, self.tokenizer, 'nested_list')
         _, example = self.tensorizer.tensorize_example(document, is_training=False)[0]
 
@@ -185,13 +179,13 @@ class CorefIncrementalTagger(Module):
                 predicted_clusters = self.get_predictions_c2f(*tensorized, update_fn=my_update_fn)
 
             clusters = []
-            for cluster in predicted_clusters:
+            for i, cluster in enumerate(predicted_clusters):
                 spans = []
                 for mention_start, mention_end in cluster:
                     tok_start_idx = subtoken_map[mention_start]
                     tok_end_idx = subtoken_map[mention_end + 1]
                     spans.append(doc[tok_start_idx:tok_end_idx])
-                clusters.append(Cluster(mentions=SpanGroup(doc, spans=spans)))
+                clusters.append(SpanGroup(doc, spans=spans, attrs={'id': i}))
 
             for token in doc:
                 token._.coref_clusters = []
@@ -199,7 +193,7 @@ class CorefIncrementalTagger(Module):
             doc._.has_coref = True
             doc._.coref_clusters = clusters
             for cluster in clusters:
-                for mention in cluster.mentions:
+                for mention in cluster:
                     mention._.is_coref = True
                     mention._.coref_cluster = cluster
                     # mention._.coref_scores = None  # not used

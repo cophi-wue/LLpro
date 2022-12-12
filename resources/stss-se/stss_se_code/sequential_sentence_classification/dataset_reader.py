@@ -52,11 +52,11 @@ class SeqClassificationReader(DatasetReader):
         self.max_sent_per_example = max_sent_per_example
         self.use_abstract_scores = use_abstract_scores
         self.sci_sum_fake_scores = sci_sum_fake_scores
-        print("*********************************")
-        print("start token : ", self._tokenizer.sequence_pair_start_tokens)
-        print("middle token : ", self._tokenizer.sequence_pair_mid_tokens)
-        print("end token : ", self._tokenizer.sequence_pair_end_tokens)
-        print("*********************************")
+        # print("*********************************")
+        # print("start token : ", self._tokenizer.sequence_pair_start_tokens)
+        # print("middle token : ", self._tokenizer.sequence_pair_mid_tokens)
+        # print("end token : ", self._tokenizer.sequence_pair_end_tokens)
+        # print("*********************************")
 
     def _read(self, file_path: str):
         file_path = cached_path(file_path)

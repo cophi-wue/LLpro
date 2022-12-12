@@ -14,10 +14,10 @@ from ..common import Module
     'stss_se_home': 'resources/stss-se', 'model_path': 'extracted_model', 'use_cuda': True, 'device_on_run': False,
     'pbar_opts': None
 })
-def scenes_stss_se(nlp, name, stss_se_home, model_path):
+def scenes_stss_se(nlp, name, stss_se_home, model_path, use_cuda, device_on_run, pbar_opts):
     if not Doc.has_extension('scenes'):
         Doc.set_extension('scenes', default=list())
-    return SceneSegmenter(stss_se_home=stss_se_home, model_path=model_path)
+    return SceneSegmenter(name, stss_se_home=stss_se_home, model_path=model_path, use_cuda=use_cuda, device_on_run=device_on_run, pbar_opts=pbar_opts)
 
 
 class SceneSegmenter(Module):
@@ -68,7 +68,8 @@ class SceneSegmenter(Module):
 
         scenes = self.postprocess(pred_labels)
         for segment_counter, scene in enumerate(scenes):
-            doc._.scenes.append(Span(doc=doc, start=scene['begin'], end=scene['end'], span_id=segment_counter))
+            print(scene, sentences[scene['begin']][0].i, sentences[scene['end']-1][-1].i+1)
+            doc._.scenes.append(Span(doc=doc, start=sentences[scene['begin']][0].i, end=sentences[scene['end']-1][-1].i+1, span_id=segment_counter, label=scene['type']))
 
         return doc
 

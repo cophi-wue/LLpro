@@ -1,4 +1,4 @@
-from run import Runner
+from neural_coref.run import Runner
 import sys
 
 

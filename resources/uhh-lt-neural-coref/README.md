@@ -28,14 +28,14 @@ The basic end-to-end coreference model [(as found in the original implementation
 The code was extended to handle incremental coreference resolution and separate mention pre-training.
 
 **Files**:
-* [run.py](run.py): training and evaluation
-* [run_mentions.py](run.py): training and evaluation of mentions
-* [model.py](model.py): the coreference model
-* [higher_order.py](higher_order.py): higher-order inference modules
-* [analyze.py](analyze.py): result analysis
+* [run.py](neural_coref/run.py): training and evaluation
+* [run_mentions.py](neural_coref/run.py): training and evaluation of mentions
+* [model.py](neural_coref/model.py): the coreference model
+* [higher_order.py](neural_coref/higher_order.py): higher-order inference modules
+* [analyze.py](neural_coref/analyze.py): result analysis
 * [preprocess.py](preprocess.py): converting CoNLL files to examples
-* [tensorize.py](tensorize.py): tensorizing example
-* [conll.py](conll.py), [metrics.py](metrics.py): same CoNLL-related files from the [repository](https://github.com/mandarjoshi90/coref)
+* [tensorize.py](neural_coref/tensorize.py): tensorizing example
+* [conll.py](neural_coref/conll.py), [metrics.py](metrics.py): same CoNLL-related files from the [repository](https://github.com/mandarjoshi90/coref)
 * [experiments.conf](experiments.conf): different model configurations
 * [split_droc.py](split_droc.py): create train/dev/test splits for the German literature "DROC" dataset
 * [split_gerdracor.py](split_gerdracor.py): create train/dev/test splits for the German Drama dataset GerDraCor

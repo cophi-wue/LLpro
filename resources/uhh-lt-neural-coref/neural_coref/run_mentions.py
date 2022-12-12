@@ -1,20 +1,12 @@
 import logging
-import itertools
 import random
-import numpy as np
 import torch
 from torch.utils.tensorboard import SummaryWriter
-from transformers import AdamW
-from torch.optim import Adam
 import sklearn.metrics
-from tensorize import CorefDataProcessor
-import util
 import time
 from run import Runner
 from os.path import join
 from os import remove
-from metrics import CorefEvaluator
-from datetime import datetime
 from torch.optim.lr_scheduler import LambdaLR
 from model import MentionModel
 import conll

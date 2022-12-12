@@ -16,7 +16,6 @@ from datetime import datetime
 from torch.optim.lr_scheduler import LambdaLR
 from model import CorefModel, IncrementalCorefModel
 import conll
-import sys
 import gc
 from tqdm import tqdm
 

@@ -1,4 +1,4 @@
-from model import CorefModel
+from neural_coref.model import CorefModel
 
 
 class ServeCorefModel(CorefModel):

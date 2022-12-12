@@ -15,18 +15,20 @@ from ..common import Module
 
 
 @Language.factory("tagger_rnntagger", assigns=['token._.rnntagger_tag', 'token.morph'], default_config={
-    'rnntagger_home': 'resources/RNNTagger', 'use_cuda': True, 'pbar_opts': None
+    'rnntagger_home': 'resources/RNNTagger', 'use_cuda': True, 'device_on_run': False, 'pbar_opts': None
 })
-def tagger_rnntagger(nlp, name, rnntagger_home):
+def tagger_rnntagger(nlp, name, rnntagger_home, use_cuda, device_on_run, pbar_opts):
     if not Token.has_extension('rnntagger_tag'):
         Token.set_extension('rnntagger_tag', default='')
-    return RNNTagger(name=name, rnntagger_home=rnntagger_home)
+    return RNNTagger(name=name, rnntagger_home=rnntagger_home, use_cuda=use_cuda, device_on_run=device_on_run, pbar_opts=pbar_opts)
 
 
 class RNNTagger(Module):
 
-    def __init__(self, name, rnntagger_home='resources/RNNTagger', use_cuda=True, pbar_opts=None):
+    def __init__(self, name, rnntagger_home='resources/RNNTagger', use_cuda=True, device_on_run=False, pbar_opts=None):
         super().__init__(name, pbar_opts=pbar_opts)
+        self.device = torch.device('cuda' if torch.cuda.is_available() and use_cuda else "cpu")
+        self.device_on_run = device_on_run
         self.rnntagger_home = Path(rnntagger_home)
         sys.path.insert(0, str(self.rnntagger_home))
         sys.path.insert(0, str(self.rnntagger_home / "PyNMT"))
@@ -43,7 +45,10 @@ class RNNTagger(Module):
         if torch.cuda.is_available() and use_cuda:
             self.model = self.model.cuda()
         self.model.eval()
-        logging.info(f"RNNTagger using device {next(self.model.parameters()).device}")
+
+        if not self.device_on_run:
+            self.model.to(self.device)
+            logging.info(f"{self.name} using device {next(self.model.parameters()).device}")
 
         def annotate_sentence(words):
             data = self.vector_mappings
@@ -69,6 +74,16 @@ class RNNTagger(Module):
                     raise RuntimeError("Error in function annotate_sentence")
 
         self.annotate_sentence = annotate_sentence
+
+    def before_run(self):
+        if self.device_on_run:
+            self.model.to(self.device)
+            logging.info(f"{self.name} using device {next(self.model.parameters()).device}")
+
+    def after_run(self):
+        if self.device_on_run:
+            self.model.to('cpu')
+            torch.cuda.empty_cache()
 
     def process(self, doc: Doc, progress_fn: Callable[[int], None]) -> Doc:
         for sent in doc.sents:

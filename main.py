@@ -65,25 +65,16 @@ if __name__ == "__main__":
                        action='store_const', dest='outtype', const='stdout')
     group.add_argument('--writefiles', metavar='DIR',
                        help='For each input file, write processed tokens to a separate file in DIR.', default=None)
-    parser.add_argument('--format', choices=['tsv', 'jsonl'], action='append',
-                        help='Output format to write. If --writefiles is given, then --format can be specified multiple '
-                             'times, writing the respective output format for each output file. Defaults to \'jsonl\'.')
-    parser.add_argument('infiles', metavar='FILE', type=str, nargs='+', help='Input files, or directories.')
+    parser.add_argument('--infiles', metavar='FILE', type=str, nargs='+', help='Input files, or directories.')
     parser.set_defaults(outtype='stdout')
     args = parser.parse_args()
     if args.writefiles is not None:
         args.outtype = 'files'
-    if not args.format or len(args.format) == 0:
-        args.format = ['jsonl']
     logging.basicConfig(level=args.loglevel)
     for hdl in logging.getLogger('flair').handlers:
         logging.getLogger('flair').removeHandler(hdl)
     logging.getLogger('flair').propagate = True
     logging.info('Picked up following arguments: ' + repr(vars(args)))
-
-    if len(set(args.format)) > 1 and not args.writefiles:
-        logging.error('Can only specify a single output format unless --writefiles is given.')
-        sys.exit(1)
 
     if torch.cuda.is_available():
         logging.info(f'torch: CUDA available, version {torch.version.cuda}, architectures {torch.cuda.get_arch_list()}')

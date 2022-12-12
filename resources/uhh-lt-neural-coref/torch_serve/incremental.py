@@ -1,4 +1,4 @@
-from model import IncrementalCorefModel
+from neural_coref.model import IncrementalCorefModel
 
 
 class ServeIncrementalCorefModel(IncrementalCorefModel):

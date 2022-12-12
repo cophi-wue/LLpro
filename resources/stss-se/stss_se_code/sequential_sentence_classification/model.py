@@ -35,10 +35,10 @@ class SeqClassificationModel(Model):
 
         self.text_field_embedder = text_field_embedder
         self.vocab = vocab
-        print( self.vocab.get_token_from_index(namespace='labels', index=0))
-        print( self.vocab.get_token_from_index(namespace='labels', index=1))
-        print( self.vocab.get_token_from_index(namespace='labels', index=2))
-        print( self.vocab.get_token_from_index(namespace='labels', index=3))
+        # print( self.vocab.get_token_from_index(namespace='labels', index=0))
+        # print( self.vocab.get_token_from_index(namespace='labels', index=1))
+        # print( self.vocab.get_token_from_index(namespace='labels', index=2))
+        # print( self.vocab.get_token_from_index(namespace='labels', index=3))
 
         self.use_sep = use_sep
         self.with_crf = with_crf

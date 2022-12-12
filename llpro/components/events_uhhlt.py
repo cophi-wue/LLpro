@@ -35,54 +35,11 @@ class EventClassifier(Module):
         self.device = torch.device('cuda' if torch.cuda.is_available() and use_cuda else "cpu")
         self.event_classify_home = Path(event_classify_home)
         self.device_on_run = device_on_run
+        self.batch_size = batch_size
         sys.path.insert(0, str(self.event_classify_home))
 
         from event_classify.util import get_model
-        from event_classify.segmentations import event_segmentation
-        from event_classify.preprocessing import get_annotation_dicts
-        from event_classify.datasets import JSONDataset, SpanAnnotation, EventType, SpeechType
         self.model, self.tokenizer = get_model(model_dir)
-
-        def prepare_data(doc):
-            segmented_doc = event_segmentation(doc)
-            annotations = get_annotation_dicts(segmented_doc)
-            data = {"text": doc.text, "title": None, "annotations": annotations}
-
-            dataset = JSONDataset(dataset_file=None, data=[data], include_special_tokens=True)
-            loader = DataLoader(
-                dataset,
-                batch_size=batch_size,
-                collate_fn=lambda list_: SpanAnnotation.to_batch(list_, self.tokenizer),
-            )
-            return dataset, loader
-
-        def format_predictions(predictions, extra_predictions):
-            event_types = [EventType(p.item()) for p in predictions]
-            iterative = []
-            mental = []
-            i = 0
-            for et in event_types:
-                if et != EventType.NON_EVENT:
-                    iterative.append(bool(extra_predictions["iterative"][i].item()))
-                    mental.append(bool(extra_predictions["mental"][i].item))
-                    i += 1
-                else:
-                    iterative.append(None)
-                    mental.append(None)
-            return {
-                "event_types": event_types,
-                "speech_type": [
-                    SpeechType(p.item()) for p in extra_predictions["speech_type"]
-                ],
-                "thought_representation": [
-                    bool(p.item()) for p in extra_predictions["thought_representation"]
-                ],
-                "iterative": iterative,
-                "mental": mental,
-            }
-
-        self.prepare_data = prepare_data
-        self.format_predictions = format_predictions
 
         if not self.device_on_run:
             self.model.to(self.device)
@@ -96,6 +53,49 @@ class EventClassifier(Module):
     def after_run(self):
         if self.device_on_run:
             self.model.to('cpu')
+
+    def prepare_data(self, doc):
+        from event_classify.segmentations import event_segmentation
+        from event_classify.preprocessing import get_annotation_dicts
+        from event_classify.datasets import JSONDataset, SpanAnnotation
+        # NOTE: this populates the doc._.scenes attribute with (unlabeled) verbal phrases
+        segmented_doc = event_segmentation(doc)
+        annotations = get_annotation_dicts(segmented_doc)
+        data = {"text": doc.text, "title": None, "annotations": annotations}
+
+        dataset = JSONDataset(dataset_file=None, data=[data], include_special_tokens=True)
+        loader = DataLoader(
+            dataset,
+            batch_size=self.batch_size,
+            collate_fn=lambda list_: SpanAnnotation.to_batch(list_, self.tokenizer),
+        )
+        return dataset, loader
+
+    def format_predictions(self, predictions, extra_predictions):
+        from event_classify.datasets import EventType, SpeechType
+        event_types = [EventType(p.item()) for p in predictions]
+        iterative = []
+        mental = []
+        i = 0
+        for et in event_types:
+            if et != EventType.NON_EVENT:
+                iterative.append(bool(extra_predictions["iterative"][i].item()))
+                mental.append(bool(extra_predictions["mental"][i].item))
+                i += 1
+            else:
+                iterative.append(None)
+                mental.append(None)
+        return {
+            "event_types": event_types,
+            "speech_type": [
+                SpeechType(p.item()) for p in extra_predictions["speech_type"]
+            ],
+            "thought_representation": [
+                bool(p.item()) for p in extra_predictions["thought_representation"]
+            ],
+            "iterative": iterative,
+            "mental": mental,
+        }
 
     def process(self, doc: Doc, progress_fn: Callable[[int], None]) -> Doc:
         dataset, dataloader = self.prepare_data(doc)

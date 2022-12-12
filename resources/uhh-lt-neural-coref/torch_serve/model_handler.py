@@ -7,10 +7,10 @@ from ts.torch_handler.base_handler import BaseHandler
 from transformers import BertTokenizer, ElectraTokenizer
 from transformers.models.bert import BasicTokenizer
 
-from run import Runner
-from preprocess import get_document
-from tensorize import Tensorizer
-from conll import output_conll
+from neural_coref.run import Runner
+from neural_coref.preprocess import get_document
+from neural_coref.tensorize import Tensorizer
+from neural_coref.conll import output_conll
 import model_config
 
 SENTENCE_ENDERS = "!.?"
