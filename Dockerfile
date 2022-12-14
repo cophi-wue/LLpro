@@ -17,10 +17,14 @@ RUN apt-get update -y && apt-get -y install \
 COPY requirements.txt requirements.txt
 RUN sh -c 'pip3 install --no-cache-dir -r requirements.txt'
 
-COPY . .
+COPY resources resources
+COPY prepare.sh prepare.sh
 RUN sh prepare.sh
-RUN rm -rf resources/invero-xl-span-cuda-2.0.0.tar
-RUN python3 -c 'import llpro.pipeline; llpro.pipeline.preload_all_modules();'
+
+COPY main.py main.py
+COPY llpro llpro
+RUN python3 -c 'from main import create_pipe; create_pipe();'
+
 
 
 ARG INSTALL_APEX=0
@@ -34,4 +38,4 @@ WORKDIR /LL-Pipeline
 ENV TRANSFORMERS_OFFLINE=1
 ENV TOKENIZER_PARALLELISM=false
 
-ENTRYPOINT ["python3", "main.py"]
+ENTRYPOINT ["python3", "-u", "main.py"]
