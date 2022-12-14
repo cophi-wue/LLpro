@@ -3,6 +3,7 @@ import logging
 import multiprocessing
 import os
 import sys
+import time
 
 import spacy
 import torch
@@ -39,12 +40,16 @@ def run_pipeline_on_files(filenames, nlp, tokenizer=None):
         file_pbar = tqdm(total=sum(file_sizes), position=1, unit='B', unit_scale=True, ncols=80)
         file_pbar.set_description_str(f'0/{len(filenames)}')
         for i, (filename, size) in enumerate(zip(filenames, file_sizes)):
+            start_time = time.monotonic()
             with open(filename) as f:
                 content = f.read()
                 doc = tokenizer(content)
                 doc._.filename = filename
 
                 nlp(doc)
+
+            end_time = time.monotonic()
+            print(getattr(doc._, 'filename', 'stdin'), 'total', end_time - start_time, len(doc), sep='\t')
 
             file_pbar.update(size)
             file_pbar.set_description_str(f'{i + 1}/{len(filenames)}')
@@ -120,7 +125,7 @@ if __name__ == "__main__":
 
     logging.info('Loading pipeline')
     nlp = create_pipe()
-    nlp.analyze_pipes(pretty=True)
+    # nlp.analyze_pipes(pretty=True)
 
     tokenizer = SoMaJoTokenizer(nlp.vocab, paragraph_separator=args.paragraph_pattern, section_pattern=args.section_pattern)
     for filename, tagged_doc in run_pipeline_on_files(filenames, nlp, tokenizer):
