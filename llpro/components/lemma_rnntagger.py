@@ -8,26 +8,29 @@ from spacy import Language
 from spacy.tokens import Token, Doc
 from typing import Callable
 
+import torch
+
 from ..common import Module
 
 
 @Language.factory("lemma_rnntagger", requires=['token._.rnntagger_tag'], assigns=['token.lemma'], default_config={
-    'rnntagger_home': 'resources/RNNTagger', 'use_cuda': True, 'pbar_opts': None
+    'rnntagger_home': 'resources/RNNTagger', 'use_cuda': True, 'device_on_run': False, 'pbar_opts': None
 })
-def lemma_rnntagger(nlp, name, rnntagger_home, use_cuda, pbar_opts):
+def lemma_rnntagger(nlp, name, rnntagger_home, use_cuda, device_on_run, pbar_opts):
     if not Token.has_extension('rnntagger_tag'):
         Token.set_extension('rnntagger_tag', default='')
-    return RNNLemmatizer(name=name, rnntagger_home=rnntagger_home, use_cuda=use_cuda, pbar_opts=pbar_opts)
+    return RNNLemmatizer(name=name, rnntagger_home=rnntagger_home, use_cuda=use_cuda, device_on_run=device_on_run, pbar_opts=pbar_opts)
 
 
 class RNNLemmatizer(Module):
 
-    def __init__(self, name, rnntagger_home='resources/RNNTagger', use_cuda=True, pbar_opts=None):
+    def __init__(self, name, rnntagger_home='resources/RNNTagger', use_cuda=True, device_on_run=False, pbar_opts=None):
         super().__init__(name, pbar_opts=pbar_opts)
+        self.device = torch.device('cuda' if torch.cuda.is_available() and use_cuda else "cpu")
+        self.device_on_run = device_on_run
         self.rnntagger_home = Path(rnntagger_home)
         sys.path.insert(0, str(self.rnntagger_home))
         sys.path.insert(0, str(self.rnntagger_home / "PyNMT"))
-        import torch
         from PyNMT.Data import Data, rstrip_zeros
         from PyNMT.NMT import NMTDecoder
 
@@ -75,6 +78,16 @@ class RNNLemmatizer(Module):
                 yield out, prob
 
         self.processor = myprocessor
+
+    def before_run(self):
+        if self.device_on_run:
+            self.model.to(self.device)
+            logging.info(f"{self.name} using device {next(self.model.parameters()).device}")
+
+    def after_run(self):
+        if self.device_on_run:
+            self.model.to('cpu')
+            torch.cuda.empty_cache()
 
     def process(self, doc: Doc, progress_fn: Callable[[int], None]) -> Doc:
         cached = {}

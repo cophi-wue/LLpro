@@ -30,14 +30,14 @@ class Module:
         def my_update_fn(x: int):
             pbar.update(x)
 
-        start_time = time.time()
+        start_time = time.monotonic()
         self.before_run()
         self.process(doc, my_update_fn)
         self.after_run()
         pbar.close()
-        end_time = time.time()
+        end_time = time.monotonic()
 
-        if 'filename' in vars(doc._):
+        if getattr(doc._, 'filename', None) is not None:
             logging.info(
                 f'Finished module {self.name} for {doc._.filename} ({len(doc) / (end_time - start_time):.0f}tok/s)')
         else:
@@ -65,7 +65,7 @@ def spacy_doc_to_dataframe(doc):
         return getattr(tok, attr)
 
     for tok in doc:
-        for column in ["i", "text", "._.is_sent_start", "_.is_para_start", "tag_", "lemma_", "dep_", "head"]:
+        for column in ["i", "text", "_.is_punct_sent_start", "_.is_para_start", "tag_", "lemma_", "dep_", "head"]:
             token_attribute_dictionary[column].append(get_value(tok, column))
 
     for tok in doc:

@@ -52,6 +52,22 @@ def run_pipeline_on_files(filenames, nlp, tokenizer=None):
     file_pbar.close()
 
 
+def create_pipe():
+    nlp = spacy.blank("de")
+    # nlp = spacy.load('de_dep_news_trf', exclude=['ner', 'lemmatizer', 'textcat', 'morphologizer', 'attribute_ruler', 'parser'])
+    nlp.add_pipe('tagger_someweta')
+    nlp.add_pipe('tagger_rnntagger')
+    nlp.add_pipe('lemma_rnntagger')
+    nlp.add_pipe('parser_parzu_parallelized', config={'num_processes': 4})
+    nlp.add_pipe('speech_redewiedergabe')
+    nlp.add_pipe('scenes_stss_se')
+    nlp.add_pipe('coref_uhhlt')
+    nlp.add_pipe('ner_flair')
+    nlp.add_pipe('events_uhhlt')
+
+    return nlp
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='NLP Pipeline for literary texts written in German.')
     parser.add_argument('-v', '--verbose', action="store_const", dest="loglevel", const=logging.INFO)
@@ -72,9 +88,13 @@ if __name__ == "__main__":
     if args.writefiles is not None:
         args.outtype = 'files'
     logging.basicConfig(level=args.loglevel)
-    for hdl in logging.getLogger('flair').handlers:
-        logging.getLogger('flair').removeHandler(hdl)
-    logging.getLogger('flair').propagate = True
+    try:
+        import flair
+        for hdl in logging.getLogger('flair').handlers:
+            logging.getLogger('flair').removeHandler(hdl)
+        logging.getLogger('flair').propagate = True
+    except:
+        pass
     logging.info('Picked up following arguments: ' + repr(vars(args)))
 
     if torch.cuda.is_available():
@@ -91,17 +111,7 @@ if __name__ == "__main__":
                 filenames.extend([os.path.join(root, m) for m in members])
 
     logging.info('Loading pipeline')
-    nlp = spacy.blank("de")
-    # nlp = spacy.load('de_dep_news_trf', exclude=['ner', 'lemmatizer', 'textcat', 'morphologizer', 'attribute_ruler', 'parser'])
-    nlp.add_pipe('tagger_someweta')
-    nlp.add_pipe('tagger_rnntagger')
-    nlp.add_pipe('lemma_rnntagger')
-    nlp.add_pipe('parser_parzu_parallelized', config={'num_processes': 4})
-    nlp.add_pipe('speech_redewiedergabe')
-    nlp.add_pipe('scenes_stss_se')
-    nlp.add_pipe('coref_uhhlt')
-    nlp.add_pipe('ner_flair')
-    nlp.add_pipe('events_uhhlt')
+    nlp = create_pipe()
     nlp.analyze_pipes(pretty=True)
 
     tokenizer = SoMaJoTokenizer(nlp.vocab)

@@ -37,14 +37,13 @@ class SceneSegmenter(Module):
             self.archive.model.to(self.device)
 
     def before_run(self):
-        if self.device_on_run:
-            self.archive.model.to(self.device)
-            logging.info(f"SceneSegmenter using device {self.archive.model._get_prediction_device()}")
+        self.archive.model.to(self.device)
+        logging.info(f"{self.name} using device {self.archive.model._get_prediction_device()}")
 
     def after_run(self):
         if self.device_on_run:
             self.archive.model.to('cpu')
-            torch.cuda.empty_cache()
+            torch.cuda.empty_cache()  # TODO
 
     def process(self, doc: Doc, progress_fn: Callable[[int], None]) -> Doc:
         sentences = list(doc.sents)
@@ -68,7 +67,6 @@ class SceneSegmenter(Module):
 
         scenes = self.postprocess(pred_labels)
         for segment_counter, scene in enumerate(scenes):
-            print(scene, sentences[scene['begin']][0].i, sentences[scene['end']-1][-1].i+1)
             doc._.scenes.append(Span(doc=doc, start=sentences[scene['begin']][0].i, end=sentences[scene['end']-1][-1].i+1, span_id=segment_counter, label=scene['type']))
 
         return doc

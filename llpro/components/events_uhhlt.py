@@ -15,7 +15,7 @@ from ..common import Module
 @Language.factory("events_uhhlt", requires=['token.tag', 'token.dep', 'token.head'], assigns=['Doc._.events'],
                   default_config={
                       'event_classify_home': 'resources/uhh-lt-event-classify',
-                      'model_dir': './resources/eventclassifier_model',
+                      'model_dir': './resources/eventclassifier_model/demo_model',
                       'batch_size': 8,
                       'pbar_opts': None,
                       'use_cuda': True,

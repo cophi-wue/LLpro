@@ -91,14 +91,13 @@ class CorefIncrementalTagger(Module):
         return config
 
     def before_run(self):
-        if self.device_on_run:
-            self.model.to(self.device)
-            logging.info(f"{self.name} using device {next(self.model.parameters()).device}")
+        self.model.to(self.device)
+        logging.info(f"{self.name} using device {str(next(self.model.parameters()).device)}")
 
     def after_run(self):
         if self.device_on_run:
             self.model.to('cpu')
-            torch.cuda.empty_cache()
+            torch.cuda.empty_cache()  # TODO
 
     # cf. resources/uhh-lt-neural-coref/model.py
     def get_predictions_incremental(self, input_ids, input_mask, speaker_ids, sentence_len, genre, sentence_map,

@@ -2,7 +2,6 @@ import gc
 import itertools
 import logging
 
-import flair
 import more_itertools
 import spacy
 import torch
@@ -29,6 +28,7 @@ class FLERTNERTagger(Module):
         self.mini_batch_size = mini_batch_size
         self.device = torch.device('cuda' if torch.cuda.is_available() and use_cuda else "cpu")
 
+        import flair
         from flair.models import SequenceTagger
         from flair.data import Sentence
         from flair.datasets import DataLoader
@@ -51,27 +51,26 @@ class FLERTNERTagger(Module):
                     for s in batch:
                         s.clear_embeddings()
                         output.append(s)
-            del dataloader
-            del flair_sentences
-            gc.collect()  # TODO
+            torch.cuda.empty_cache()
             return output
 
         self.batch_processor = process_batch
 
         if not self.device_on_run:
             self.tagger.to(self.device)
-            flair.device = self.device
             logging.info(f"{self.name} using device {str(next(self.tagger.parameters()).device)}")
 
     def before_run(self):
-        if self.device_on_run:
-            flair.device = self.device
-            self.tagger.to(self.device)
-            logging.info(f"{self.name} using device {str(next(self.tagger.parameters()).device)}")
+        import flair
+        flair.device = self.device
+        self.tagger.to(self.device)
+        logging.info(f"{self.name} using device {str(next(self.tagger.parameters()).device)}")
 
     def after_run(self):
+        import flair
         if self.device_on_run:
             self.tagger.to('cpu')
+            flair.device = 'cpu'
             torch.cuda.empty_cache()  # TODO
 
     def _annotate_batch(self, batch):

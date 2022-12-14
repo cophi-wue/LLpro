@@ -2,7 +2,6 @@ import itertools
 import logging
 from pathlib import Path
 
-import flair
 from typing import Dict, Callable
 
 import more_itertools
@@ -30,6 +29,7 @@ class RedewiedergabeTagger(Module):
     def __init__(self, name, model_paths=None, use_cuda=True, device_on_run=False, pbar_opts=None):
         super().__init__(name, pbar_opts=pbar_opts)
         import torch
+        import flair
         from flair.models import SequenceTagger
         flair.device = 'cpu'
 
@@ -55,15 +55,17 @@ class RedewiedergabeTagger(Module):
                 f"{name} using devices {','.join(str(next(m.parameters()).device) for m in self.models.values())}")
 
     def before_run(self):
+        import flair
         flair.device = self.device
-        if self.device_on_run:
-            for model in self.models.values():
-                model.to(self.device)
-            logging.info(
-                f"{self.name} using devices {','.join(str(next(m.parameters()).device) for m in self.models.values())}")
+        for model in self.models.values():
+            model.to(self.device)
+        logging.info(
+            f"{self.name} using devices {','.join(str(next(m.parameters()).device) for m in self.models.values())}")
 
     def after_run(self):
         if self.device_on_run:
+            import flair
+            flair.device = 'cpu'
             for model in self.models.values():
                 model.to('cpu')
             torch.cuda.empty_cache()

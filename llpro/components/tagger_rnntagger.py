@@ -1,13 +1,11 @@
 import logging
 import pickle
-import regex as re
 from functools import partial
 import sys
 from pathlib import Path
 
 import torch
 from spacy import Language
-from spacy.morphology import Morphology
 from spacy.tokens import Doc, Token, MorphAnalysis
 from typing import Callable
 
@@ -42,8 +40,6 @@ class RNNTagger(Module):
         self.model = PyRNN.CRFTagger.CRFTagger(*hyper_params) if len(hyper_params) == 10 \
             else PyRNN.RNNTagger.RNNTagger(*hyper_params)
         self.model.load_state_dict(torch.load(str(self.rnntagger_home / "lib/PyRNN/german.rnn")))
-        if torch.cuda.is_available() and use_cuda:
-            self.model = self.model.cuda()
         self.model.eval()
 
         if not self.device_on_run:
@@ -52,7 +48,7 @@ class RNNTagger(Module):
 
         def annotate_sentence(words):
             data = self.vector_mappings
-            # vgl. RNNTagger/PyRNN/rnn-annotate.py
+            # cf. RNNTagger/PyRNN/rnn-annotate.py
             fwd_charIDs, bwd_charIDs = data.words2charIDvec(words)
             fwd_charIDs = self.model.long_tensor(fwd_charIDs)
             bwd_charIDs = self.model.long_tensor(bwd_charIDs)
@@ -76,9 +72,8 @@ class RNNTagger(Module):
         self.annotate_sentence = annotate_sentence
 
     def before_run(self):
-        if self.device_on_run:
-            self.model.to(self.device)
-            logging.info(f"{self.name} using device {next(self.model.parameters()).device}")
+        self.model.to(self.device)
+        logging.info(f"{self.name} using device {next(self.model.parameters()).device}")
 
     def after_run(self):
         if self.device_on_run:
