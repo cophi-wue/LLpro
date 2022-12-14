@@ -4,11 +4,11 @@ import torch
 from torch.utils.tensorboard import SummaryWriter
 import sklearn.metrics
 import time
-from run import Runner
+from neural_coref.run import Runner
 from os.path import join
 from os import remove
 from torch.optim.lr_scheduler import LambdaLR
-from model import MentionModel
+from neural_coref.model import MentionModel
 import conll
 import sys
 import csv

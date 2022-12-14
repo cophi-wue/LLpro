@@ -1,5 +1,5 @@
-from run import Runner
-import util
+from neural_coref.run import Runner
+from neural_coref import util
 import json
 import pickle
 from os.path import join

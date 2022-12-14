@@ -1,4 +1,4 @@
-import util
+from neural_coref import util
 import numpy as np
 import random
 from transformers import AutoTokenizer

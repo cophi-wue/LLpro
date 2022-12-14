@@ -6,7 +6,7 @@ from torch.utils.tensorboard import SummaryWriter
 from transformers import AdamW
 from torch.optim import Adam
 from tensorize import CorefDataProcessor
-import util
+from neural_coref import util
 import argparse
 import time
 from os.path import join
@@ -14,7 +14,7 @@ from os import remove
 from metrics import CorefEvaluator
 from datetime import datetime
 from torch.optim.lr_scheduler import LambdaLR
-from model import CorefModel, IncrementalCorefModel
+from neural_coref.model import CorefModel, IncrementalCorefModel
 import conll
 import gc
 from tqdm import tqdm

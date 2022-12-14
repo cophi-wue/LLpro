@@ -1,13 +1,13 @@
 import torch
 import torch.nn as nn
 from transformers import AutoModel
-import util
+from neural_coref import util
 import logging
 from collections import Iterable, defaultdict
 import numpy as np
 import torch.nn.init as init
-import higher_order as ho
-from entities import IncrementalEntities, GoldLabelStrategy
+from neural_coref import higher_order as ho
+from neural_coref.entities import IncrementalEntities, GoldLabelStrategy
 from torch import Tensor
 from collections import OrderedDict
 

@@ -1,6 +1,6 @@
 import torch
 import torch.nn as nn
-import util
+from neural_coref import util
 
 
 def attended_antecedent(top_span_emb, top_antecedent_emb, top_antecedent_scores, device):

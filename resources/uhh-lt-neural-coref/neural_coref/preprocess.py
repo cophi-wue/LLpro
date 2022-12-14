@@ -5,8 +5,7 @@ import re
 import collections
 import json
 from transformers import BertTokenizer, ElectraTokenizer
-from neural_coref import conll
-import util
+from neural_coref import conll, util
 
 logging.basicConfig(format='%(asctime)s - %(levelname)s - %(name)s - %(message)s',
                     datefmt='%m/%d/%Y %H:%M:%S', level=logging.INFO)

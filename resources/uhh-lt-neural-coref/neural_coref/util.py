@@ -17,7 +17,7 @@ def flatten(l):
 def initialize_config(config_name, create_dirs=True):
     logger.info("Running experiment: {}".format(config_name))
 
-    config = pyhocon.ConfigFactory.parse_file("experiments.conf")[config_name]
+    config = pyhocon.ConfigFactory.parse_file("../experiments.conf")[config_name]
     config['log_dir'] = join(config["log_root"], config_name)
     config['tb_dir'] = join(config['log_root'], 'tensorboard')
     if create_dirs:
