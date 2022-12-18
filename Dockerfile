@@ -21,8 +21,10 @@ COPY resources resources
 COPY prepare.sh prepare.sh
 RUN sh prepare.sh
 
+COPY setup.py setup.py
 COPY main.py main.py
 COPY llpro llpro
+RUN python3 setup.py build_ext --inplace
 RUN python3 -c 'from main import create_pipe; create_pipe();'
 
 

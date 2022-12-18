@@ -7,8 +7,9 @@ import sys
 import more_itertools
 from spacy import Language
 from spacy.tokens import Span, Doc
-from typing import List, Iterable, Callable, Tuple
+from typing import List, Iterable, Callable, Tuple, Sequence
 
+from ..spacy_cython_utils import apply_dependency_to_doc
 from ..common import Module
 
 
@@ -41,21 +42,21 @@ class ParzuParallelized(Module):
         self.pool.close()
         self.pool.join()
 
-    def split_doc_into_chunks(self, doc: Doc) -> Iterable[Span]:
+    def split_doc_into_chunks(self, doc: Doc) -> Iterable[Sequence[Span]]:
         def sentlist_len(list_of_sents):
             return sum(len(x) for x in list_of_sents)
 
         for sentences in more_itertools.constrained_batches(doc.sents, max_size=self.tokens_per_process,
-                                                            get_len=sentlist_len):
-            yield doc[sentences[0].start:sentences[-1].end]
+                                                            get_len=sentlist_len, strict=False):
+            yield list(sentences)
 
     def process(self, doc: Doc, progress_fn: Callable[[int], None]) -> Doc:
         m = multiprocessing.Manager()
         q = m.Queue()
-        process_chunks: List[Span] = list(self.split_doc_into_chunks(doc))
+        process_chunks = self.split_doc_into_chunks(doc)
         results = []
-        for i, span in enumerate(process_chunks):
-            serialized = [[(tok.i, tok.text, tok.tag_) for tok in sent] for sent in span.sents]
+        for i, chunk in enumerate(process_chunks):
+            serialized = [[(tok.i, tok.text, tok.tag_) for tok in sent] for sent in chunk]
             results.append(self.pool.apply_async(ParzuParallelized._process_worker, (serialized, i, q)))
 
         while any(not res.ready() for res in results) or not q.empty():
@@ -66,15 +67,12 @@ class ParzuParallelized(Module):
             except queue.Empty:
                 pass
 
-        for r in results:
-            r = r.get()
-            for i, token_result in enumerate(r):
-                tok = doc[token_result['index']]
-                if tok.tag_.startswith('$'):
-                    continue
-                tok.dep_ = token_result['deprel']
-                tok.head = doc[token_result['head']]
+        concatenated_results = list(itertools.chain(*(r.get() for r in results)))
 
+        # we use the cython implementation here since, when assigning head and deprel to each token individually in
+        # python, this gets extremely slow since for each token, assigning the head attribute triggers recalculations
+        # of left/rightmost children. Also, spacy's implementation messes up the sentence boundaries.
+        doc = apply_dependency_to_doc(doc, [token_result['head'] for token_result in concatenated_results], [token_result['deprel'] for token_result in concatenated_results])
         return doc
 
     @staticmethod
@@ -91,6 +89,11 @@ class ParzuParallelized(Module):
 
         result = _WORKER_MODULE.__call__(serialized_span, send_update)
         return result
+
+    def __del__(self):
+        self.pool.close()
+        self.pool.join()
+        self.pool = None
 
 
 class ParzuWorker:
