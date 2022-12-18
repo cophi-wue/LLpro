@@ -58,7 +58,7 @@ def create_pipe():
     nlp.add_pipe('tagger_someweta')
     nlp.add_pipe('tagger_rnntagger')
     nlp.add_pipe('lemma_rnntagger')
-    nlp.add_pipe('parser_parzu_parallelized', config={'num_processes': 4})
+    nlp.add_pipe('parser_parzu_parallelized', config={'num_processes': get_cpu_limit()})
     nlp.add_pipe('speech_redewiedergabe')
     nlp.add_pipe('scenes_stss_se')
     nlp.add_pipe('coref_uhhlt')
@@ -82,7 +82,7 @@ if __name__ == "__main__":
                        action='store_const', dest='outtype', const='stdout')
     group.add_argument('--writefiles', metavar='DIR',
                        help='For each input file, write processed tokens to a separate file in DIR.', default=None)
-    parser.add_argument('--infiles', metavar='FILE', type=str, nargs='+', help='Input files, or directories.')
+    parser.add_argument('--infiles', metavar='FILE', type=str, nargs='+', help='Input files, or directories.', required=True)
     parser.set_defaults(outtype='stdout')
     args = parser.parse_args()
     if args.writefiles is not None:
@@ -97,10 +97,14 @@ if __name__ == "__main__":
         pass
     logging.info('Picked up following arguments: ' + repr(vars(args)))
 
+    if 'OMP_NUM_THREADS' not in os.environ:
+        torch.set_num_threads(get_cpu_limit())
+
     if torch.cuda.is_available():
         logging.info(f'torch: CUDA available, version {torch.version.cuda}, architectures {torch.cuda.get_arch_list()}')
     else:
         logging.info('torch: CUDA not available')
+        logging.info(f'torch: num_threads is {torch.get_num_threads()}')
 
     filenames = []
     for f in args.infiles:
