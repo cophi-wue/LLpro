@@ -16,7 +16,7 @@ class Module:
         self.name = name
 
         if pbar_opts is None:
-            pbar_opts = {'unit': 'tok', 'postfix': self.name, 'dynamic_ncols': True, 'leave': False}
+            pbar_opts = {'unit': 'tok', 'postfix': self.name, 'ncols': 30, 'leave': False}
         self.pbar_opts = pbar_opts
 
     def process(self, doc: Doc, progress_fn: Callable[[int], None]) -> Doc:
@@ -67,6 +67,12 @@ def spacy_doc_to_dataframe(doc):
     for tok in doc:
         for column in ["i", "text", "is_sent_start", "_.is_para_start", "tag_", "lemma_", "dep_", "head"]:
             token_attribute_dictionary[column].append(get_value(tok, column))
+
+    for tok in doc:
+        if len(tok._.speech) > 0:
+            token_attribute_dictionary['speech'].append(','.join(tok._.speech))
+        else:
+            token_attribute_dictionary['speech'].append('_')
 
     for tok in doc:
         ent_str = 'O' if tok.ent_iob_ == 'O' else tok.ent_iob_ + '-' + tok.ent_type_
