@@ -1,10 +1,10 @@
 import itertools
 import logging
-import multiprocessing
 import queue
 import sys
 
 import more_itertools
+import multiprocessing_on_dill as multiprocessing
 from spacy import Language
 from spacy.tokens import Span, Doc
 from typing import List, Iterable, Callable, Tuple, Sequence
@@ -37,10 +37,6 @@ class ParzuParallelized(Module):
         logging.info(f"Starting {num_processes} processes of {name}")
         self.pool = multiprocessing.Pool(processes=num_processes, initializer=ParzuParallelized._init_worker,
                                          initargs=({'parzu_home': parzu_home},))
-
-    def close(self):
-        self.pool.close()
-        self.pool.join()
 
     def split_doc_into_chunks(self, doc: Doc) -> Iterable[Sequence[Span]]:
         def sentlist_len(list_of_sents):
@@ -90,10 +86,6 @@ class ParzuParallelized(Module):
         result = _WORKER_MODULE.__call__(serialized_span, send_update)
         return result
 
-    def __del__(self):
-        self.pool.close()
-        self.pool.join()
-        self.pool = None
 
 
 class ParzuWorker:

@@ -92,6 +92,7 @@ matplotlib-inline==0.1.6
 mistune==2.0.4
 more-itertools==9.0.0
 mpld3==0.3
+multiprocessing-on-dill==3.5.0a4
 murmurhash==1.0.9
 nbclassic==0.4.8
 nbclient==0.7.2
