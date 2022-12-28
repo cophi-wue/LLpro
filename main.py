@@ -108,6 +108,10 @@ if __name__ == "__main__":
 
     filenames = []
     for f in args.infiles:
+        if not os.path.exists(f):
+            logging.error(f'file {f} does not exist, aborting!')
+            sys.exit(1)
+
         if os.path.isfile(f):
             filenames.append(f)
         else:
