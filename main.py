@@ -36,7 +36,7 @@ def run_pipeline_on_files(filenames, nlp, tokenizer=None):
         Doc.set_extension('filename', default=None)
 
     with logging_redirect_tqdm():
-        file_pbar = tqdm(total=sum(file_sizes), position=1, unit='B', unit_scale=True, dynamic_ncols=True)
+        file_pbar = tqdm(total=sum(file_sizes), position=1, unit='B', unit_scale=True, ncols=80)
         file_pbar.set_description_str(f'0/{len(filenames)}')
         for i, (filename, size) in enumerate(zip(filenames, file_sizes)):
             with open(filename) as f:

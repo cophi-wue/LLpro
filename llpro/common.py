@@ -16,7 +16,7 @@ class Module:
         self.name = name
 
         if pbar_opts is None:
-            pbar_opts = {'unit': 'tok', 'postfix': self.name, 'ncols': 30, 'leave': False}
+            pbar_opts = {'unit': 'tok', 'postfix': self.name, 'ncols': 80, 'leave': False}
         self.pbar_opts = pbar_opts
 
     def process(self, doc: Doc, progress_fn: Callable[[int], None]) -> Doc:
