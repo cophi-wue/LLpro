@@ -65,7 +65,7 @@ def spacy_doc_to_dataframe(doc):
         return getattr(tok, attr)
 
     for tok in doc:
-        for column in ["i", "text", "is_sent_start", "_.is_para_start", "tag_", "lemma_", "dep_", "head"]:
+        for column in ["i", "text", "is_sent_start", "_.is_para_start", "_.is_section_start", "tag_", "lemma_", "dep_", "head"]:
             token_attribute_dictionary[column].append(get_value(tok, column))
 
     for tok in doc:
@@ -99,4 +99,5 @@ def spacy_doc_to_dataframe(doc):
                     df.loc[tok.i, 'event'] = label
 
     df = df.rename(columns=lambda x: re.sub(r'(_$|^_\.)', '', x))
+    df = df.fillna(value='_')
     return df

@@ -118,7 +118,7 @@ if __name__ == "__main__":
     nlp = create_pipe()
     nlp.analyze_pipes(pretty=True)
 
-    tokenizer = SoMaJoTokenizer(nlp.vocab)
+    tokenizer = SoMaJoTokenizer(nlp.vocab, paragraph_separator=args.paragraph_pattern, section_pattern=args.section_pattern)
     for filename, tagged_doc in run_pipeline_on_files(filenames, nlp, tokenizer):
         if args.writefiles:
             with open(os.path.join(args.writefiles, os.path.basename(filename) + '.tsv'), 'w') as output_file:
