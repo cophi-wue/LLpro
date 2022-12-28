@@ -24,7 +24,7 @@ def add_extension(cls, ext, **kwargs):
                       'config_name': 'droc_incremental_no_segment_distance',
                       'pbar_opts': None,
                       'use_cuda': True,
-                      'device_on_run': False})
+                      'device_on_run': True})
 def coref_uhhlt(nlp, name, coref_home, model, config_name, pbar_opts, use_cuda, device_on_run):
     add_extension(Doc, "has_coref", default=False)
     add_extension(Doc, "coref_clusters", default=list())
@@ -44,7 +44,7 @@ class CorefIncrementalTagger(Module):
 
     def __init__(self, name, coref_home='resources/uhh-lt-neural-coref',
                  model='resources/model_droc_incremental_no_segment_distance_May02_17-32-58_1800.bin',
-                 config_name='droc_incremental_no_segment_distance', use_cuda=True, device_on_run=False,
+                 config_name='droc_incremental_no_segment_distance', use_cuda=True, device_on_run=True,
                  pbar_opts=None):
         super().__init__(name, pbar_opts)
         self.device = torch.device('cuda' if torch.cuda.is_available() and use_cuda else "cpu")

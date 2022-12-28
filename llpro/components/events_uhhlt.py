@@ -19,7 +19,7 @@ from ..common import Module
                       'batch_size': 8,
                       'pbar_opts': None,
                       'use_cuda': True,
-                      'device_on_run': False})
+                      'device_on_run': True})
 def events_uhhlt(nlp, name, event_classify_home, model_dir, batch_size, pbar_opts, use_cuda, device_on_run):
     if not Doc.has_extension('events'):
         Doc.set_extension('events', default=list())
@@ -29,7 +29,7 @@ def events_uhhlt(nlp, name, event_classify_home, model_dir, batch_size, pbar_opt
 
 class EventClassifier(Module):
 
-    def __init__(self, name, event_classify_home, model_dir, batch_size=8, use_cuda=True, device_on_run=False,
+    def __init__(self, name, event_classify_home, model_dir, batch_size=8, use_cuda=True, device_on_run=True,
                  pbar_opts=None):
         super().__init__(name, pbar_opts)
         self.device = torch.device('cuda' if torch.cuda.is_available() and use_cuda else "cpu")

@@ -11,7 +11,7 @@ from ..common import Module
 
 
 @Language.factory("scenes_stss_se", assigns=['doc._.scenes'], default_config={
-    'stss_se_home': 'resources/stss-se', 'model_path': 'extracted_model', 'use_cuda': True, 'device_on_run': False,
+    'stss_se_home': 'resources/stss-se', 'model_path': 'extracted_model', 'use_cuda': True, 'device_on_run': True,
     'pbar_opts': None
 })
 def scenes_stss_se(nlp, name, stss_se_home, model_path, use_cuda, device_on_run, pbar_opts):
@@ -23,7 +23,7 @@ def scenes_stss_se(nlp, name, stss_se_home, model_path, use_cuda, device_on_run,
 class SceneSegmenter(Module):
 
     def __init__(self, name, stss_se_home='resources/stss-se', model_path='extracted_model', use_cuda=True,
-                 device_on_run=False, pbar_opts=None):
+                 device_on_run=True, pbar_opts=None):
         super().__init__(name, pbar_opts=pbar_opts)
         self.device = torch.device('cuda' if torch.cuda.is_available() and use_cuda else "cpu")
         self.device_on_run = device_on_run

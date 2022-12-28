@@ -14,7 +14,7 @@ from ..common import Module
 
 
 @Language.factory("ner_flair", assigns=['doc.ents', 'token.ent_iob', 'token.ent_type'], default_config={
-    'mini_batch_size': 8, 'use_cuda': True, 'device_on_run': False, 'pbar_opts': None
+    'mini_batch_size': 8, 'use_cuda': True, 'device_on_run': True, 'pbar_opts': None
 })
 def ner_flair(nlp, name, mini_batch_size, use_cuda, device_on_run, pbar_opts):
     return FLERTNERTagger(name, mini_batch_size, use_cuda, device_on_run, pbar_opts)
@@ -22,7 +22,7 @@ def ner_flair(nlp, name, mini_batch_size, use_cuda, device_on_run, pbar_opts):
 
 class FLERTNERTagger(Module):
 
-    def __init__(self, name, mini_batch_size=8, use_cuda=True, device_on_run=False, pbar_opts=None):
+    def __init__(self, name, mini_batch_size=8, use_cuda=True, device_on_run=True, pbar_opts=None):
         super().__init__(name, pbar_opts=pbar_opts)
         self.device_on_run = device_on_run
         self.mini_batch_size = mini_batch_size

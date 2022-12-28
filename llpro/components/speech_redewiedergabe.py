@@ -13,7 +13,7 @@ from ..common import Module
 
 
 @Language.factory("speech_redewiedergabe", assigns=['token._.speech', 'token._.speech_prob'], default_config={
-    'model_paths': None, 'use_cuda': True, 'device_on_run': False, 'pbar_opts': None
+    'model_paths': None, 'use_cuda': True, 'device_on_run': True, 'pbar_opts': None
 })
 def speech_redewiedergabe(nlp, name, model_paths, use_cuda, device_on_run, pbar_opts):
     if not Token.has_extension('speech'):
@@ -26,7 +26,7 @@ def speech_redewiedergabe(nlp, name, model_paths, use_cuda, device_on_run, pbar_
 
 class RedewiedergabeTagger(Module):
 
-    def __init__(self, name, model_paths=None, use_cuda=True, device_on_run=False, pbar_opts=None):
+    def __init__(self, name, model_paths=None, use_cuda=True, device_on_run=True, pbar_opts=None):
         super().__init__(name, pbar_opts=pbar_opts)
         import torch
         import flair
