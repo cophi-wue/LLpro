@@ -49,7 +49,7 @@ def run_pipeline_on_files(filenames, nlp, tokenizer=None):
                 nlp(doc)
 
             end_time = time.monotonic()
-            print(getattr(doc._, 'filename', 'stdin'), 'total', end_time - start_time, len(doc), sep='\t')
+            print(getattr(doc._, 'filename', 'stdin'), 'total', end_time - start_time, len(doc), '', '', sep='\t')
 
             file_pbar.update(size)
             file_pbar.set_description_str(f'{i + 1}/{len(filenames)}')

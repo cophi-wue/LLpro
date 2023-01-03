@@ -37,7 +37,8 @@ class Module:
         pbar.close()
         end_time = time.monotonic()
 
-        print(getattr(doc._, 'filename', 'stdin'), self.name, end_time - start_time, len(doc), sep='\t')
+        import torch
+        print(getattr(doc._, 'filename', 'stdin'), self.name, end_time - start_time, len(doc), torch.get_num_threads(), torch.cuda.is_available(), sep='\t')
 
         if getattr(doc._, 'filename', None) is not None:
             logging.info(
