@@ -9,10 +9,9 @@ from typing import Callable
 
 from ..common import Module
 
-# TODO rename dir?
-
 @Language.factory("scenes_stss_se", assigns=['doc._.scenes'], default_config={
-    'stss_se_home': 'resources/stss-se', 'model_path': 'resources/stss-seextracted_model', 'use_cuda': True, 'device_on_run': True,
+    'stss_se_home': 'resources/stss-se-scene-segmenter',
+    'model_path': 'resources/stss-se-scene-segmenter/extracted_model', 'use_cuda': True, 'device_on_run': True,
     'pbar_opts': None
 })
 def scenes_stss_se(nlp, name, stss_se_home, model_path, use_cuda, device_on_run, pbar_opts):
@@ -23,7 +22,7 @@ def scenes_stss_se(nlp, name, stss_se_home, model_path, use_cuda, device_on_run,
 
 class SceneSegmenter(Module):
 
-    def __init__(self, name, stss_se_home='resources/stss-se', model_path='extracted_model', use_cuda=True,
+    def __init__(self, name, stss_se_home='resources/stss-se-scene-segmenter', model_path='resources/stss-se-scene-segmenter/extracted_model', use_cuda=True,
                  device_on_run=True, pbar_opts=None):
         super().__init__(name, pbar_opts=pbar_opts)
         self.device = torch.device('cuda' if torch.cuda.is_available() and use_cuda else "cpu")
@@ -52,7 +51,7 @@ class SceneSegmenter(Module):
         # as the text is further tokenized by BERT in the scene segmenter anyway, which always splits at whitespace.
         prepared_sentences = [' '.join(tok.text for tok in sent) for sent in sentences]
 
-        # cf. resources/stss-se/stss_se_code/sequential_sentence_classification/predictor.py
+        # cf. resources/stss-se-scene-segmenter/stss_se_code/sequential_sentence_classification/predictor.py
         sentence_counter = 0
         pred_labels = []
         for sentences_loop, _, _, _ in self.archive.dataset_reader.enforce_max_sent_per_example(prepared_sentences):
@@ -74,7 +73,7 @@ class SceneSegmenter(Module):
         return doc
 
     def postprocess(self, pred_labels):
-        # cf. resources/stss-se/stss_se_code/utils/postprocess.py
+        # cf. resources/stss-se-scene-segmenter/stss_se_code/utils/postprocess.py
         scenes = []
         group = {}
         last_border = 0
