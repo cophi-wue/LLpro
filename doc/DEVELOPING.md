@@ -1,6 +1,6 @@
 # Developing
 
-The llpro pipeline is implemented using the Spacy framework. In particular, this repository implements several [custom pipeline components](https://spacy.io/usage/processing-pipelines#custom-components) to construct full Spacy pipelines.
+The LLpro pipeline is implemented using the Spacy framework. In particular, this repository implements several [custom pipeline components](https://spacy.io/usage/processing-pipelines#custom-components) to construct full Spacy pipelines.
 For example, the default implementation in `main.py` constructs a Spacy pipeline as follows:
 
 ```python
@@ -128,7 +128,7 @@ Options:
 
 | Name                 | Description                                                                                              |
 |----------------------|----------------------------------------------------------------------------------------------------------|
-| `parzu_home`         | Root directory of the ParZu parser *adapted for use with the llpro pipeline*. Default: `resources/ParZu` |
+| `parzu_home`         | Root directory of the ParZu parser *adapted for use with the LLpro pipeline*. Default: `resources/ParZu` |
 | `num_processes`      | Number of parallel processes to run the parser on. Default: `1`                                          |
 | `tokens_per_process` | Max chunk size per process. Default: `1000`                                                              |
 | `pbar_opts`          | as specified above                                                                                       |
@@ -173,7 +173,7 @@ Options:
 
 | Name            | Description                                                                                                                                                                                                                                                                                                                                |
 |-----------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `coref_home`    | Root directory of the local neural-coref repository *adapted for use with the llpro pipeline*. Default: `resources/uhh-lt-neural-coref`.                                                                                                                                                                                                   |
+| `coref_home`    | Root directory of the local neural-coref repository *adapted for use with the LLpro pipeline*. Default: `resources/uhh-lt-neural-coref`.                                                                                                                                                                                                   |
 | `config_name`   | Model configuration to use. See also the respective documentation in the [UHH-LT/neural-coref](https://github.com/uhh-lt/neural-coref/tree/konvens#configurations) repository. Default: `droc_incremental_no_segment_distance`                                                                                                             |
 | `model`         | Model state dict to load. Should match the specified model configuration. Usually ends with `.bin`. See also the respective documentation in the [UHH-LT/neural-coref](https://github.com/uhh-lt/neural-coref/tree/konvens#evaluation) repository. Default: `resources/model_droc_incremental_no_segment_distance_May02_17-32-58_1800.bin` |
 | `use_cuda`      | as specified above                                                                                                                                                                                                                                                                                                                         |
@@ -229,7 +229,7 @@ Options:
 
 | Name            | Description                                                                                                                   |
 |-----------------|-------------------------------------------------------------------------------------------------------------------------------|
-| `stss_se_home`  | Root directory of the `scene_segmentation` repository *adapted for use with the llpro pipeline*. Default: `resources/stss-se` |
+| `stss_se_home`  | Root directory of the `scene_segmentation` repository *adapted for use with the LLpro pipeline*. Default: `resources/stss-se` |
 | `model_path`    | The scene segmenter model to use. Default: `resources/stss-se/extracted_model`                                                |
 | `use_cuda`      | as specified above                                                                                                            |
 | `device_on_run` | as specified above                                                                                                            |
@@ -252,7 +252,7 @@ Options:
 
 | Name                  | Description                                                                                                                                  |
 |-----------------------|----------------------------------------------------------------------------------------------------------------------------------------------|
-| `event_classify_home` | Root directory of the local event-classify repository *adapted for use with the llpro pipeline*. Default: `resources/uhh-lt-event-classify`. |
+| `event_classify_home` | Root directory of the local event-classify repository *adapted for use with the LLpro pipeline*. Default: `resources/uhh-lt-event-classify`. |
 | `model_dir`           | The scene segmenter model to use. Default: `resources/eventclassifier_model/demo_model`                                                      |
 | `batch_size`          | Number of sentences concurrently processed by one prediction. Default: `8`                                                                   |
 | `use_cuda`            | as specified above                                                                                                                           |
