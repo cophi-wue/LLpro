@@ -27,7 +27,6 @@ cupy-cuda112==10.6.0
 cycler==0.11.0
 cymem==2.0.7
 Cython==0.29.32
-de-dep-news-trf @ https://github.com/explosion/spacy-models/releases/download/de_dep_news_trf-3.3.0/de_dep_news_trf-3.3.0-py3-none-any.whl
 debugpy==1.6.4
 decorator==5.1.1
 defusedxml==0.7.1

@@ -1,8 +1,8 @@
 # LLpro – A Literary Language Processing Pipeline for German Narrative Texts
 
-A modular NLP Pipeline for German literary texts implemented in Python and Spacy. Work in progress.
+An NLP Pipeline for German literary texts implemented in Python and Spacy (v3.3.1). Work in progress.
 
-This pipeline currently performs
+This pipeline implements several custom pipeline components using the Spacy API. Currently the components perform
 * Tokenization and Sentence Splitting via [SoMaJo](https://github.com/tsproisl/SoMaJo)  [(Proisl, Uhrig 2016)](#ref-proisl_somajo_2016).
 * POS tagging via [SoMeWeTa](https://github.com/tsproisl/SoMeWeTa) [(Proisl 2018)](#ref-proisl_someweta_2018)
 * Lemmatization and Morphological Analysis via [RNNTagger](https://www.cis.uni-muenchen.de/~schmid/tools/RNNTagger/) [(Schmid 2019)](#ref-schmid_deep_2019)
@@ -159,75 +159,15 @@ GNU General Public License for more details.
 
 </div>
 
-<div id="ref-altinok_demorphy_2018">
-
-<p>Altinok, Duygu. 2018. “DEMorphy, German Language Morphological Analyzer.” <a href="https://arxiv.org/abs/1803.00902">https://arxiv.org/abs/1803.00902</a>.</p>
-
-</div>
-
-<div id="ref-bird_natural_2009">
-
-<p>Bird, Steven, Ewan Klein, and Edward Loper. 2009. <em>Natural Language Processing with Python</em>. Cambridge, Mass.: O’Reilly.</p>
-
-</div>
-
 <div id="ref-brunner_bert_2021">
 
 <p>Brunner, Annelen, Ngoc Duyen Tanja Tu, Lukas Weimer, and Fotis Jannidis. 2021. “To BERT or Not to BERT – Comparing Contextual Embeddings in a Deep Learning Architecture for the Automatic Recognition of Four Types of Speech, Thought and Writing Representation.” In <em>Proceedings of the 5th Swiss Text Analytics Conference (SwissText) &amp; 16th Conference on Natural Language Processing (KONVENS)</em>, 2624:11. CEUR Workshop Proceedings. Zurich, Switzerland. <a href="http://ceur-ws.org/Vol-2624/paper5.pdf">http://ceur-ws.org/Vol-2624/paper5.pdf</a>.</p>
 
 </div>
 
-<div id="ref-conia_invero-xl_2021">
-
-<p>Conia, Simone, Riccardo Orlando, Fabrizio Brignone, Francesco Cecconi, and Roberto Navigli. 2021. “InVeRo-XL: Making Cross-Lingual Semantic Role Labeling Accessible with Intelligible Verbs and Roles.” In <em>Proceedings of the 2021 Conference on Empirical Methods in Natural Language Processing: System Demonstrations</em>, 319–28. Online; Punta Cana, Dominican Republic: Association for Computational Linguistics. <a href="https://doi.org/10.18653/v1/2021.emnlp-demo.36">https://doi.org/10.18653/v1/2021.emnlp-demo.36</a>.</p>
-
-</div>
-
-<div id="ref-di_fabio_verbatlas_2019">
-
-<p>Di Fabio, Andrea, Simone Conia, and Roberto Navigli. 2019. “VerbAtlas: A Novel Large-Scale Verbal Semantic Resource and Its Application to Semantic Role Labeling.” In <em>Proceedings of the 2019 Conference on Empirical Methods in Natural Language Processing and the 9th International Joint Conference on Natural Language Processing (EMNLP-IJCNLP)</em>, 627–37. Hong Kong, China: Association for Computational Linguistics. <a href="https://doi.org/10.18653/v1/D19-1058">https://doi.org/10.18653/v1/D19-1058</a>.</p>
-
-</div>
-
-<div id="ref-forth_umfassende_2014">
-
-<p>Forth, Kilian A. 2014. <em>Eine Umfassende Constraint-Dependenz-Grammatik Des Deutschen</em>. Universität Hamburg. <a href="https://edoc.sub.uni-hamburg.de/informatik/volltexte/2014/204/">https://edoc.sub.uni-hamburg.de/informatik/volltexte/2014/204/</a>.</p>
-
-</div>
-
-<div id="ref-kiss_unsupervised_2006">
-
-<p>Kiss, Tibor, and Jan Strunk. 2006. “Unsupervised Multilingual Sentence Boundary Detection.” <em>Computational Linguistics</em> 32 (4): 485–525. <a href="https://doi.org/10.1162/coli.2006.32.4.485">https://doi.org/10.1162/coli.2006.32.4.485</a>.</p>
-
-</div>
-
 <div id="ref-kurfali_breaking_2021">
 
 <p>Kurfalı, Murathan, and Mats Wirén. 2021. “Breaking the Narrative: Scene Segmentation Through Sequential Sentence Classification.” In <em>Proceedings of the Shared Task on Scene Segmentation</em>, edited by Albin Zehe, Leonard Konle, Lea Dümpelmann, Evelyn Gius, Svenja Guhr, Andreas Hotho, Fotis Jannidis, et al., 3001:49–53. CEUR Workshop Proceedings. Düsseldorf, Germany. <a href="http://ceur-ws.org/Vol-3001/#paper6">http://ceur-ws.org/Vol-3001/#paper6</a>.</p>
-
-</div>
-
-<div id="ref-lavergne_practical_2010">
-
-<p>Lavergne, Thomas, Olivier Cappé, and François Yvon. 2010. “Practical Very Large Scale CRFs.” In <em>Proceedings the 48th Annual Meeting of the Association for Computational Linguistics (ACL)</em>, 504–13. Association for Computational Linguistics. <a href="http://www.aclweb.org/anthology/P10-1052">http://www.aclweb.org/anthology/P10-1052</a>.</p>
-
-</div>
-
-<div id="ref-manning_stanford_2014">
-
-<p>Manning, Christopher D., Mihai Surdeanu, John Bauer, Jenny Finkel, Steven J. Bethard, and David McClosky. 2014. “The Stanford CoreNLP Natural Language Processing Toolkit.” In <em>Proceedings of 52nd Annual Meeting of the Association for Computational Linguistics: System Demonstrations</em>, 55–60. Association for Computational Linguistics. <a href="http://www.aclweb.org/anthology/P/P14/P14-5010">http://www.aclweb.org/anthology/P/P14/P14-5010</a>.</p>
-
-</div>
-
-<div id="ref-mueller_efficient_2013">
-
-<p>Mueller, Thomas, Helmut Schmid, and Hinrich Schütze. 2013. “Efficient Higher-Order CRFs for Morphological Tagging.” In <em>Proceedings of the 2013 Conference on Empirical Methods in Natural Language Processing</em>, 322–32. Seattle, Washington, USA: Association for Computational Linguistics. <a href="https://www.aclweb.org/anthology/D13-1032">https://www.aclweb.org/anthology/D13-1032</a>.</p>
-
-</div>
-
-<div id="ref-ortmann_evaluating_2019">
-
-<p>Ortmann, Katrin, A. Roussel, and Stefanie Dipper. 2019. “Evaluating Off-the-Shelf NLP Tools for German.” In <em>Proceedings of the 15th Conference on Natural Language Processing (KONVENS 2019)</em>, 212–22. Erlangen, Germany: German Society for Computational Linguistics &amp; Language Technology. <a href="https://konvens.org/proceedings/2019/papers/KONVENS2019_paper_55.pdf">https://konvens.org/proceedings/2019/papers/KONVENS2019_paper_55.pdf</a>.</p>
 
 </div>
 
@@ -240,18 +180,6 @@ GNU General Public License for more details.
 <div id="ref-proisl_somajo_2016">
 
 <p>Proisl, Thomas, and Peter Uhrig. 2016. “SoMaJo: State-of-the-Art Tokenization for German Web and Social Media Texts.” In <em>Proceedings of the 10th Web as Corpus Workshop (WAC-X) and the EmpiriST Shared Task</em>, 57–62. Berlin, Germany: Association for Computational Linguistics (ACL). <a href="http://aclweb.org/anthology/W16-2607">http://aclweb.org/anthology/W16-2607</a>.</p>
-
-</div>
-
-<div id="ref-tjong_kim_sang_introduction_2003">
-
-<p>Sang, Erik F. Tjong Kim, and Fien De Meulder. 2003. “Introduction to the CoNLL-2003 Shared Task: Language-Independent Named Entity Recognition.” In <em>Proceedings of the Seventh Conference on Natural Language Learning at HLT-NAACL 2003</em>, 142–47. Edmonton, Canada: Association for Computational Linguistics. <a href="https://doi.org/10.3115/1119176.1119195">https://doi.org/10.3115/1119176.1119195</a>.</p>
-
-</div>
-
-<div id="ref-schmid_probabilistic_1994">
-
-<p>Schmid, Helmut. 1994. “Probabilistic Part-of-Speech Tagging Using Decision Trees.” In <em>Proceedings of International Conference on New Methods in Language Processing</em>. Manchester, UK. <a href="https://www.cis.uni-muenchen.de/~schmid/tools/TreeTagger/data/tree-tagger1.pdf">https://www.cis.uni-muenchen.de/~schmid/tools/TreeTagger/data/tree-tagger1.pdf</a>.</p>
 
 </div>
 

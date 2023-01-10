@@ -25,8 +25,9 @@ def parser_parzu_parallelized(nlp, name, parzu_home, num_processes, tokens_per_p
 class ParzuParallelized(Module):
     """
     NOTE: This parser does not assign any head or dep attributes to punctuation signs. Otherwise, Spacy's sentence
-    segmentation fails to generate proper sentences. Observe that punctuation is not explicitly handled in Forth's
-    Dependency Grammar, hence we do not miss any information.
+    segmentation fails to generate proper sentences, therefore we restitute the sentence segmentation present prior
+    to the parsing step. Observe that punctuation is not explicitly handled in Forth's Dependency Grammar,
+    hence we do not lose any information.
     """
 
     def __init__(self, name, parzu_home='resources/ParZu', num_processes: int = 1, tokens_per_process: int = 1000,

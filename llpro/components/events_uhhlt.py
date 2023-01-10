@@ -12,7 +12,7 @@ from torch.utils.data import DataLoader
 from ..common import Module
 
 
-@Language.factory("events_uhhlt", requires=['token.tag', 'token.dep', 'token.head'], assigns=['Doc._.events'],
+@Language.factory("events_uhhlt", requires=['token.tag', 'token.dep', 'token.head'], assigns=['doc._.events'],
                   default_config={
                       'event_classify_home': 'resources/uhh-lt-event-classify',
                       'model_dir': './resources/eventclassifier_model/demo_model',
@@ -132,7 +132,7 @@ class EventClassifier(Module):
         new_spans = []
         for i, event_span in enumerate(doc._.events):
             attrs = {
-                k: v[i].to_string() if hasattr(v[i], "to_string") else v[i]
+                k if k != 'event_types' else 'event_type': v[i].to_string() if hasattr(v[i], "to_string") else v[i]
                 for k, v in result.items()
             }
             new_spans.append(SpanGroup(doc, spans=event_span, attrs=attrs))

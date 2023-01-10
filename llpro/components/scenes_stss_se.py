@@ -9,9 +9,10 @@ from typing import Callable
 
 from ..common import Module
 
+# TODO rename dir?
 
 @Language.factory("scenes_stss_se", assigns=['doc._.scenes'], default_config={
-    'stss_se_home': 'resources/stss-se', 'model_path': 'extracted_model', 'use_cuda': True, 'device_on_run': True,
+    'stss_se_home': 'resources/stss-se', 'model_path': 'resources/stss-seextracted_model', 'use_cuda': True, 'device_on_run': True,
     'pbar_opts': None
 })
 def scenes_stss_se(nlp, name, stss_se_home, model_path, use_cuda, device_on_run, pbar_opts):
@@ -32,7 +33,7 @@ class SceneSegmenter(Module):
         from stss_se_code.sequential_sentence_classification.model import SeqClassificationModel
         from stss_se_code.sequential_sentence_classification.dataset_reader import SeqClassificationReader
         import allennlp.models.archival
-        self.archive = allennlp.models.archival.load_archive(str(self.stss_se_home / model_path))
+        self.archive = allennlp.models.archival.load_archive(str(model_path))
         if not self.device_on_run:
             self.archive.model.to(self.device)
 
@@ -69,6 +70,7 @@ class SceneSegmenter(Module):
         for segment_counter, scene in enumerate(scenes):
             doc._.scenes.append(Span(doc=doc, start=sentences[scene['begin']][0].i, end=sentences[scene['end']-1][-1].i+1, span_id=segment_counter, label=scene['type']))
 
+        # TODO backward links from tokens to scenes?
         return doc
 
     def postprocess(self, pred_labels):

@@ -36,11 +36,11 @@ def coref_uhhlt(nlp, name, coref_home, model, config_name, pbar_opts, use_cuda, 
     add_extension(Token, "in_coref", default=False)
     add_extension(Token, "coref_clusters", default=list())
 
-    return CorefIncrementalTagger(name=name, coref_home=coref_home, model=model, config_name=config_name,
-                                  pbar_opts=pbar_opts, use_cuda=use_cuda, device_on_run=device_on_run)
+    return CorefTagger(name=name, coref_home=coref_home, model=model, config_name=config_name,
+                       pbar_opts=pbar_opts, use_cuda=use_cuda, device_on_run=device_on_run)
 
 
-class CorefIncrementalTagger(Module):
+class CorefTagger(Module):
 
     def __init__(self, name, coref_home='resources/uhh-lt-neural-coref',
                  model='resources/model_droc_incremental_no_segment_distance_May02_17-32-58_1800.bin',
