@@ -97,7 +97,7 @@ class CorefTagger(Module):
     def after_run(self):
         if self.device_on_run:
             self.model.to('cpu')
-            torch.cuda.empty_cache()  # TODO
+            torch.cuda.empty_cache()
 
     # cf. resources/uhh-lt-neural-coref/model.py
     def get_predictions_incremental(self, input_ids, input_mask, speaker_ids, sentence_len, genre, sentence_map,

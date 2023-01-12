@@ -137,4 +137,6 @@ class EventClassifier(Module):
             }
             new_spans.append(SpanGroup(doc, spans=event_span, attrs=attrs))
         doc._.events = new_spans
+
+        # TODO backward links from tokens to scenes?
         return doc

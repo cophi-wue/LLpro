@@ -5,11 +5,12 @@ import sys
 from pathlib import Path
 
 import torch
-from spacy import Language
+from spacy import Language, Vocab
 from spacy.tokens import Doc, Token, MorphAnalysis
 from typing import Callable
 
 from ..common import Module
+from ..stts2upos import conv_table
 
 
 @Language.factory("tagger_rnntagger", assigns=['token._.rnntagger_tag', 'token.morph'], default_config={
@@ -100,33 +101,27 @@ class RNNTagger(Module):
         return doc
 
 
-def feature(featname, arg):
-    """Use this dict to change the way morph values
-    are represented.
-    Map a value to `None` if you want a feature to
-    be removed."""
-    value_map = {'Sg': 'Sing', 'Pl': 'Plur'}
-    return (featname, value_map.get(arg, arg))
-
-
-degree = partial(feature, "Degree")
-case = partial(feature, "Case")
-number = partial(feature, "Number")
-gender = partial(feature, "Gender")
-definite = partial(feature, "Definite")
-person = partial(feature, "Person")
-tense = partial(feature, "Tense")
-mood = partial(feature, "Mood")
-
-
 def from_tigertag(tigertag):
-    """Extract morphological information from a TIGER tag."""
+    # adapted from https://github.com/rubcompling/konvens2019/scripts/common.py
+
+    def feature(featname, arg):
+        value_map = {'Sg': 'Sing', 'Pl': 'Plur'}
+        return featname, value_map.get(arg, arg)
+
+    degree = partial(feature, "Degree")
+    case = partial(feature, "Case")
+    number = partial(feature, "Number")
+    gender = partial(feature, "Gender")
+    person = partial(feature, "Person")
+    tense = partial(feature, "Tense")
+    mood = partial(feature, "Mood")
+
     stts, *parts = tigertag.split(".")
     if stts == '$':
-        stts = '$.'
+        stts, parts = '$.', []
+    _, base_features = conv_table[stts]
+    feature_dict = MorphAnalysis(Vocab(), base_features).to_dict()
 
-    # Maps an POS tag to the list of functions we need in
-    # order to interpret the morphological information.
     def fields_for_tag(tag):
         if tag == "ADJA":
             return [degree, case, number, gender]
@@ -160,7 +155,6 @@ def from_tigertag(tigertag):
         else:
             return []
 
-    active_fields = fields_for_tag(stts)
-    feats = dict(f(p) for f, p in zip(active_fields, parts))
-
-    return feats
+    extracted_fields = dict(f(p) for f, p in zip(fields_for_tag(stts), parts))
+    feature_dict.update(extracted_fields)
+    return feature_dict

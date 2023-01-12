@@ -22,6 +22,7 @@ nlp.add_pipe('ner_flair')
 nlp.add_pipe('events_uhhlt')
 
 # replace the default tokenizer with custom one
+import llpro.components.tokenizer_somajo
 nlp.tokenizer = llpro.components.tokenizer_somajo.SoMaJoTokenizer(nlp.vocab)
 
 # run the pipeline on some example text
@@ -32,9 +33,21 @@ for token in doc:
     print(token.i, token.text, token.tag_)
 ```
 
+Note that you can pass additional options by specifying them in the `config` dict when adding to the pipeline:
+```python
+nlp.add_pipe('the_component', config={'some_option': False})
+```
+
 ## Common Options of the Custom Components
 
-TODO
+The following options can be passed to many of the custom components below, and are specified here:
+
+| Name            | Description                                                                                                                                                                                                                                                                     |
+|:----------------|:--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `use_cuda`      | If `True`, use CUDA to run the component on the GPU, if available Default: `True`                                                                                                                                                                                               |
+| `device_on_run` | If `True`, will load the component's model(s) into the GPU memory only when the component is being called. If `False`, the component will load the model(s) into GPU memoty immediately after the component is added to the pipeline. Default: `False`                          |
+| `pbar_opts`     | Dict object that is passed to the [tqdm progress bar constructior](https://tqdm.github.io/docs/tqdm/#__init__) as keywords, which is used to display progress of the component when being called. Default: `{'unit': 'tok', 'postfix': self.name, 'ncols': 80, 'leave': False}` |
+
 
 ## List of Implemented Custom Components / Tokenizer
 
@@ -64,10 +77,10 @@ In the default implementation `main.py`, arguments `paragraph_separator` and `se
  
 Options:
 
-| Name            |     | Description                                                                   |
-|-----------------|:----|-------------------------------------------------------------------------------|
-| `model`         |     | SoMeWeTa model to use. Default: `resources/german_newspaper_2020-05-28.model` |
-| `pbar_opts`     |     | as specified above                                                            |
+| Name            | Description                                                                   |
+|-----------------|:------------------------------------------------------------------------------|
+| `model`         | SoMeWeTa model to use. Default: `resources/german_newspaper_2020-05-28.model` |
+| `pbar_opts`     | as specified above                                                            |
 
 The SoMeWeTaTagger component uses the POS tagger [SoMeWeTa](https://github.com/tsproisl/SoMeWeTa) proposed by Proisl [(2018)](#ref-proisl_someweta_2018)
 to predict POS tags ([TIGER variant of the STTS tagset](https://www.ims.uni-stuttgart.de/documents/ressourcen/korpora/tiger-corpus/annotation/tiger_scheme-syntax.pdf)) for each token.
@@ -83,12 +96,12 @@ Like Spacy's [default tagger](https://spacy.io/usage/linguistic-features#pos-tag
 
 Options:
 
-| Name             |                                                                                                                                                              | Description        |
-|------------------|:-------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------|
+| Name             | Description                                                                                                                                                  |
+|------------------|:-------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `rnntagger_home` | Root directory of the RNNTagger, i.e. where `PyNMT`, `PyRNN` resides. (Adaptations of the code are not required in this case.) Default: `resoures/RNNTagger` |
-| `use_cuda`       |                                                                                                                                                              | as specified above |
-| `device_on_run`  |                                                                                                                                                              | as specified above |
-| `pbar_opts`      |                                                                                                                                                              | as specified above |
+| `use_cuda`       | as specified above                                                                                                                                           |
+| `device_on_run`  | as specified above                                                                                                                                           |
+| `pbar_opts`      | as specified above                                                                                                                                           |
 
 The RNNTagger component uses the POS tagger and Analyzer [RNNTagger](https://www.cis.uni-muenchen.de/~schmid/tools/RNNTagger/) proposed by Schmid [(2019)](#ref-schmid_deep_2019)
 to predict for each token a morphological analysis and an additional POS token for further processing.
@@ -106,7 +119,7 @@ Additionally, the predicted POS tag is stored in the custom attribute `token._rn
 Options:
 
 | Name             | Description                                                                                                                                                  |
-|------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------|
+|:-----------------|:-------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `rnntagger_home` | Root directory of the RNNTagger, i.e. where `PyNMT`, `PyRNN` resides. (Adaptations of the code are not required in this case.) Default: `resoures/RNNTagger` |
 | `use_cuda`       | as specified above                                                                                                                                           |
 | `device_on_run`  | as specified above                                                                                                                                           |
@@ -127,7 +140,7 @@ Like Spacy's [default lemmatizer](https://spacy.io/usage/linguistic-features#lem
 Options:
 
 | Name                 | Description                                                                                              |
-|----------------------|----------------------------------------------------------------------------------------------------------|
+|:---------------------|:---------------------------------------------------------------------------------------------------------|
 | `parzu_home`         | Root directory of the ParZu parser *adapted for use with the LLpro pipeline*. Default: `resources/ParZu` |
 | `num_processes`      | Number of parallel processes to run the parser on. Default: `1`                                          |
 | `tokens_per_process` | Max chunk size per process. Default: `1000`                                                              |
@@ -151,7 +164,7 @@ Unlike Spacy's default dependency parser, this component does not modify the sen
 Options:
 
 | Name            | Description                                                                |
-|-----------------|----------------------------------------------------------------------------|
+|:----------------|:---------------------------------------------------------------------------|
 | `batch_size`    | Number of sentences concurrently processed by one prediction. Default: `8` |
 | `use_cuda`      | as specified above                                                         |
 | `device_on_run` | as specified above                                                         |
@@ -172,7 +185,7 @@ Like Spacy's [default entity recognizer](https://spacy.io/usage/linguistic-featu
 Options:
 
 | Name            | Description                                                                                                                                                                                                                                                                                                                                |
-|-----------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+|:----------------|:-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `coref_home`    | Root directory of the local neural-coref repository *adapted for use with the LLpro pipeline*. Default: `resources/uhh-lt-neural-coref`.                                                                                                                                                                                                   |
 | `config_name`   | Model configuration to use. See also the respective documentation in the [UHH-LT/neural-coref](https://github.com/uhh-lt/neural-coref/tree/konvens#configurations) repository. Default: `droc_incremental_no_segment_distance`                                                                                                             |
 | `model`         | Model state dict to load. Should match the specified model configuration. Usually ends with `.bin`. See also the respective documentation in the [UHH-LT/neural-coref](https://github.com/uhh-lt/neural-coref/tree/konvens#evaluation) repository. Default: `resources/model_droc_incremental_no_segment_distance_May02_17-32-58_1800.bin` |
@@ -209,7 +222,7 @@ Additionally, `span_group.attrs["id"]` holds a unique ID of that cluster.
 Options:
 
 | Name            | Description                                                                                                                                                                                                                                                                                                                                                                                                       |
-|-----------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+|:----------------|:------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `model_paths`   | A dict with keys corresponding to the STWR type and values corresponding to the respective model. Default: `{'direct': 'resources/rwtagger_models/models/direct/final-model.pt', 'indirect': 'resources/rwtagger_models/models/indirect/final-model.pt', 'reported': 'resources/rwtagger_models/models/reported/final-model.pt', 'freeIndirect': 'resources/rwtagger_models/models/freeIndirect/final-model.pt'}` |
 | `use_cuda`      | as specified above                                                                                                                                                                                                                                                                                                                                                                                                |
 | `device_on_run` | as specified above                                                                                                                                                                                                                                                                                                                                                                                                |
@@ -228,7 +241,7 @@ This component assigns to each token a subset of the four speech types `direct`,
 Options:
 
 | Name            | Description                                                                                                                   |
-|-----------------|-------------------------------------------------------------------------------------------------------------------------------|
+|:----------------|:------------------------------------------------------------------------------------------------------------------------------|
 | `stss_se_home`  | Root directory of the `scene_segmentation` repository *adapted for use with the LLpro pipeline*. Default: `resources/stss-se` |
 | `model_path`    | The scene segmenter model to use. Default: `resources/stss-se/extracted_model`                                                |
 | `use_cuda`      | as specified above                                                                                                            |
@@ -251,7 +264,7 @@ For each span `scene` in `doc._.scenes`, the attribute `scene.label` is one of `
 Options:
 
 | Name                  | Description                                                                                                                                  |
-|-----------------------|----------------------------------------------------------------------------------------------------------------------------------------------|
+|:----------------------|:---------------------------------------------------------------------------------------------------------------------------------------------|
 | `event_classify_home` | Root directory of the local event-classify repository *adapted for use with the LLpro pipeline*. Default: `resources/uhh-lt-event-classify`. |
 | `model_dir`           | The scene segmenter model to use. Default: `resources/eventclassifier_model/demo_model`                                                      |
 | `batch_size`          | Number of sentences concurrently processed by one prediction. Default: `8`                                                                   |

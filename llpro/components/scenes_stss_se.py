@@ -43,7 +43,7 @@ class SceneSegmenter(Module):
     def after_run(self):
         if self.device_on_run:
             self.archive.model.to('cpu')
-            torch.cuda.empty_cache()  # TODO
+            torch.cuda.empty_cache()
 
     def process(self, doc: Doc, progress_fn: Callable[[int], None]) -> Doc:
         sentences = list(doc.sents)

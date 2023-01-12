@@ -65,15 +65,15 @@ def spacy_doc_to_dataframe(doc):
         return getattr(tok, attr)
 
     for tok in doc:
-        for column in ["i", "text", "is_sent_start", "_.is_para_start", "_.is_section_start", "pos_", "tag_", "lemma_", "dep_", "head"]:
+        for column in ["i", "text", "is_sent_start", "_.is_para_start", "_.is_section_start", "pos_", "tag_", "lemma_", "morph", "dep_", "head"]:
             val = get_value(tok, column)
             if val is None:
                 val = '_'
             if type(val) is bool:
                 val = int(val)
-            token_attribute_dictionary[column].append(str(val))
-
-    # TODO morphology
+            if type(val) not in {int, float}:
+                val = str(val)
+            token_attribute_dictionary[column].append(val)
 
     for tok in doc:
         if len(tok._.speech) > 0:
@@ -96,23 +96,22 @@ def spacy_doc_to_dataframe(doc):
     df = pandas.DataFrame(token_attribute_dictionary).set_index('i')
 
     if hasattr(doc._, 'scenes'):
-        df['scene_id'] = -1
+        df['scene_id'] = '_'
         df['scene_label'] = '_'
         for scene in doc._.scenes:
             for tok in scene:
-                df.loc[tok.i, 'scene_id'] = scene.id
+                df.loc[tok.i, 'scene_id'] = int(scene.id)
                 df.loc[tok.i, 'scene_label'] = scene.label_
 
     if hasattr(doc._, 'events'):
-        df['scene_id'] = '_'
-        df['scene_label'] = '_'
+        df['event_id'] = '_'
+        df['event_label'] = '_'
         for i, event in enumerate(doc._.events):
-            # label = f'ID={i}|EventType={event.attrs["event_types"]}|SpeechType={event.attrs["speech_type"]}|ThoughtRepresentation={event.attrs["thought_representation"]}'
             for span in event:
                 for tok in span:
-                    df.loc[tok.i, 'event_id'] = i
+                    df.loc[tok.i, 'event_id'] = int(i)
                     df.loc[tok.i, 'event_label'] = event.attrs['event_type']
 
     df = df.rename(columns=lambda x: re.sub(r'(_$|^_\.)', '', x))
-    df = df.fillna(value='_')
+    df = df.fillna(value='_').replace('', '_')
     return df

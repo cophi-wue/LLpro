@@ -71,7 +71,7 @@ class FLERTNERTagger(Module):
         if self.device_on_run:
             self.tagger.to('cpu')
             flair.device = 'cpu'
-            torch.cuda.empty_cache()  # TODO
+            torch.cuda.empty_cache()
 
     def _annotate_batch(self, batch):
         from flair.models.sequence_tagger_utils.bioes import get_spans_from_bio
