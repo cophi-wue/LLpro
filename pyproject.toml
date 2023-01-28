@@ -1,0 +1,46 @@
+[tool.poetry]
+name = "LLpro"
+description = "A Literary Language Processing Pipeline for German Narrative Texts"
+version = "0.1.0"
+authors = ["Anton Ehrmanntraut <anton.ehrmanntraut@uni-wuerzburg.de>"]
+packages = [{include = "llpro"}]
+include = [{ path = "llpro/**/*.so", format = "wheel" }]
+exclude = ["bin"]
+
+[tool.poetry.dependencies]
+python = ">=3.7.1,<3.11"
+spacy = "~=3.5"
+regex = "^2022.10.31"
+pyhocon = "^0.3.59"
+SoMaJo = ">=2.2.2"
+SoMeWeTa = ">=1.8.1"
+Cython = "~=0.29"
+more-itertools = "^9.0.0"
+torch = ">=1.11"
+pandas = "1.3"
+multiprocessing_on_dill = "^3.5.0-alpha.4"
+pexpect = "^4.8.0"
+flair = "0.11.3"
+#spacy-transformers = ">=1.2"
+#transformers = "^4.26.0"
+#pytorch-transformers = "^1.2.0"
+spacy-transformers = "^1.2.1"
+pytorch-transformers = "^1.2.0"
+omegaconf = "^2.3.0"
+
+[tool.poetry.dev-dependencies]
+pytest = ">=5.2"
+cython = "~=0.29"
+
+[tool.poetry.build]
+generate-setup-file = false
+script = "build.py"
+
+[build-system]
+requires = [
+    "poetry-core>=1.0.0",
+    "cython~=0.29",
+    "spacy~=3.5"
+]
+build-backend = "poetry.core.masonry.api"
+

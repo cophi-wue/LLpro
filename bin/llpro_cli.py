@@ -9,11 +9,11 @@ import torch
 from spacy.tokens import Doc
 from tqdm import tqdm
 
+from tqdm.contrib.logging import logging_redirect_tqdm
+
 import llpro.components
 from llpro.common import spacy_doc_to_dataframe
 from llpro.components.tokenizer_somajo import SoMaJoTokenizer
-
-from tqdm.contrib.logging import logging_redirect_tqdm
 
 
 def get_cpu_limit():
@@ -54,13 +54,13 @@ def run_pipeline_on_files(filenames, nlp, tokenizer=None):
 
 def create_pipe():
     nlp = spacy.blank("de")
-    # nlp = spacy.load('de_dep_news_trf', exclude=['ner', 'lemmatizer', 'textcat', 'morphologizer', 'attribute_ruler', 'parser'])
+    # nlp = spacy.load('de_dep_news_trf', exclude=['ner', 'lemmatizer', 'textcat', 'morphologizer', 'attribute_ruler'])
     nlp.add_pipe('tagger_someweta')
     nlp.add_pipe('tagger_rnntagger')
     nlp.add_pipe('lemma_rnntagger')
     nlp.add_pipe('parser_parzu_parallelized', config={'num_processes': get_cpu_limit()})
     nlp.add_pipe('speech_redewiedergabe')
-    nlp.add_pipe('scenes_stss_se')
+    #nlp.add_pipe('scenes_stss_se')
     nlp.add_pipe('coref_uhhlt')
     nlp.add_pipe('ner_flair')
     nlp.add_pipe('events_uhhlt')
@@ -117,6 +117,7 @@ if __name__ == "__main__":
         else:
             for root, dirs, members in os.walk(f, followlinks=True):
                 filenames.extend([os.path.join(root, m) for m in members])
+
 
     logging.info('Loading pipeline')
     nlp = create_pipe()
