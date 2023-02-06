@@ -60,7 +60,7 @@ def create_pipe():
     nlp.add_pipe('lemma_rnntagger')
     nlp.add_pipe('parser_parzu_parallelized', config={'num_processes': get_cpu_limit()})
     nlp.add_pipe('speech_redewiedergabe')
-    #nlp.add_pipe('scenes_stss_se')
+    nlp.add_pipe('scenes_stss_se')
     nlp.add_pipe('coref_uhhlt')
     nlp.add_pipe('ner_flair')
     nlp.add_pipe('events_uhhlt')
