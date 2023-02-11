@@ -1,6 +1,7 @@
 import collections
 import logging
 import time
+from abc import abstractmethod
 
 import regex as re
 import pandas
@@ -19,6 +20,7 @@ class Module:
             pbar_opts = {'unit': 'tok', 'postfix': self.name, 'ncols': 80, 'leave': False}
         self.pbar_opts = pbar_opts
 
+    @abstractmethod
     def process(self, doc: Doc, progress_fn: Callable[[int], None]) -> Doc:
         raise NotImplementedError()
 

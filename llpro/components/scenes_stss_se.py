@@ -4,12 +4,12 @@ from pathlib import Path
 
 import torch
 from spacy import Language
-from spacy.tokens import Doc, Span
+from spacy.tokens import Doc, Span, Token
 from typing import Callable
 
 from ..common import Module
 
-@Language.factory("scenes_stss_se", assigns=['doc._.scenes'], default_config={
+@Language.factory("scenes_stss_se", assigns=['doc._.scenes', 'token._.scene'], default_config={
     'stss_se_home': 'resources/stss-se-scene-segmenter',
     'model_path': 'resources/stss-se-scene-segmenter/extracted_model', 'use_cuda': True, 'device_on_run': True,
     'pbar_opts': None
@@ -17,8 +17,9 @@ from ..common import Module
 def scenes_stss_se(nlp, name, stss_se_home, model_path, use_cuda, device_on_run, pbar_opts):
     if not Doc.has_extension('scenes'):
         Doc.set_extension('scenes', default=list())
+    if not Token.has_extension('scene'):
+        Token.set_extension('scene', default=None)
     return SceneSegmenter(name, stss_se_home=stss_se_home, model_path=model_path, use_cuda=use_cuda, device_on_run=device_on_run, pbar_opts=pbar_opts)
-
 
 class SceneSegmenter(Module):
 
@@ -67,9 +68,12 @@ class SceneSegmenter(Module):
 
         scenes = self.postprocess(pred_labels)
         for segment_counter, scene in enumerate(scenes):
-            doc._.scenes.append(Span(doc=doc, start=sentences[scene['begin']][0].i, end=sentences[scene['end']-1][-1].i+1, span_id=segment_counter, label=scene['type']))
+            scene_obj = Span(doc=doc, start=sentences[scene['begin']][0].i, end=sentences[scene['end']-1][-1].i+1, span_id=segment_counter, label=scene['type'])
+            doc._.scenes.append(scene_obj)
 
-        # TODO backward links from tokens to scenes?
+            for tok in scene_obj:
+                tok._.scene = scene_obj
+
         return doc
 
     def postprocess(self, pred_labels):

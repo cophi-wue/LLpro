@@ -72,18 +72,17 @@ class RedewiedergabeTagger(Module):
 
     def process(self, doc: Doc, progress_fn: Callable[[int], None]) -> Doc:
         from flair.data import Sentence
-        max_seq_length = 510  # inc. [CLS] and [SEP]
+        max_seq_length = 100  # inc. [CLS] and [SEP]
         it = iter(doc)
 
         def gen_sentences():
-            for sentence in doc.sents:
-                for sent_part in more_itertools.constrained_batches([x.text for x in sentence], max_size=max_seq_length,
-                                                                    get_len=lambda x: self.bert_sequence_length(x)):
-                    yield sent_part
+            tokenized_sentences = ([x.text for x in sentence] for sentence in doc.sents)
+            for list_of_sentences in more_itertools.constrained_batches(tokenized_sentences, max_size=max_seq_length):# get_len=lambda x: self.bert_sequence_length(x)):
+                yield itertools.chain(*list_of_sentences)
 
         for chunk in more_itertools.chunked(gen_sentences(), n=10):
             chunk = [list(sent) for sent in chunk]
-            tokens = itertools.islice(it, sum(len(x) for x in chunk))
+            tokens = list(itertools.islice(it, sum(len(x) for x in chunk)))
 
             for rw_type, model in self.models.items():
                 sent_objs = [Sentence(sent) for sent in chunk]
@@ -92,6 +91,7 @@ class RedewiedergabeTagger(Module):
 
                 labels = itertools.chain.from_iterable(sent.to_dict('cat')['cat'] for sent in sent_objs)
                 for tok, label in zip(tokens, labels):
+                    # label = label[0].to_dict()
                     if label['value'] != 'x':
                         tok._.speech.append(rw_type)
                     tok._.speech_prob[rw_type] = label['confidence']

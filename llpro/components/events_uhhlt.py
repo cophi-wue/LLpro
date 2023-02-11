@@ -58,8 +58,15 @@ class EventClassifier(Module):
         from event_classify.segmentations import event_segmentation
         from event_classify.preprocessing import get_annotation_dicts
         from event_classify.datasets import JSONDataset, SpanAnnotation
-        # NOTE: this populates the doc._.scenes attribute with (unlabeled) verbal phrases
-        segmented_doc = event_segmentation(doc)
+        if len(doc._.events) == 0:
+            # NOTE: this populates the doc._.events attribute with (unlabeled) verbal phrases. Type: list of list of
+            # Span's
+            segmented_doc = event_segmentation(doc)
+        else:
+            # NOTE: this case only exists to facilitate testing. We are unable to reproduce the segmentation of the
+            # reference implementation by parsing alone, since the reference runs on Spacy's v3.3 parser, but we use
+            # Spacy v3.5.
+            segmented_doc = doc
         annotations = get_annotation_dicts(segmented_doc)
         data = {"text": doc.text, "title": None, "annotations": annotations}
 
@@ -119,8 +126,8 @@ class EventClassifier(Module):
             for name in ["speech_type", "thought_representation"]:
                 all_predictions[name].append(getattr(out, name).cpu())
 
-            new_progress_counter = doc.char_span(annotations[0].start,
-                                                 annotations[-1].end).end  # token index of the last processed span
+            new_progress_counter = doc.char_span(annotations[0].start, annotations[-1].end,
+                                                 alignment_mode='expand').end  # token index of the last processed span
             progress_fn(new_progress_counter - progress_counter)
             progress_counter = new_progress_counter
 
@@ -138,5 +145,5 @@ class EventClassifier(Module):
             new_spans.append(SpanGroup(doc, spans=event_span, attrs=attrs))
         doc._.events = new_spans
 
-        # TODO backward links from tokens to scenes?
+        # TODO backward links from tokens to events?
         return doc

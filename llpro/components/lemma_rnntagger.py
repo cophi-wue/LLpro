@@ -116,10 +116,10 @@ class RNNLemmatizer(Module):
                 cache_key = (tok.text, tok._.rnntagger_tag)
                 if is_cached:
                     lemma, prob = cached[cache_key]
-                    tok.lemma_ = lemma
+                    tok.lemma_ = lemma if lemma != '<unk>' else tok.text
                 else:
                     lemma, prob = next(processed)
                     cached[cache_key] = (lemma, prob)
-                    tok.lemma_ = lemma
+                    tok.lemma_ = lemma if lemma != '<unk>' else tok.text
                 progress_fn(1)
         return doc

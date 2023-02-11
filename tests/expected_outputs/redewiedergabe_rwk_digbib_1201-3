@@ -1,0 +1,628 @@
+tok	normtok	lemma	pos	rfpos	sentstart	stwr	frame	speaker	intexpr	note	direct	indirect	reported	freeIndirect	direct_pred	freeIndirect_pred	indirect_pred	reported_pred
+Obgleich	Obgleich	obgleich	KOUS	CONJ.SubFin.-	yes	direct.speech.8	-	-	-	-	direct	x	x	x	x	x	x	x
+ich	ich	ich	PPER	PRO.Pers.Subst.1.Nom.Sg.*	no	direct.speech.8	-	speaker.8	-	-	direct	x	x	x	x	x	x	x
+mich	mich	mich	PRF	PRO.Refl.Subst.1.Acc.Sg.*	no	direct.speech.8	-	-	-	-	direct	x	x	x	x	x	x	x
+für	für	für	APPR	APPR.Acc	no	direct.speech.8	-	-	-	-	direct	x	x	x	x	x	x	x
+den	den	d	ART	ART.Def.Acc.Sg.Masc	no	direct.speech.8	-	-	-	-	direct	x	x	x	x	x	x	x
+Verein	Verein	Verein	NN	N.Reg.Acc.Sg.Masc	no	direct.speech.8	-	-	-	-	direct	x	x	x	x	x	x	x
+für	für	für	APPR	APPR.Acc	no	direct.speech.8	-	-	-	-	direct	x	x	x	x	x	x	x
+Innere	Innere	inner	ADJA	ADJA.Pos.Acc.Sg.Fem	no	direct.speech.8	-	-	-	-	direct	x	x	x	x	x	x	x
+Mission	Mission	Mission	NN	N.Reg.Acc.Sg.Fem	no	direct.speech.8	-	-	-	-	direct	x	x	x	x	x	x	x
+stets	stets	stets	ADV	ADV	no	direct.speech.8	-	-	-	-	direct	x	x	x	x	x	x	x
+lebhaft	lebhaft	lebhaft	ADJD	ADJD.Pos	no	direct.speech.8	-	-	-	-	direct	x	x	x	x	x	x	x
+interessiert	interessiert	interessieren	VVPP	VPP.Full.Psp	no	direct.speech.8	-	-	-	-	direct	x	x	x	x	x	x	x
+habe	habe	haben	VAFIN	VFIN.Haben.1.Sg.Pres.Ind	no	direct.speech.8	-	-	-	-	direct	x	x	x	x	x	x	x
+,	,	,	$,	SYM.Pun.Comma	no	direct.speech.8	-	-	-	-	direct	x	x	x	x	x	x	x
+höre	höre	hören	VVFIN	VFIN.Full.1.Sg.Pres.Ind	no	direct.speech.8	-	-	-	-	direct	x	x	x	x	x	x	x
+ich	ich	ich	PPER	PRO.Pers.Subst.1.Nom.Sg.*	no	direct.speech.8	-	-	-	-	direct	x	x	x	x	x	x	x
+nur	nur	nur	ADV	ADV	no	direct.speech.8	-	-	-	-	direct	x	x	x	x	x	x	x
+mit	mit	mit	APPR	APPR.Dat	no	direct.speech.8	-	-	-	-	direct	x	x	x	x	x	x	x
+halbem	halbem	halb	ADJA	ADJA.Pos.Dat.Sg.Neut	no	direct.speech.8	-	-	-	-	direct	x	x	x	x	x	x	x
+Ohr	Ohr	Ohr	NN	N.Reg.Dat.Sg.Neut	no	direct.speech.8	-	-	-	-	direct	x	x	x	x	x	x	x
+zu	zu	zu	PTKVZ	PART.Verb	no	direct.speech.8	-	-	-	-	direct	x	x	x	x	x	x	x
+,	,	,	$,	SYM.Pun.Comma	no	direct.speech.8	-	-	-	-	direct	x	x	x	x	x	x	x
+denn	denn	denn	KON	CONJ.Coord.Denn	no	direct.speech.8	-	-	-	-	direct	x	x	x	x	x	x	x
+ich	ich	ich	PPER	PRO.Pers.Subst.1.Nom.Sg.*	no	direct.speech.8	-	-	-	-	direct	x	x	x	x	x	x	x
+bin	bin	sein	VAFIN	VFIN.Sein.1.Sg.Pres.Ind	no	direct.speech.8	-	-	-	-	direct	x	x	x	x	x	x	x
+viel	viel	viel	ADV	ADV	no	direct.speech.8	-	-	-	-	direct	x	x	x	x	x	x	x
+zu	zu	zu	PTKA	PART.Deg	no	direct.speech.8	-	-	-	-	direct	x	x	x	x	x	x	x
+sehr	sehr	sehr	ADV	ADV	no	direct.speech.8	-	-	-	-	direct	x	x	x	x	x	x	x
+mit	mit	mit	APPR	APPR.Dat	no	direct.speech.8	-	-	-	-	direct	x	x	x	x	x	x	x
+mir	mir	ich	PPER	PRO.Pers.Subst.1.Dat.Sg.*	no	direct.speech.8	-	-	-	-	direct	x	x	x	x	x	x	x
+selber	selber	selber	ADV	ADV	no	direct.speech.8	-	-	-	-	direct	x	x	x	x	x	x	x
+beschäftigt	beschäftigt	beschäftigen	VVPP	VPP.Full.Psp	no	direct.speech.8	-	-	-	-	direct	x	x	x	x	x	x	x
+.	.	.	$.	SYM.Pun.Sent	no	direct.speech.8	-	-	-	-	direct	x	x	x	x	x	x	x
+Als	Als	als	KOUS	CONJ.SubFin.-	yes	direct.speech.8	-	-	-	-	direct	x	x	x	x	x	x	x
+dann	dann	dann	ADV	ADV	no	direct.speech.8	-	-	-	-	direct	x	x	x	x	x	x	x
+endlich	endlich	endlich	ADV	ADV	no	direct.speech.8	-	-	-	-	direct	x	x	x	x	x	x	x
+die	die	d	ART	ART.Def.Nom.Sg.Fem	no	direct.speech.8	-	-	-	-	direct	x	x	x	x	x	x	x
+Sache	Sache	Sache	NN	N.Reg.Nom.Sg.Fem	no	direct.speech.8	-	-	-	-	direct	x	x	x	x	x	x	x
+zu	zu	zu	APPR	APPR.Dat	no	direct.speech.8	-	-	-	-	direct	x	x	x	x	x	x	x
+Ende	Ende	Ende	NN	N.Reg.Dat.Sg.Neut	no	direct.speech.8	-	-	-	-	direct	x	x	x	x	x	x	x
+ist	ist	sein	VAFIN	VFIN.Sein.3.Sg.Pres.Ind	no	direct.speech.8	-	-	-	-	direct	x	x	x	x	x	x	x
+,	,	,	$,	SYM.Pun.Comma	no	direct.speech.8	-	-	-	-	direct	x	x	x	x	x	x	x
+und	und	und	KON	CONJ.Coord.-	no	direct.speech.8	-	-	-	-	direct	x	x	x	x	x	x	x
+ich	ich	ich	PPER	PRO.Pers.Subst.1.Nom.Sg.*	no	direct.speech.8	-	-	-	-	direct	x	x	x	x	x	x	x
+gehen	gehen	gehen	VVINF	VINF.Full.-	no	direct.speech.8	-	-	-	-	direct	x	x	x	x	x	x	x
+will	will	wollen	VMFIN	VFIN.Mod.1.Sg.Pres.Ind	no	direct.speech.8	-	-	-	-	direct	x	x	x	x	x	x	x
+,	,	,	$,	SYM.Pun.Comma	no	direct.speech.8	-	-	-	-	direct	x	x	x	x	x	x	x
+werde	werde	werden	VAFIN	VFIN.Aux.1.Sg.Pres.Ind	no	direct.speech.8|reported.speech.3	-	-	-	-	direct	x	reported	x	x	x	x	reported
+ich	ich	ich	PPER	PRO.Pers.Subst.1.Nom.Sg.*	no	direct.speech.8|reported.speech.3	-	-	-	-	direct	x	reported	x	x	x	x	reported
+zum	zum	zum	APPRART	APPRART.Dat.Sg.Masc	no	direct.speech.8|reported.speech.3	-	-	-	-	direct	x	reported	x	x	x	x	reported
+Präsidenten	Präsidenten	Präsident	NN	N.Reg.Dat.Sg.Masc	no	direct.speech.8|reported.speech.3	-	speaker.4	-	-	direct	x	reported	x	x	x	x	reported
+des	des	d	ART	ART.Def.Gen.Sg.Neut	no	direct.speech.8|reported.speech.3	-	-	-	-	direct	x	reported	x	x	x	x	reported
+Landeskonsistoriums	Landeskonsistoriums	Landeskonsistorium	NN	N.Reg.Gen.Sg.Neut	no	direct.speech.8|reported.speech.3	-	-	-	-	direct	x	reported	x	x	x	x	reported
+gerufen	gerufen	rufen	VVPP	VPP.Full.Psp	no	direct.speech.8|reported.speech.3	-	-	intexpr.3	-	direct	x	reported	x	x	x	x	reported
+.	.	.	$.	SYM.Pun.Sent	no	direct.speech.8|reported.speech.3	-	-	-	-	direct	x	reported	x	x	x	x	reported
+Ich	Ich	ich	PPER	PRO.Pers.Subst.1.Nom.Sg.*	yes	direct.speech.8	-	-	-	-	direct	x	x	x	x	x	x	x
+komme	komme	kommen	VVFIN	VFIN.Full.1.Sg.Pres.Ind	no	direct.speech.8	-	-	-	-	direct	x	x	x	x	x	x	x
+hin	hin	hin	PTKVZ	PART.Verb	no	direct.speech.8	-	-	-	-	direct	x	x	x	x	x	x	x
+:	:	:	$.	SYM.Pun.Colon	no	direct.speech.8	-	-	-	-	direct	x	x	x	x	x	x	x
+»	&quot;	&quot;	$(	ADJA.Pos.Nom.Sg.Masc	yes	direct.speech.8|direct.speech.4	-	-	-	-	direct	x	x	x	direct	x	x	x
+Herr	Herr	Herr	NN	N.Reg.Nom.Sg.Masc	no	direct.speech.8|direct.speech.4	-	-	-	-	direct	x	x	x	direct	x	x	x
+Pastor	Pastor	Pastor	NN	N.Reg.Nom.Sg.Masc	no	direct.speech.8|direct.speech.4	-	-	-	-	direct	x	x	x	direct	x	x	x
+Viemeyer	Viemeyer	Viemeyer	NE	N.Name.Nom.Sg.Masc	no	direct.speech.8|direct.speech.4	-	-	-	-	direct	x	x	x	direct	x	x	x
+!	!	!	$.	SYM.Pun.Sent	no	direct.speech.8|direct.speech.4	-	-	-	-	direct	x	x	x	direct	x	x	x
+Es	Es	es	PPER	PRO.Pers.Subst.3.Nom.Sg.Neut	yes	direct.speech.8|direct.speech.4	frame.5	-	-	-	direct	x	x	x	direct	x	x	x
+scheint	scheint	scheinen	VVFIN	VFIN.Full.3.Sg.Pres.Ind	no	direct.speech.8|direct.speech.4	frame.5	-	intexpr.5	-	direct	x	x	x	direct	x	x	x
+mir	mir	ich	PPER	PRO.Pers.Subst.1.Dat.Sg.*	no	direct.speech.8|direct.speech.4	frame.5	speaker.5	-	-	direct	x	x	x	direct	x	x	x
+doch	doch	doch	ADV	ADV	no	direct.speech.8|direct.speech.4	frame.5	-	-	-	direct	x	x	x	direct	x	x	x
+,	,	,	$,	SYM.Pun.Comma	no	direct.speech.8|direct.speech.4	frame.5	-	-	-	direct	x	x	x	direct	x	x	x
+daß	daß	daß	KOUS	CONJ.SubFin.-	no	direct.speech.8|direct.speech.4|indirect.thought.5	-	-	-	-	direct	indirect	x	x	direct	x	indirect	reported
+Ihnen	Ihnen	sie	PPER	PRO.Pers.Subst.3.Dat.Pl.*	no	direct.speech.8|direct.speech.4|indirect.thought.5	-	-	-	-	direct	indirect	x	x	direct	x	indirect	reported
+eine	eine	eine	ART	ART.Indef.Nom.Sg.Fem	no	direct.speech.8|direct.speech.4|indirect.thought.5	-	-	-	-	direct	indirect	x	x	direct	x	indirect	reported
+würdige	würdige	würdig	ADJA	ADJA.Pos.Nom.Sg.Fem	no	direct.speech.8|direct.speech.4|indirect.thought.5	-	-	-	-	direct	indirect	x	x	direct	x	indirect	reported
+Auffassung	Auffassung	Auffaßung	NN	N.Reg.Nom.Sg.Fem	no	direct.speech.8|direct.speech.4|indirect.thought.5	-	-	-	-	direct	indirect	x	x	direct	x	indirect	reported
+der	der	d	ART	ART.Def.Gen.Pl.Fem	no	direct.speech.8|direct.speech.4|indirect.thought.5	-	-	-	-	direct	indirect	x	x	direct	x	indirect	reported
+ernsten	ernsten	ernst	ADJA	ADJA.Pos.Gen.Pl.Fem	no	direct.speech.8|direct.speech.4|indirect.thought.5	-	-	-	-	direct	indirect	x	x	direct	x	indirect	reported
+Aufgaben	Aufgaben	Aufgabe	NN	N.Reg.Gen.Pl.Fem	no	direct.speech.8|direct.speech.4|indirect.thought.5	-	-	-	-	direct	indirect	x	x	direct	x	indirect	reported
+des	des	d	ART	ART.Def.Gen.Sg.Masc	no	direct.speech.8|direct.speech.4|indirect.thought.5	-	-	-	-	direct	indirect	x	x	direct	x	indirect	reported
+Vereins	Vereins	Verein	NN	N.Reg.Gen.Sg.Masc	no	direct.speech.8|direct.speech.4|indirect.thought.5	-	-	-	-	direct	indirect	x	x	direct	x	indirect	reported
+für	für	für	APPR	APPR.Acc	no	direct.speech.8|direct.speech.4|indirect.thought.5	-	-	-	-	direct	indirect	x	x	direct	x	indirect	reported
+Innere	Innere	inner	ADJA	ADJA.Pos.Acc.Sg.Fem	no	direct.speech.8|direct.speech.4|indirect.thought.5	-	-	-	-	direct	indirect	x	x	direct	x	indirect	reported
+Mission	Mission	Mission	NN	N.Reg.Acc.Sg.Fem	no	direct.speech.8|direct.speech.4|indirect.thought.5	-	-	-	-	direct	indirect	x	x	direct	x	indirect	reported
+abgeht	abgeht	abgehen	VVFIN	VFIN.Full.3.Sg.Pres.Ind	no	direct.speech.8|direct.speech.4|indirect.thought.5	-	-	-	-	direct	indirect	x	x	direct	x	indirect	reported
+.	.	.	$.	SYM.Pun.Sent	no	direct.speech.8|direct.speech.4|indirect.thought.5	-	-	-	-	direct	indirect	x	x	direct	x	indirect	reported
+Ich	Ich	ich	PPER	PRO.Pers.Subst.1.Nom.Sg.*	yes	direct.speech.8|direct.speech.4|reported.speech.6	-	speaker.6	-	-	direct	x	reported	x	direct	x	x	reported
+will	will	wollen	VMFIN	VFIN.Mod.1.Sg.Pres.Ind	no	direct.speech.8|direct.speech.4|reported.speech.6	-	-	-	-	direct	x	reported	x	direct	x	x	reported
+keine	keine	keine	PIAT	PRO.Indef.Attr.-.Acc.Pl.Neut	no	direct.speech.8|direct.speech.4|reported.speech.6	-	-	-	-	direct	x	reported	x	direct	x	x	reported
+langen	langen	lang	ADJA	ADJA.Pos.Acc.Pl.Neut	no	direct.speech.8|direct.speech.4|reported.speech.6	-	-	-	-	direct	x	reported	x	direct	x	x	reported
+Worte	Worte	Wort	NN	N.Reg.Acc.Pl.Neut	no	direct.speech.8|direct.speech.4|reported.speech.6	-	-	intexpr.6	-	direct	x	reported	x	direct	x	x	reported
+machen	machen	machen	VVINF	VINF.Full.-	no	direct.speech.8|direct.speech.4|reported.speech.6	-	-	intexpr.6	-	direct	x	reported	x	direct	x	x	reported
+.	.	.	$.	SYM.Pun.Sent	no	direct.speech.8|direct.speech.4|reported.speech.6	-	-	-	-	direct	x	reported	x	direct	x	x	reported
+Die	Die	d	ART	ART.Def.Nom.Sg.Fem	yes	direct.speech.8|direct.speech.4	-	-	-	-	direct	x	x	x	direct	x	x	x
+Sache	Sache	Sache	NN	N.Reg.Nom.Sg.Fem	no	direct.speech.8|direct.speech.4	-	-	-	-	direct	x	x	x	direct	x	x	x
+widert	widert	widern	VVFIN	VFIN.Full.3.Sg.Pres.Ind	no	direct.speech.8|direct.speech.4	-	-	-	-	direct	x	x	x	direct	x	x	x
+mich	mich	ich	PPER	PRO.Pers.Subst.1.Acc.Sg.*	no	direct.speech.8|direct.speech.4	-	speaker.7	-	-	direct	x	x	x	direct	x	x	x
+an	an	an	PTKVZ	PART.Verb	no	direct.speech.8|direct.speech.4	-	-	-	-	direct	x	x	x	direct	x	x	x
+.	.	.	$.	SYM.Pun.Sent	no	direct.speech.8|direct.speech.4	-	-	-	-	direct	x	x	x	direct	x	x	x
+Was	Was	was	PWS	PRO.Inter.Subst.-.Nom.Sg.Neut	yes	direct.speech.8|direct.speech.4	-	-	-	-	direct	x	x	x	direct	x	x	x
+zuviel	zuviel	zuviel	PIS	ADV	no	direct.speech.8|direct.speech.4	-	-	-	-	direct	x	x	x	direct	x	x	x
+ist	,	,	$,	SYM.Pun.Comma	no	direct.speech.8|direct.speech.4	-	-	-	-	direct	x	x	x	direct	x	x	x
+,	,	,	$,	SYM.Pun.Comma	no	direct.speech.8|direct.speech.4	-	-	-	-	direct	x	x	x	direct	x	x	x
+ist	ist	sein	VAFIN	VFIN.Sein.3.Sg.Pres.Ind	no	direct.speech.8|direct.speech.4	-	-	-	-	direct	x	x	x	direct	x	x	x
+zuviel	zuviel	zuviel	PIS	PRO.Indef.Subst.-.*.*.*	no	direct.speech.8|direct.speech.4	-	-	-	-	direct	x	x	x	direct	x	x	x
+.	.	.	$.	SYM.Pun.Sent	no	direct.speech.8|direct.speech.4	-	-	-	-	direct	x	x	x	direct	x	x	x
+Einstweilen	Einstweilen	einstweilen	ADV	ADV	yes	direct.speech.8|direct.speech.4	-	-	-	-	direct	x	x	x	direct	x	x	x
+werden	werden	werden	VAFIN	VFIN.Aux.3.Pl.Pres.Ind	no	direct.speech.8|direct.speech.4	-	-	-	-	direct	x	x	x	direct	x	x	x
+Sie	Sie	sie	PPER	PRO.Pers.Subst.3.Nom.Pl.*	no	direct.speech.8|direct.speech.4	-	-	-	-	direct	x	x	x	direct	x	x	x
+sich	sich	sich	PRF	PRO.Refl.Subst.3.Acc.Pl.*	no	direct.speech.8|direct.speech.4	-	-	-	-	direct	x	x	x	direct	x	x	x
+unverzüglich	unverzüglich	unverzüglich	ADJD	ADJD.Pos	no	direct.speech.8|direct.speech.4	-	-	-	-	direct	x	x	x	direct	x	x	x
+nach	nach	nach	APPR	APPR.Dat	no	direct.speech.8|direct.speech.4	-	-	-	-	direct	x	x	x	direct	x	x	x
+Stolberg	Stolberg	Stolberg	NN	N.Name.Dat.Sg.Neut	no	direct.speech.8|direct.speech.4	-	-	-	-	direct	x	x	x	direct	x	x	x
+zurückbegeben	zurückbegeben	zurückbegeben	VVPP	VPP.Full.Psp	no	direct.speech.8|direct.speech.4	-	-	-	-	direct	x	x	x	direct	x	x	x
+.	.	.	$.	SYM.Pun.Sent	no	direct.speech.8|direct.speech.4	-	-	-	-	direct	x	x	x	direct	x	x	x
+Dort	Dort	dort	ADV	ADV	yes	direct.speech.8|direct.speech.4|reported.speech writing.7.nonfact	-	-	-	-	direct	x	reported	x	direct	x	x	x
+werden	werden	werden	VAFIN	VFIN.Aux.3.Pl.Pres.Ind	no	direct.speech.8|direct.speech.4|reported.speech writing.7.nonfact	-	-	-	-	direct	x	reported	x	direct	x	x	x
+Sie	Sie	sie	PPER	PRO.Pers.Subst.3.Nom.Pl.*	no	direct.speech.8|direct.speech.4|reported.speech writing.7.nonfact	-	-	-	-	direct	x	reported	x	direct	x	x	x
+das	das	d	ART	ART.Def.Acc.Sg.Neut	no	direct.speech.8|direct.speech.4|reported.speech writing.7.nonfact	-	-	-	-	direct	x	reported	x	direct	x	x	x
+Weitere	Weitere	weit	ADJA	N.Reg.Acc.Sg.Neut	no	direct.speech.8|direct.speech.4|reported.speech writing.7.nonfact	-	-	-	-	direct	x	reported	x	direct	x	x	x
+von	von	von	APPR	APPR.Dat	no	direct.speech.8|direct.speech.4|reported.speech writing.7.nonfact	-	-	-	-	direct	x	reported	x	direct	x	x	x
+mir	mir	ich	PPER	PRO.Pers.Subst.1.Dat.Sg.*	no	direct.speech.8|direct.speech.4|reported.speech writing.7.nonfact	-	-	-	-	direct	x	reported	x	direct	x	x	x
+hören	hören	hören	VVINF	VFIN.Full.3.Pl.Pres.Ind	no	direct.speech.8|direct.speech.4|reported.speech writing.7.nonfact	-	-	-	-	direct	x	reported	x	direct	x	x	x
+.	.	.	$.	SYM.Pun.Sent	no	direct.speech.8|direct.speech.4|reported.speech writing.7.nonfact	-	-	-	-	direct	x	reported	x	direct	x	x	x
+«	&quot;	&quot;	$(	N.Reg.Nom.Sg.Masc	no	direct.speech.8|direct.speech.4	-	-	-	-	direct	x	x	x	direct	x	x	x
+Damit	Damit	damit	PAV	PROADV.Dem	yes	direct.speech.8	-	-	-	-	direct	x	x	x	x	x	x	x
+dreht	dreht	drehen	VVFIN	VFIN.Full.3.Sg.Pres.Ind	no	direct.speech.8	-	-	-	-	direct	x	x	x	x	x	x	x
+er	er	er	PPER	PRO.Pers.Subst.3.Nom.Sg.Masc	no	direct.speech.8	-	-	-	-	direct	x	x	x	x	x	x	x
+sich	sich	sich	PRF	PRO.Refl.Subst.3.Acc.Sg.*	no	direct.speech.8	-	-	-	-	direct	x	x	x	x	x	x	x
+um	um	um	PTKVZ	PART.Verb	no	direct.speech.8	-	-	-	-	direct	x	x	x	x	x	x	x
+und	und	und	KON	CONJ.Coord.-	no	direct.speech.8	-	-	-	-	direct	x	x	x	x	x	x	x
+ging	ging	gehen	VVFIN	VFIN.Full.3.Sg.Past.Ind	no	direct.speech.8	-	-	-	-	direct	x	x	x	x	x	x	x
+...	...	...	$(	SYM.Pun.Cont	no	direct.speech.8	-	-	-	-	direct	x	x	x	x	x	x	x
+ließ	ließ	lassen	VVFIN	VFIN.Full.3.Sg.Past.Ind	no	direct.speech.8	-	-	-	-	direct	x	x	x	x	x	x	x
+mich	mich	ich	PPER	PRO.Pers.Subst.1.Acc.Sg.*	no	direct.speech.8	-	-	-	-	direct	x	x	x	x	x	x	x
+stehn	stehen	stehen	VVFIN	VINF.Full.-	no	direct.speech.8	-	-	-	-	direct	x	x	x	x	x	x	x
+.	.	.	$.	SYM.Pun.Sent	no	direct.speech.8	-	-	-	-	direct	x	x	x	x	x	x	x
+Und	Und	und	KON	CONJ.Coord.-	yes	direct.speech.8|reported.speech.9	-	-	-	-	direct	x	reported	x	x	x	x	reported
+nun	nun	nun	ADV	ADV	no	direct.speech.8|reported.speech.9	-	-	-	-	direct	x	reported	x	x	x	x	reported
+frag	frag	fragen	VVFIN	VIMP.Full.2.Sg	no	direct.speech.8|reported.speech.9	-	-	intexpr.9	-	direct	x	reported	x	x	x	x	reported
+ich	ich	ich	PPER	PRO.Pers.Subst.1.Nom.Sg.*	no	direct.speech.8|reported.speech.9	-	speaker.9	-	-	direct	x	reported	x	x	x	x	reported
+Sie	Sie	sie	PPER	PRO.Pers.Subst.3.Acc.Pl.*	no	direct.speech.8|reported.speech.9	-	-	-	-	direct	x	reported	x	x	x	x	reported
+,	,	,	$,	SYM.Pun.Comma	no	direct.speech.8|reported.speech.9	-	-	-	-	direct	x	reported	x	x	x	x	x
+meine	meine	meine	PPOSAT	PRO.Poss.Attr.-.Acc.Pl.Masc	no	direct.speech.8|reported.speech.9	-	-	-	-	direct	x	reported	x	x	x	x	x
+Herren	Herren	Herr	NN	N.Reg.Acc.Pl.Masc	no	direct.speech.8|reported.speech.9	-	-	-	-	direct	x	reported	x	x	x	x	x
+!	!	!	$.	SYM.Pun.Sent	no	direct.speech.8|reported.speech.9	-	-	-	-	direct	x	reported	x	x	x	x	x
+Beschwöre	Beschwöre	beschwören	VVFIN	VFIN.Full.3.Sg.Pres.Subj	yes	direct.speech.8	-	-	-	-	direct	x	x	x	x	x	x	x
+Sie	Sie	sie	PPER	PRO.Pers.Subst.3.Nom.Sg.Fem	no	direct.speech.8	-	-	-	-	direct	x	x	x	x	x	x	x
+:	:	:	$.	SYM.Pun.Colon	no	direct.speech.8	-	-	-	-	direct	x	x	x	x	x	x	x
+sagen	sagen	sagen	VVFIN	VFIN.Full.3.Pl.Pres.Ind	no	direct.speech.8|indirect.speech.39|reported.speech.41.nonfact	-	-	intexpr.41	-	direct	indirect	reported	x	direct	x	x	reported
+Sie	Sie	sie	PPER	PRO.Pers.Subst.3.Nom.Pl.*	no	direct.speech.8|indirect.speech.39|reported.speech.41.nonfact	-	speaker.41	-	-	direct	indirect	reported	x	direct	x	x	reported
+mir	mir	ich	PPER	PRO.Pers.Subst.1.Dat.Sg.*	no	direct.speech.8|indirect.speech.39|reported.speech.41.nonfact	-	-	-	-	direct	indirect	reported	x	direct	x	x	reported
+,	,	,	$,	SYM.Pun.Comma	no	direct.speech.8	frame.39	-	-	-	direct	x	x	x	direct	x	x	x
+ich	ich	ich	PPER	PRO.Pers.Subst.1.Nom.Sg.*	no	direct.speech.8	frame.39	speaker.39	-	-	direct	x	x	x	direct	x	x	x
+bitte	bitte	bitten	VVFIN	VFIN.Full.1.Sg.Pres.Ind	no	direct.speech.8	frame.39	-	intexpr.39	-	direct	x	x	x	direct	x	x	x
+Sie	Sie	sie	PPER	PRO.Pers.Subst.3.Acc.*.*	no	direct.speech.8	frame.39	-	-	-	direct	x	x	x	direct	x	x	x
+:	:	:	$.	SYM.Pun.Colon	no	direct.speech.8	frame.39	-	-	-	direct	x	x	x	direct	x	x	x
+was	was	was	PWS	PRO.Inter.Subst.-.Acc.Sg.Neut	yes	direct.speech.8|indirect.speech.39|reported.speech.41.nonfact	-	-	-	-	direct	indirect	reported	x	direct	x	x	x
+kann	kann	können	VMFIN	VFIN.Mod.3.Sg.Pres.Ind	no	direct.speech.8|indirect.speech.39|reported.speech.41.nonfact	-	-	-	-	direct	indirect	reported	x	direct	x	x	x
+das	das	die	PDS	PRO.Dem.Subst.-.Nom.Sg.Neut	no	direct.speech.8|indirect.speech.39|reported.speech.41.nonfact	-	-	-	-	direct	indirect	reported	x	direct	x	x	x
+sein	sein	sein	VAINF	VINF.Sein.-	no	direct.speech.8|indirect.speech.39|reported.speech.41.nonfact	-	-	-	-	direct	indirect	reported	x	direct	x	x	x
+?	?	?	$.	SYM.Pun.Sent	no	direct.speech.8|indirect.speech.39|reported.speech.41.nonfact	-	-	-	-	direct	indirect	reported	x	direct	x	x	x
+Was	Was	was	PWS	PRO.Inter.Subst.-.Acc.Sg.Neut	yes	direct.speech.8	-	-	-	-	direct	x	x	x	direct	x	x	x
+kann	kann	können	VMFIN	VFIN.Mod.3.Sg.Pres.Ind	no	direct.speech.8	-	-	-	-	direct	x	x	x	direct	x	x	x
+dem	dem	die	PDS	PRO.Dem.Subst.-.Dat.Sg.Neut	no	direct.speech.8	-	-	-	-	direct	x	x	x	direct	x	x	x
+zugrunde	zugrunde	zugrunde	ADV	ADV	no	direct.speech.8	-	-	-	-	direct	x	x	x	direct	x	x	x
+liegen	liegen	liegen	VVFIN	VINF.Full.-	no	direct.speech.8	-	-	-	-	direct	x	x	x	direct	x	x	x
+?	?	?	$.	SYM.Pun.Sent	no	direct.speech.8	-	-	-	-	direct	x	x	x	direct	x	x	x
+Daß	Daß	daß	KOUS	CONJ.SubFin.-	yes	direct.speech.8	-	-	-	-	direct	x	x	x	direct	x	x	x
+man	man	man	PIS	PRO.Indef.Subst.-.Nom.Sg.*	no	direct.speech.8	-	-	-	-	direct	x	x	x	direct	x	x	x
+sich	sich	sich	PRF	PRO.Refl.Subst.3.Acc.Sg.*	no	direct.speech.8	-	-	-	-	direct	x	x	x	direct	x	x	x
+am	am	am	APPRART	APPRART.Dat.Sg.Masc	no	direct.speech.8	-	-	-	-	direct	x	x	x	direct	x	x	x
+frühen	frühen	früh	ADJA	ADJA.Pos.Dat.Sg.Masc	no	direct.speech.8	-	-	-	-	direct	x	x	x	direct	x	x	x
+Morgen	Morgen	Morgen	NN	N.Reg.Dat.Sg.Masc	no	direct.speech.8	-	-	-	-	direct	x	x	x	direct	x	x	x
+mit	mit	mit	APPR	APPR.Dat	no	direct.speech.8	-	-	-	-	direct	x	x	x	direct	x	x	x
+der	der	d	ART	ART.Def.Dat.Sg.Fem	no	direct.speech.8	-	-	-	-	direct	x	x	x	direct	x	x	x
+langen	langen	lang	ADJA	ADJA.Pos.Dat.Sg.Fem	no	direct.speech.8	-	-	-	-	direct	x	x	x	direct	x	x	x
+Pfeife	Pfeife	Pfeife	NN	N.Reg.Dat.Sg.Fem	no	direct.speech.8	-	-	-	-	direct	x	x	x	direct	x	x	x
+zum	zum	zum	APPRART	APPRART.Dat.Sg.Neut	no	direct.speech.8	-	-	-	-	direct	x	x	x	direct	x	x	x
+Fenster	Fenster	Fenster	NN	N.Reg.Dat.Sg.Neut	no	direct.speech.8	-	-	-	-	direct	x	x	x	direct	x	x	x
+hinauslegt	hinauslegt	hinauslegen	VVFIN	VPP.Full.Psp	no	direct.speech.8	-	-	-	-	direct	x	x	x	direct	x	x	x
+,	,	,	$,	SYM.Pun.Comma	no	direct.speech.8	-	-	-	-	direct	x	x	x	direct	x	x	x
+du	du	du	PPER	PRO.Pers.Subst.2.Nom.Sg.*	no	direct.speech.8	-	-	-	-	direct	x	x	x	direct	x	x	x
+lieber	lieber	lieber	ADV	ADV	no	direct.speech.8	-	-	-	-	direct	x	x	x	direct	x	x	x
+Gott	Gott	Gott	NN	N.Reg.Nom.Sg.Masc	no	direct.speech.8	-	-	-	-	direct	x	x	x	direct	x	x	x
+,	,	,	$,	SYM.Pun.Comma	no	direct.speech.8	-	-	-	-	direct	x	x	x	direct	x	x	x
+das	das	die	PDS	PRO.Dem.Subst.-.Nom.Sg.Neut	no	direct.speech.8	-	-	-	-	direct	x	x	x	direct	x	x	x
+mag	mag	mögen	VMFIN	VFIN.Mod.3.Sg.Pres.Ind	no	direct.speech.8	-	-	-	-	direct	x	x	x	direct	x	x	x
+ja	ja	ja	ADV	ADV	no	direct.speech.8	-	-	-	-	direct	x	x	x	direct	x	x	x
+kleinstädtisch	kleinstädtisch	kleinstädtisch	ADJD	ADJD.Pos	no	direct.speech.8	-	-	-	-	direct	x	x	x	direct	x	x	x
+sein	sein	sein	VAINF	VINF.Sein.-	no	direct.speech.8	-	-	-	-	direct	x	x	x	direct	x	x	x
+,	,	,	$,	SYM.Pun.Comma	no	direct.speech.8	-	-	-	-	direct	x	x	x	direct	x	x	x
+meinetwegen	meinetwegen	meinetwegen	ADV	ADV	no	direct.speech.8	-	-	-	-	direct	x	x	x	direct	x	x	x
+auch	auch	auch	ADV	ADV	no	direct.speech.8	-	-	-	-	direct	x	x	x	direct	x	x	x
+ungehörig	ungehörig	ungehörig	ADJD	ADJD.Pos	no	direct.speech.8	-	-	-	-	direct	x	x	x	direct	x	x	x
+,	,	,	$,	SYM.Pun.Comma	no	direct.speech.8	-	-	-	-	direct	x	x	x	direct	x	x	x
+wenigstens	wenigstens	wenigstens	ADV	ADV	no	direct.speech.8	-	-	-	-	direct	x	x	x	direct	x	x	x
+für	für	für	APPR	APPR.Acc	no	direct.speech.8	-	-	-	-	direct	x	x	x	direct	x	x	x
+einen	einen	eine	ART	ART.Indef.Acc.Sg.Masc	no	direct.speech.8	-	-	-	-	direct	x	x	x	direct	x	x	x
+Geistlichen	Geistlichen	Geistliche	NN	N.Reg.Acc.Sg.Masc	no	direct.speech.8	-	-	-	-	direct	x	x	x	direct	x	x	x
+.	.	.	$.	SYM.Pun.Sent	no	direct.speech.8	-	-	-	-	direct	x	x	x	direct	x	x	x
+Aber	Aber	aber	KON	CONJ.Coord.Aber	yes	direct.speech.8	-	-	-	-	direct	x	x	x	direct	x	x	x
+unmöglich	unmöglich	unmöglich	ADJD	ADJD.Pos	no	direct.speech.8	-	-	-	-	direct	x	x	x	direct	x	x	x
+kann	kann	können	VMFIN	VFIN.Mod.3.Sg.Pres.Ind	no	direct.speech.8	-	-	-	-	direct	x	x	x	direct	x	x	x
+das	das	die	PDS	PRO.Dem.Subst.-.Nom.Sg.Neut	no	direct.speech.8	-	-	-	-	direct	x	x	x	direct	x	x	x
+doch	doch	doch	ADV	ADV	no	direct.speech.8	-	-	-	-	direct	x	x	x	direct	x	x	x
+ein	ein	eine	ART	ART.Indef.Nom.Sg.Neut	no	direct.speech.8	-	-	-	-	direct	x	x	x	direct	x	x	x
+solches	solches	solch	PIAT	PRO.Indef.Attr.-.Nom.Sg.Neut	no	direct.speech.8	-	-	-	-	direct	x	x	x	direct	x	x	x
+Verbrechen	Verbrechen	Verbrechen	NN	N.Reg.Nom.Sg.Neut	no	direct.speech.8	-	-	-	-	direct	x	x	x	direct	x	x	x
+sein	sein	sein	VAINF	VINF.Sein.-	no	direct.speech.8	-	-	-	-	direct	x	x	x	direct	x	x	x
+...	...	...	$(	SYM.Pun.Cont	no	direct.speech.8	-	-	-	-	direct	x	x	x	direct	x	x	x
+Wie	Wie	wie	PWAV	PROADV.Inter	no	direct.speech.8	-	-	-	-	direct	x	x	x	direct	x	x	x
+?	?	?	$.	SYM.Pun.Sent	no	direct.speech.8	-	-	-	-	direct	x	x	x	direct	x	x	x
+–	-	-	$(	SYM.Pun.Hyph	yes	direct.speech.8	-	-	-	-	direct	x	x	x	x	x	x	x
+Wir	Wir	wir	PPER	PRO.Pers.Subst.1.Nom.Pl.*	yes	reported.speech.12.nonfact	-	speaker.12	-	-	x	x	reported	x	x	x	x	reported
+verharrten	verharrten	verharren	VVFIN	VFIN.Full.1.Pl.Past.Ind	no	reported.speech.12.nonfact	-	-	-	-	x	x	reported	x	x	x	x	reported
+nach	nach	nach	APPR	APPR.Dat	no	reported.speech.12.nonfact	-	-	-	-	x	x	reported	x	x	x	x	reported
+Schluß	Schluß	Schluß	NN	N.Reg.Dat.Sg.Masc	no	reported.speech.12.nonfact	-	-	-	-	x	x	reported	x	x	x	x	reported
+dieser	dieser	diese	PDAT	PRO.Dem.Attr.-.Gen.Sg.Fem	no	reported.speech.12.nonfact	-	-	-	-	x	x	reported	x	x	x	x	reported
+Rede	Rede	Rede	NN	N.Reg.Gen.Sg.Fem	no	reported.speech.12.nonfact	-	-	-	-	x	x	reported	x	x	x	x	reported
+eine	eine	eine	ART	ART.Indef.Acc.Sg.Fem	no	reported.speech.12.nonfact	-	-	-	-	x	x	reported	x	x	x	x	reported
+Zeitlang	Zeitlang	Zeitlang	NN	N.Reg.Acc.Sg.Fem	no	reported.speech.12.nonfact	-	-	-	-	x	x	reported	x	x	x	x	reported
+in	in	in	APPR	APPR.In	no	reported.speech.12.nonfact	-	-	-	-	x	x	reported	x	x	x	x	reported
+tiefem	tiefem	tief	ADJA	ADJA.Pos.Dat.Sg.Neut	no	reported.speech.12.nonfact	-	-	-	-	x	x	reported	x	x	x	x	reported
+Schweigen	Schweigen	Schweigen	NN	N.Reg.Dat.Sg.Neut	no	reported.speech.12.nonfact	-	-	intexpr.12	-	x	x	reported	x	x	x	x	reported
+.	.	.	$.	SYM.Pun.Sent	no	reported.speech.12.nonfact	-	-	-	-	x	x	reported	x	x	x	x	reported
+Die	Die	d	ART	ART.Def.Nom.Sg.Fem	yes	-	-	-	-	-	x	x	x	x	x	x	x	x
+Situation	Situation	Situation	NN	N.Reg.Nom.Sg.Fem	no	-	-	-	-	-	x	x	x	x	x	x	x	x
+war	war	sein	VAFIN	VFIN.Sein.3.Sg.Past.Ind	no	-	-	-	-	-	x	x	x	x	x	x	x	x
+doch	doch	doch	ADV	ADV	no	-	-	-	-	-	x	x	x	x	x	x	x	x
+prekär	prekär	prekär	ADJD	ADJD.Pos	no	-	-	-	-	-	x	x	x	x	x	x	x	x
+geworden	geworden	werden	VAPP	VPP.Aux.Psp	no	-	-	-	-	-	x	x	x	x	x	x	x	x
+...	...	...	$.	SYM.Pun.Cont	no	-	-	-	-	-	x	x	x	x	x	x	x	x
+Schließlich	Schließlich	schließlich	ADV	ADV	yes	-	frame.14	-	-	-	x	x	x	x	x	x	x	x
+ergriff	ergriff	ergreifen	VVFIN	VFIN.Full.3.Sg.Past.Ind	no	-	frame.14	-	intexpr.14	-	x	x	x	x	x	x	x	x
+der	der	d	ART	ART.Def.Nom.Sg.Masc	no	-	frame.14	-	-	-	x	x	x	x	x	x	x	x
+Oberstabsarzt	Oberstabsarzt	Oberstabsarzt	NN	N.Reg.Nom.Sg.Masc	no	-	frame.14	speaker.14_17_42	-	-	x	x	x	x	x	x	x	x
+das	das	d	ART	ART.Def.Acc.Sg.Neut	no	-	frame.14	-	-	-	x	x	x	x	x	x	x	x
+Wort	Wort	Wort	NN	N.Reg.Acc.Sg.Neut	no	-	frame.14	-	intexpr.14	-	x	x	x	x	x	x	x	x
+:	:	:	$.	SYM.Pun.Colon	no	-	frame.14	-	-	-	x	x	x	x	x	x	x	x
+–	-	-	$(	SYM.Pun.Hyph	yes	direct.speech.14	-	-	-	-	direct	x	x	x	x	x	x	x
+Sagen	Sagen	sagen	VVFIN	VFIN.Full.3.Pl.Pres.Ind	no	direct.speech.14	frame.15	-	intexpr.15	-	direct	x	x	x	direct	x	x	x
+Sie	Sie	sie	PPER	PRO.Pers.Subst.3.Nom.Pl.*	no	direct.speech.14	frame.15	-	-	-	direct	x	x	x	direct	x	x	x
+,	,	,	$,	SYM.Pun.Comma	no	direct.speech.14	frame.15	-	-	-	direct	x	x	x	direct	x	x	x
+Herr	Herr	Herr	NN	N.Reg.Nom.Sg.Masc	no	direct.speech.14	frame.15	speaker.15_16_18_21_44	-	-	direct	x	x	x	direct	x	x	x
+Pastor	Pastor	Pastor	NN	N.Reg.Nom.Sg.Masc	no	direct.speech.14	frame.15	speaker.15_16_18_21_44	-	-	direct	x	x	x	direct	x	x	x
+,	,	,	$,	SYM.Pun.Comma	no	direct.speech.14	frame.15	-	-	-	direct	x	x	x	direct	x	x	x
+haben	haben	haben	VAFIN	VFIN.Haben.3.Pl.Pres.Ind	no	direct.speech.14|indirect.speech.15.nonfact	-	-	-	-	direct	indirect	x	x	direct	x	indirect	reported
+Sie	Sie	sie	PPER	PRO.Pers.Subst.3.Nom.Pl.*	no	direct.speech.14|indirect.speech.15.nonfact	-	-	-	-	direct	indirect	x	x	direct	x	indirect	reported
+die	die	d	ART	ART.Def.Acc.Sg.Fem	no	direct.speech.14|indirect.speech.15.nonfact	-	-	-	-	direct	indirect	x	x	direct	x	indirect	reported
+Sache	Sache	Sache	NN	N.Reg.Acc.Sg.Fem	no	direct.speech.14|indirect.speech.15.nonfact	-	-	-	-	direct	indirect	x	x	direct	x	indirect	reported
+mit	mit	mit	APPR	APPR.Dat	no	direct.speech.14|indirect.speech.15.nonfact	-	-	-	-	direct	indirect	x	x	direct	x	indirect	reported
+der	der	d	ART	PRO.Dem.Subst.-.Dat.Sg.Fem	no	direct.speech.14|indirect.speech.15.nonfact	-	-	-	-	direct	indirect	x	x	direct	x	indirect	reported
+.	.	.	$.	SYM.Pun.Sent	no	direct.speech.14|indirect.speech.15.nonfact	-	-	-	-	direct	indirect	x	x	direct	x	indirect	reported
+.	.	.	$.	SYM.Pun.Sent	no	direct.speech.14|indirect.speech.15.nonfact	-	-	-	-	direct	indirect	x	x	direct	x	indirect	reported
+der	der	d	ART	ART.Def.Dat.Sg.Fem	no	direct.speech.14|indirect.speech.15.nonfact	-	-	-	-	direct	indirect	x	x	direct	x	indirect	reported
+Frau	Frau	Frau	NN	N.Reg.Dat.Sg.Fem	no	direct.speech.14|indirect.speech.15.nonfact	-	-	-	-	direct	indirect	x	x	direct	x	indirect	reported
+Oberförster	Oberförster	Oberförster	NN	N.Reg.Nom.Sg.Masc	no	direct.speech.14|indirect.speech.15.nonfact	-	-	-	-	direct	indirect	x	x	direct	x	indirect	reported
+besprochen	besprochen	besprechen	VVPP	VPP.Full.Psp	no	direct.speech.14|indirect.speech.15.nonfact	-	-	-	-	direct	indirect	x	x	direct	x	indirect	reported
+?	?	?	$.	SYM.Pun.Sent	no	direct.speech.14|indirect.speech.15.nonfact	-	-	-	-	direct	indirect	x	x	direct	x	indirect	reported
+–	-	-	$(	SYM.Pun.Hyph	yes	direct.speech.16	-	-	-	-	direct	x	x	x	direct	x	x	x
+O	O	o	ITJ	N.Name.Nom.Sg.*	no	direct.speech.16	-	-	-	-	direct	x	x	x	direct	x	x	x
+doch	doch	doch	ADV	ADV	no	direct.speech.16	-	-	-	-	direct	x	x	x	direct	x	x	x
+,	,	,	$,	SYM.Pun.Comma	no	direct.speech.16	-	-	-	-	direct	x	x	x	direct	x	x	x
+gewiß	gewiß	gewiß	ADV	ADV	no	direct.speech.16	-	-	-	-	direct	x	x	x	direct	x	x	x
+!	!	!	$.	SYM.Pun.Sent	no	direct.speech.16	-	-	-	-	direct	x	x	x	direct	x	x	x
+Die	Die	d	ART	ART.Def.Nom.Sg.Fem	yes	direct.speech.16	-	-	-	-	direct	x	x	x	direct	x	x	x
+gute	gute	gut	ADJA	ADJA.Pos.Nom.Sg.Fem	no	direct.speech.16	-	-	-	-	direct	x	x	x	direct	x	x	x
+Frau	Frau	Frau	NN	N.Reg.Nom.Sg.Fem	no	direct.speech.16	-	-	-	-	direct	x	x	x	direct	x	x	x
+war	war	sein	VAFIN	VFIN.Sein.3.Sg.Past.Ind	no	direct.speech.16	-	-	-	-	direct	x	x	x	direct	x	x	x
+ganz	ganz	ganz	ADV	ADV	no	direct.speech.16	-	-	-	-	direct	x	x	x	direct	x	x	x
+unglücklich	unglücklich	unglücklich	ADJD	ADJD.Pos	no	direct.speech.16	-	-	-	-	direct	x	x	x	direct	x	x	x
+,	,	,	$,	SYM.Pun.Comma	no	direct.speech.16	-	-	-	-	direct	x	x	x	direct	x	x	x
+ganz	ganz	ganz	ADV	ADV	no	direct.speech.16	-	-	-	-	direct	x	x	x	direct	x	x	x
+unglücklich	unglücklich	unglücklich	ADJD	ADJD.Pos	no	direct.speech.16	-	-	-	-	direct	x	x	x	direct	x	x	x
+,	,	,	$,	SYM.Pun.Comma	no	direct.speech.16	-	-	-	-	direct	x	x	x	direct	x	x	x
+–	-	-	$(	SYM.Pun.Hyph	no	direct.speech.16	-	-	-	-	direct	x	x	x	direct	x	x	x
+sie	sie	sie	PPER	PRO.Pers.Subst.3.Nom.Sg.Fem	no	direct.speech.16	-	-	-	-	direct	x	x	x	direct	x	x	x
+hat	hat	haben	VAFIN	VFIN.Haben.3.Sg.Pres.Ind	no	direct.speech.16	-	-	-	-	direct	x	x	x	direct	x	x	x
+sogar	sogar	sogar	ADV	ADV	no	direct.speech.16	-	-	-	-	direct	x	x	x	direct	x	x	x
+geweint	geweint	weinen	VVPP	VPP.Full.Psp	no	direct.speech.16	-	-	-	-	direct	x	x	x	direct	x	x	x
+.	.	.	$.	SYM.Pun.Sent	no	direct.speech.16	-	-	-	-	direct	x	x	x	direct	x	x	x
+–	-	-	$(	SYM.Pun.Hyph	yes	direct.speech.17	-	-	-	-	direct	x	x	x	direct	x	x	x
+So	So	so	ADV	ADV	no	direct.speech.17	-	-	-	-	direct	x	x	x	direct	x	x	x
+.	.	.	$.	SYM.Pun.Sent	no	direct.speech.17	-	-	-	-	direct	x	x	x	direct	x	x	x
+–	-	-	$(	SYM.Pun.Hyph	no	direct.speech.17	-	-	-	-	direct	x	x	x	direct	x	x	x
+–	-	-	$(	SYM.Pun.Hyph	no	direct.speech.17	-	-	-	-	direct	x	x	x	direct	x	x	x
+–	-	-	$(	SYM.Pun.Hyph	yes	direct.speech.18	-	-	-	-	direct	x	x	x	direct	x	x	x
+Ja	Ja	ja	PTKANT	PART.Ans	no	direct.speech.18	-	-	-	-	direct	x	x	x	direct	x	x	x
+,	,	,	$,	SYM.Pun.Comma	no	direct.speech.18	-	-	-	-	direct	x	x	x	direct	x	x	x
+und	und	und	KON	CONJ.Coord.-	no	direct.speech.18	-	-	-	-	direct	x	x	x	direct	x	x	x
+hat	hat	haben	VAFIN	VFIN.Haben.3.Sg.Pres.Ind	no	direct.speech.18	-	-	-	-	direct	x	x	x	direct	x	x	x
+immer	immer	immer	ADV	ADV	no	direct.speech.18	-	-	-	-	direct	x	x	x	direct	x	x	x
+versucht	versucht	versuchen	VVPP	VPP.Full.Psp	no	direct.speech.18	-	-	-	-	direct	x	x	x	direct	x	x	x
+,	,	,	$,	SYM.Pun.Comma	no	direct.speech.18	-	-	-	-	direct	x	x	x	direct	x	x	x
+mich	mich	ich	PPER	PRO.Pers.Subst.1.Acc.Sg.*	no	direct.speech.18	-	-	-	-	direct	x	x	x	direct	x	x	x
+zu	zu	zu	PTKZU	PART.Zu	no	direct.speech.18	-	-	-	-	direct	x	x	x	direct	x	x	x
+trösten	trösten	trösten	VVINF	VINF.Full.-	no	direct.speech.18	-	-	-	-	direct	x	x	x	direct	x	x	x
+.	.	.	$.	SYM.Pun.Sent	no	direct.speech.18	-	-	-	-	direct	x	x	x	direct	x	x	x
+Und	Und	und	KON	CONJ.Coord.-	yes	direct.speech.18	frame.19	-	-	-	direct	x	x	x	direct	x	x	x
+ganz	ganz	ganz	ADV	ADV	no	direct.speech.18	frame.19	-	-	-	direct	x	x	x	direct	x	x	x
+zum	zum	zum	APPRART	APPRART.Dat.Sg.Masc	no	direct.speech.18	frame.19	-	-	-	direct	x	x	x	direct	x	x	x
+Abschied	Abschied	Abschied	NN	N.Reg.Dat.Sg.Masc	no	direct.speech.18	frame.19	-	-	-	direct	x	x	x	direct	x	x	x
+sagte	sagte	sagen	VVFIN	VFIN.Full.3.Sg.Past.Ind	no	direct.speech.18	frame.19	-	intexpr.19	-	direct	x	x	x	direct	x	x	x
+sie	sie	sie	PPER	PRO.Pers.Subst.3.Nom.Sg.Fem	no	direct.speech.18	frame.19	speaker.19	-	-	direct	x	x	x	direct	x	x	x
+:	:	:	$.	SYM.Pun.Colon	no	direct.speech.18	frame.19	-	-	-	direct	x	x	x	direct	x	x	x
+Ich	Ich	ich	PPER	PRO.Pers.Subst.1.Nom.Sg.*	yes	direct.speech.18|indirect.speech.19	-	-	-	-	direct	indirect	x	x	direct	x	x	x
+möchte	möchte	mögen	VMFIN	VFIN.Mod.1.Sg.Past.Subj	no	direct.speech.18|indirect.speech.19	-	-	-	-	direct	indirect	x	x	direct	x	x	x
+mich	mich	mich	PRF	PRO.Pers.Subst.1.Acc.Sg.*	no	direct.speech.18|indirect.speech.19	-	-	-	-	direct	indirect	x	x	direct	x	x	x
+nur	nur	nur	ADV	ADV	no	direct.speech.18|indirect.speech.19	-	-	-	-	direct	indirect	x	x	direct	x	x	x
+beruhigen	beruhigen	beruhigen	VVINF	VINF.Full.-	no	direct.speech.18|indirect.speech.19	-	-	-	-	direct	indirect	x	x	direct	x	x	x
+:	:	:	$.	SYM.Pun.Colon	no	direct.speech.18|indirect.speech.19	-	-	-	-	direct	indirect	x	x	direct	x	x	x
+sie	sie	sie	PPER	PRO.Pers.Subst.3.Nom.Sg.Fem	yes	direct.speech.18|indirect.speech.19	-	-	-	-	direct	indirect	x	x	direct	x	x	x
+würde	würde	werden	VAFIN	VFIN.Aux.3.Sg.Past.Subj	no	direct.speech.18|indirect.speech.19	-	-	-	-	direct	indirect	x	x	direct	x	x	x
+die	die	d	ART	ART.Def.Acc.Sg.Fem	no	direct.speech.18|indirect.speech.19	-	-	-	-	direct	indirect	x	x	direct	x	x	x
+Sache	Sache	Sache	NN	N.Reg.Acc.Sg.Fem	no	direct.speech.18|indirect.speech.19	-	-	-	-	direct	indirect	x	x	direct	x	x	x
+schon	schon	schon	ADV	ADV	no	direct.speech.18|indirect.speech.19	-	-	-	-	direct	indirect	x	x	direct	x	x	x
+ins	ins	ins	APPRART	APPRART.Acc.Sg.Neut	no	direct.speech.18|indirect.speech.19	-	-	-	-	direct	indirect	x	x	direct	x	x	x
+Reine	Reine	Reine	NN	N.Reg.Acc.Sg.Neut	no	direct.speech.18|indirect.speech.19	-	-	-	-	direct	indirect	x	x	direct	x	x	x
+bringen	bringen	bringen	VVINF	VFIN.Full.3.Pl.Pres.Ind	no	direct.speech.18|indirect.speech.19	-	-	-	-	direct	indirect	x	x	direct	x	x	x
+.	.	.	$.	SYM.Pun.Sent	no	direct.speech.18|indirect.speech.19	-	-	-	-	direct	indirect	x	x	direct	x	x	x
+–	-	-	$(	SYM.Pun.Hyph	yes	direct.speech.42	-	-	-	-	direct	x	x	x	direct	x	x	x
+Sie	Sie	sie	PPER	PRO.Pers.Subst.3.Nom.Pl.*	no	direct.speech.42	-	-	-	-	direct	x	x	x	direct	x	x	x
+.	.	.	$.	SYM.Pun.Sent	no	direct.speech.42	-	-	-	-	direct	x	x	x	direct	x	x	x
+–	-	-	$(	SYM.Pun.Hyph	yes	direct.speech.42	-	-	-	-	direct	x	x	x	direct	x	x	x
+–	-	-	$(	SYM.Pun.Hyph	no	direct.speech.42	-	-	-	-	direct	x	x	x	direct	x	x	x
+–	-	-	$(	SYM.Pun.Hyph	yes	direct.speech.44	-	-	-	-	direct	x	x	x	direct	x	x	x
+Ja	Ja	ja	PTKANT	PART.Ans	no	direct.speech.44	-	-	-	-	direct	x	x	x	direct	x	x	x
+.	.	.	$.	SYM.Pun.Sent	no	direct.speech.44	-	-	-	-	direct	x	x	x	direct	x	x	x
+–	-	-	$(	SYM.Pun.Hyph	yes	direct.speech.44	-	-	-	-	direct	x	x	x	direct	x	x	x
+Sie	Sie	sie	PPER	PRO.Pers.Subst.3.Nom.Sg.Fem	no	direct.speech.44	-	-	-	-	direct	x	x	x	direct	x	x	x
+war	war	sein	VAFIN	VFIN.Sein.3.Sg.Past.Ind	no	direct.speech.44	-	-	-	-	direct	x	x	x	direct	x	x	x
+ganz	ganz	ganz	ADV	ADV	no	direct.speech.44	-	-	-	-	direct	x	x	x	direct	x	x	x
+erregt	erregt	erregen	VVPP	ADJD.Pos	no	direct.speech.44	-	-	-	-	direct	x	x	x	direct	x	x	x
+.	.	.	$.	SYM.Pun.Sent	no	direct.speech.44	-	-	-	-	direct	x	x	x	direct	x	x	x
+Sie	Sie	sie	PPER	PRO.Pers.Subst.3.Nom.Sg.Fem	yes	direct.speech.44	frame.22	speaker.22	-	-	direct	x	x	x	direct	x	x	x
+versprach	versprach	versprechen	VVFIN	VFIN.Full.3.Sg.Past.Ind	no	direct.speech.44	frame.22	-	intexpr.22	-	direct	x	x	x	direct	x	x	x
+mir	mir	ich	PPER	PRO.Pers.Subst.1.Dat.Sg.*	no	direct.speech.44	frame.22	-	-	-	direct	x	x	x	direct	x	x	x
+,	,	,	$,	SYM.Pun.Comma	no	direct.speech.44	frame.22	-	-	-	direct	x	x	x	direct	x	x	x
+sie	sie	sie	PPER	PRO.Pers.Subst.3.Nom.Sg.Fem	no	direct.speech.44|indirect.speech.22	-	-	-	-	direct	indirect	x	x	direct	x	indirect	x
+würde	würde	werden	VAFIN	VFIN.Aux.3.Sg.Past.Subj	no	direct.speech.44|indirect.speech.22	-	-	-	-	direct	indirect	x	x	direct	x	indirect	x
+persönlich	persönlich	persönlich	ADJD	ADJD.Pos	no	direct.speech.44|indirect.speech.22	-	-	-	-	direct	indirect	x	x	direct	x	indirect	x
+zu	zu	zu	APPR	APPR.Dat	no	direct.speech.44|indirect.speech.22	-	-	-	-	direct	indirect	x	x	direct	x	indirect	x
+dem	dem	d	ART	ART.Def.Dat.Sg.Masc	no	direct.speech.44|indirect.speech.22	-	-	-	-	direct	indirect	x	x	direct	x	indirect	x
+Herrn	Herrn	Herr	NN	N.Reg.Dat.Sg.Masc	no	direct.speech.44|indirect.speech.22	-	-	-	-	direct	indirect	x	x	direct	x	indirect	x
+Präsidenten	Präsidenten	Präsident	NN	N.Reg.Acc.Sg.Masc	no	direct.speech.44|indirect.speech.22	-	-	-	-	direct	indirect	x	x	direct	x	indirect	x
+gehen	gehen	gehen	VVINF	VINF.Full.-	no	direct.speech.44|indirect.speech.22	-	-	-	-	direct	indirect	x	x	direct	x	indirect	x
+.	.	.	$.	SYM.Pun.Sent	no	direct.speech.44|indirect.speech.22	-	-	-	-	direct	indirect	x	x	direct	x	indirect	x
+Sie	Sie	sie	PPER	PRO.Pers.Subst.3.Nom.Sg.Fem	yes	direct.speech.44	frame.23	speaker.23_43	-	-	direct	x	x	x	direct	x	x	x
+würde	würde	werden	VAFIN	VFIN.Aux.3.Sg.Past.Subj	no	direct.speech.44	frame.23	-	-	-	direct	x	x	x	direct	x	x	x
+ihm	ihm	er	PPER	PRO.Pers.Subst.3.Dat.Sg.Masc	no	direct.speech.44	frame.23	-	-	-	direct	x	x	x	direct	x	x	x
+bezeugen	bezeugen	bezeugen	VVFIN	VINF.Full.-	no	direct.speech.44	frame.23	-	intexpr.23	-	direct	x	x	x	direct	x	x	x
+,	,	,	$,	SYM.Pun.Comma	no	direct.speech.44	frame.23	-	-	-	direct	x	x	x	direct	x	x	x
+daß	daß	daß	KOUS	CONJ.SubFin.-	no	direct.speech.44|indirect.speech.23.nonfact	-	-	-	-	direct	indirect	x	x	direct	x	indirect	x
+wir	wir	wir	PPER	PRO.Pers.Subst.1.Nom.Pl.*	no	direct.speech.44|indirect.speech.23.nonfact	-	-	-	-	direct	indirect	x	x	direct	x	indirect	x
+das	das	die	PDS	PRO.Dem.Subst.-.Acc.Sg.Neut	no	direct.speech.44|indirect.speech.23.nonfact	-	-	-	-	direct	indirect	x	x	direct	x	indirect	x
+hier	hier	hier	ADV	ADV	no	direct.speech.44|indirect.speech.23.nonfact	-	-	-	-	direct	indirect	x	x	direct	x	indirect	x
+alle	alle	alle	PIS	PRO.Indef.Subst.-.Acc.Pl.*	no	direct.speech.44|indirect.speech.23.nonfact	-	-	-	-	direct	indirect	x	x	direct	x	indirect	x
+so	so	so	ADV	ADV	no	direct.speech.44|indirect.speech.23.nonfact	-	-	-	-	direct	indirect	x	x	direct	x	indirect	x
+machen	machen	machen	VVINF	VFIN.Full.1.Pl.Pres.Ind	no	direct.speech.44|indirect.speech.23.nonfact	-	-	-	-	direct	indirect	x	x	direct	x	indirect	x
+.	.	.	$.	SYM.Pun.Sent	no	direct.speech.44|indirect.speech.23.nonfact	-	-	-	-	direct	indirect	x	x	direct	x	indirect	x
+Ich	Ich	ich	PPER	PRO.Pers.Subst.1.Nom.Sg.*	yes	direct.speech.44	-	-	-	-	direct	x	x	x	x	x	x	reported
+meine	meine	meinen	VVFIN	VFIN.Full.1.Sg.Pres.Ind	no	direct.speech.44	-	-	-	-	direct	x	x	x	x	x	x	reported
+mit	mit	mit	APPR	APPR.Dat	no	direct.speech.44	-	-	-	-	direct	x	x	x	x	x	x	reported
+der	der	d	ART	ART.Def.Dat.Sg.Fem	no	direct.speech.44	-	-	-	-	direct	x	x	x	x	x	x	reported
+Pfeife	Pfeife	Pfeife	NN	N.Reg.Dat.Sg.Fem	no	direct.speech.44	-	-	-	-	direct	x	x	x	x	x	x	reported
+morgens	morgens	morgens	ADV	ADV	no	direct.speech.44	-	-	-	-	direct	x	x	x	x	x	x	reported
+.	.	.	$.	SYM.Pun.Sent	no	direct.speech.44	-	-	-	-	direct	x	x	x	x	x	x	reported
+So	So	so	ADV	ADV	yes	direct.speech.44	-	-	-	-	direct	x	x	x	x	x	x	x
+zum	zum	zum	APPRART	APPRART.Dat.Sg.Neut	no	direct.speech.44	-	-	-	-	direct	x	x	x	x	x	x	x
+Fenster	Fenster	Fenster	NN	N.Reg.Dat.Sg.Neut	no	direct.speech.44	-	-	-	-	direct	x	x	x	x	x	x	x
+hinaus	hinaus	hinaus	APZR	APZR	no	direct.speech.44	-	-	-	-	direct	x	x	x	x	x	x	x
+.	.	.	$.	SYM.Pun.Sent	no	direct.speech.44	-	-	-	-	direct	x	x	x	x	x	x	x
+–	-	-	$(	SYM.Pun.Hyph	yes	direct.speech.44	-	-	-	-	direct	x	x	x	x	x	x	x
+Sie	Sie	sie	PPER	PRO.Pers.Subst.3.Nom.Sg.Fem	no	direct.speech.44|indirect freeIndirect.speech.43	-	-	-	-	direct	x	x	x	x	x	x	x
+hätte	hätte	haben	VAFIN	VFIN.Haben.3.Sg.Past.Subj	no	direct.speech.44|indirect freeIndirect.speech.43	-	-	-	-	direct	x	x	x	x	x	x	x
+Beziehungen	Beziehungen	Beziehung	NN	N.Reg.Acc.Pl.Fem	no	direct.speech.44|indirect freeIndirect.speech.43	-	-	-	-	direct	x	x	x	x	x	x	x
+zu	zu	zu	APPR	APPR.Dat	no	direct.speech.44|indirect freeIndirect.speech.43	-	-	-	-	direct	x	x	x	x	x	x	x
+dem	dem	d	ART	ART.Def.Dat.Sg.Masc	no	direct.speech.44|indirect freeIndirect.speech.43	-	-	-	-	direct	x	x	x	x	x	x	x
+Herrn	Herrn	Herr	NN	N.Reg.Dat.Sg.Masc	no	direct.speech.44|indirect freeIndirect.speech.43	-	-	-	-	direct	x	x	x	x	x	x	x
+Präsidenten	Präsidenten	Präsident	NN	N.Reg.Acc.Sg.Masc	no	direct.speech.44|indirect freeIndirect.speech.43	-	-	-	-	direct	x	x	x	x	x	x	x
+.	.	.	$.	SYM.Pun.Sent	no	direct.speech.44|indirect freeIndirect.speech.43	-	-	-	-	direct	x	x	x	x	x	x	x
+Sein	Sein	sein	PPOSAT	PRO.Poss.Attr.-.Nom.Sg.Masc	yes	direct.speech.44|indirect freeIndirect.speech.43	-	-	-	-	direct	x	x	x	x	x	x	x
+Sohn	Sohn	Sohn	NN	N.Reg.Nom.Sg.Masc	no	direct.speech.44|indirect freeIndirect.speech.43	-	-	-	-	direct	x	x	x	x	x	x	x
+,	,	,	$,	SYM.Pun.Comma	no	direct.speech.44|indirect freeIndirect.speech.43	-	-	-	-	direct	x	x	x	x	x	x	x
+der	der	d	ART	ART.Def.Nom.Sg.Masc	no	direct.speech.44|indirect freeIndirect.speech.43	-	-	-	-	direct	x	x	x	x	x	x	x
+Landrat	Landrat	Landrat	NN	N.Reg.Nom.Sg.Masc	no	direct.speech.44|indirect freeIndirect.speech.43	-	-	-	-	direct	x	x	x	x	x	x	x
+,	,	,	$,	SYM.Pun.Comma	no	direct.speech.44|indirect freeIndirect.speech.43	-	-	-	-	direct	x	x	x	x	x	x	x
+wäre	wäre	sein	VAFIN	VFIN.Sein.3.Sg.Past.Subj	no	direct.speech.44|indirect freeIndirect.speech.43	-	-	-	-	direct	x	x	x	x	x	x	x
+öfter	öfter	öfter	ADV	ADV	no	direct.speech.44|indirect freeIndirect.speech.43	-	-	-	-	direct	x	x	x	x	x	x	x
+bei	bei	bei	APPR	APPR.Dat	no	direct.speech.44|indirect freeIndirect.speech.43	-	-	-	-	direct	x	x	x	x	x	x	x
+ihr	ihr	ihr	PPOSAT	PRO.Pers.Subst.3.Dat.Sg.Fem	no	direct.speech.44|indirect freeIndirect.speech.43	-	-	-	-	direct	x	x	x	x	x	x	x
+gewesen	gewesen	sein	VAPP	VPP.Sein.Psp	no	direct.speech.44|indirect freeIndirect.speech.43	-	-	-	-	direct	x	x	x	x	x	x	x
+,	,	,	$,	SYM.Pun.Comma	no	direct.speech.44|indirect freeIndirect.speech.43	-	-	-	-	direct	x	x	x	x	x	x	x
+und	und	und	KON	CONJ.Coord.-	no	direct.speech.44|indirect freeIndirect.speech.43	-	-	-	-	direct	x	x	x	x	x	x	x
+ein	ein	eine	ART	ART.Indef.Nom.Sg.Masc	no	direct.speech.44|indirect freeIndirect.speech.43	-	-	-	-	direct	x	x	x	x	x	x	x
+Bruder	Bruder	Bruder	NN	N.Reg.Nom.Sg.Masc	no	direct.speech.44|indirect freeIndirect.speech.43	-	-	-	-	direct	x	x	x	x	x	x	x
+von	von	von	APPR	APPR.Dat	no	direct.speech.44|indirect freeIndirect.speech.43	-	-	-	-	direct	x	x	x	x	x	x	x
+ihm	ihm	er	PPER	PRO.Pers.Subst.3.Dat.Sg.Masc	no	direct.speech.44|indirect freeIndirect.speech.43	-	-	-	-	direct	x	x	x	x	x	x	x
+,	,	,	$,	SYM.Pun.Comma	no	direct.speech.44|indirect freeIndirect.speech.43	-	-	-	-	direct	x	x	x	x	x	x	x
+dem	dem	d	ART	ART.Def.Dat.Sg.Masc	no	direct.speech.44|indirect freeIndirect.speech.43	-	-	-	-	direct	x	x	x	x	x	x	x
+Präsidenten	Präsidenten	Präsident	NN	N.Reg.Dat.Sg.Masc	no	direct.speech.44|indirect freeIndirect.speech.43	-	-	-	-	direct	x	x	x	x	x	x	x
+,	,	,	$,	SYM.Pun.Comma	no	direct.speech.44|indirect freeIndirect.speech.43	-	-	-	-	direct	x	x	x	x	x	x	x
+hätte	hätte	haben	VAFIN	VFIN.Haben.3.Sg.Past.Subj	no	direct.speech.44|indirect freeIndirect.speech.43	-	-	-	-	direct	x	x	x	x	x	x	x
+sogar	sogar	sogar	ADV	ADV	no	direct.speech.44|indirect freeIndirect.speech.43	-	-	-	-	direct	x	x	x	x	x	x	x
+mal	Mal	mal	ADV	ADV	no	direct.speech.44|indirect freeIndirect.speech.43	-	-	-	-	direct	x	x	x	x	x	x	x
+ein	ein	eine	ART	ART.Indef.Nom.Sg.Neut	no	direct.speech.44|indirect freeIndirect.speech.43	-	-	-	-	direct	x	x	x	x	x	x	x
+Mädchen	Mädchen	Mädchen	NN	N.Reg.Nom.Sg.Neut	no	direct.speech.44|indirect freeIndirect.speech.43	-	-	-	-	direct	x	x	x	x	x	x	x
+bei	bei	bei	APPR	APPR.Dat	no	direct.speech.44|indirect freeIndirect.speech.43	-	-	-	-	direct	x	x	x	x	x	x	x
+ihr	ihr	ihr	PPOSAT	PRO.Pers.Subst.3.Dat.Sg.Fem	no	direct.speech.44|indirect freeIndirect.speech.43	-	-	-	-	direct	x	x	x	x	x	x	x
+gehabt	gehabt	haben	VAPP	VPP.Haben.Psp	no	direct.speech.44|indirect freeIndirect.speech.43	-	-	-	-	direct	x	x	x	x	x	x	x
+.	.	.	$.	SYM.Pun.Sent	no	direct.speech.44|indirect freeIndirect.speech.43	-	-	-	-	direct	x	x	x	x	x	x	x
+–	-	-	$(	SYM.Pun.Hyph	yes	direct.speech.44|indirect freeIndirect.speech.43	-	-	-	-	direct	x	x	x	x	x	x	x
+Auch	Auch	auch	ADV	ADV	yes	direct.speech.44|indirect freeIndirect.speech.43	-	-	-	-	direct	x	x	x	x	x	x	x
+kenne	kenne	kennen	VVFIN	VFIN.Full.3.Sg.Pres.Subj	no	direct.speech.44|indirect freeIndirect.speech.43	-	-	-	-	direct	x	x	x	x	x	x	x
+sie	sie	sie	PPER	PRO.Pers.Subst.3.Nom.Sg.Fem	no	direct.speech.44|indirect freeIndirect.speech.43	-	-	-	-	direct	x	x	x	x	x	x	x
+eine	eine	eine	ART	ART.Indef.Acc.Sg.Fem	no	direct.speech.44|indirect freeIndirect.speech.43	-	-	-	-	direct	x	x	x	x	x	x	x
+ganze	ganze	ganz	ADJA	ADJA.Pos.Acc.Sg.Fem	no	direct.speech.44|indirect freeIndirect.speech.43	-	-	-	-	direct	x	x	x	x	x	x	x
+Anzahl	Anzahl	Anzahl	NN	N.Reg.Acc.Sg.Fem	no	direct.speech.44|indirect freeIndirect.speech.43	-	-	-	-	direct	x	x	x	x	x	x	x
+von	von	von	APPR	APPR.Dat	no	direct.speech.44|indirect freeIndirect.speech.43	-	-	-	-	direct	x	x	x	x	x	x	x
+meinen	meinen	meine	PPOSAT	PRO.Poss.Attr.-.Dat.Pl.Neut	no	direct.speech.44|indirect freeIndirect.speech.43	-	-	-	-	direct	x	x	x	x	x	x	x
+Amtsbrüdern	Amtsbrüdern	Amtsbruder	NN	N.Reg.Dat.Pl.Neut	no	direct.speech.44|indirect freeIndirect.speech.43	-	-	-	-	direct	x	x	x	x	x	x	x
+persönlich	persönlich	persönlich	ADJD	ADJD.Pos	no	direct.speech.44|indirect freeIndirect.speech.43	-	-	-	-	direct	x	x	x	x	x	x	x
+.	.	.	$.	SYM.Pun.Sent	no	direct.speech.44|indirect freeIndirect.speech.43	-	-	-	-	direct	x	x	x	x	x	x	x
+Sie	Sie	sie	PPER	PRO.Pers.Subst.3.Nom.Sg.Fem	yes	direct.speech.44|indirect freeIndirect.speech.43	-	-	-	-	direct	x	x	x	x	x	x	x
+würd	würde	werden	VAFIN	VFIN.Aux.3.Sg.Past.Subj	yes	direct.speech.44|indirect freeIndirect.speech.43	-	-	-	-	direct	x	x	x	x	x	x	x
+es	es	es	PPER	PRO.Pers.Subst.3.Acc.Sg.Neut	no	direct.speech.44|indirect freeIndirect.speech.43	-	-	-	-	direct	x	x	x	x	x	x	x
+schon	schon	schon	ADV	ADV	no	direct.speech.44|indirect freeIndirect.speech.43	-	-	-	-	direct	x	x	x	x	x	x	x
+machen	machen	machen	VVINF	VINF.Full.-	no	direct.speech.44|indirect freeIndirect.speech.43	-	-	-	-	direct	x	x	x	x	x	x	x
+!	!	!	$.	SYM.Pun.Sent	yes	direct.speech.44|indirect freeIndirect.speech.43	-	-	-	-	direct	x	x	x	x	x	x	x
+–	-	-	$(	SYM.Pun.Hyph	yes	direct.speech.44	-	-	-	-	direct	x	x	x	x	x	x	x
+–	-	-	$(	SYM.Pun.Hyph	no	direct.speech.44	-	-	-	-	direct	x	x	x	x	x	x	x
+Wir	Wir	wir	PPER	PRO.Pers.Subst.1.Nom.Pl.*	yes	-	-	-	-	-	x	x	x	x	x	x	x	x
+atmeten	atmeten	atmen	VVFIN	VFIN.Full.1.Pl.Past.Ind	no	-	-	-	-	-	x	x	x	x	x	x	x	x
+erleichtert	erleichtert	erleichtert	ADJD	ADJD.Pos	no	-	-	-	-	-	x	x	x	x	x	x	x	x
+auf	auf	auf	PTKVZ	PART.Verb	no	-	-	-	-	-	x	x	x	x	x	x	x	x
+.	.	.	$.	SYM.Pun.Sent	no	-	-	-	-	-	x	x	x	x	x	x	x	x
+Nachdenklich	Nachdenklich	nachdenklich	ADJD	ADJD.Pos	yes	-	frame.27	-	-	-	x	x	x	x	x	x	x	x
+sprach	sprach	sprechen	VVFIN	VFIN.Full.3.Sg.Past.Ind	no	-	frame.27	-	intexpr.27	-	x	x	x	x	x	x	x	x
+der	der	d	ART	ART.Def.Nom.Sg.Masc	no	-	frame.27	-	-	-	x	x	x	x	x	x	x	x
+Amtsanwalt	Amtsanwalt	Amtsanwalt	NN	N.Reg.Nom.Sg.Masc	no	-	frame.27	speaker.27	-	-	x	x	x	x	x	x	x	x
+:	:	:	$.	SYM.Pun.Colon	no	-	frame.27	-	-	-	x	x	x	x	x	x	x	x
+–	-	-	$(	SYM.Pun.Hyph	yes	direct.speech.27	-	-	-	-	direct	x	x	x	x	x	x	x
+Wissen	Wissen	wissen	VVFIN	VFIN.Full.3.Pl.Pres.Ind	no	direct.speech.27	frame.28	-	intexpr.28	-	direct	x	x	x	direct	x	x	x
+Sie	Sie	sie	PPER	PRO.Pers.Subst.3.Nom.Pl.*	no	direct.speech.27	frame.28	-	-	-	direct	x	x	x	direct	x	x	x
+,	,	,	$,	SYM.Pun.Comma	no	direct.speech.27	frame.28	-	-	-	direct	x	x	x	direct	x	x	x
+Herr	Herr	Herr	NN	N.Reg.Nom.Sg.Masc	no	direct.speech.27	frame.28	speaker.28	-	-	direct	x	x	x	direct	x	x	x
+Pastor	Pastor	Pastor	NN	N.Reg.Nom.Sg.Masc	no	direct.speech.27	frame.28	speaker.28	-	-	direct	x	x	x	direct	x	x	x
+,	,	,	$,	SYM.Pun.Comma	no	direct.speech.27	frame.28	-	-	-	direct	x	x	x	direct	x	x	x
+wie	wie	wie	PWAV	PROADV.Inter	no	direct.speech.27|indirect.thought.28.nonfact.border=state	-	-	-	-	direct	indirect	x	x	direct	x	indirect	x
+ich	ich	ich	PPER	PRO.Pers.Subst.1.Nom.Sg.*	no	direct.speech.27|indirect.thought.28.nonfact.border=state	-	-	-	-	direct	indirect	x	x	direct	x	indirect	x
+hiernach	hiernach	hiernach	PAV	PROADV.Dem	yes	direct.speech.27|indirect.thought.28.nonfact.border=state	-	-	-	-	direct	indirect	x	x	direct	x	indirect	x
+die	die	d	ART	ART.Def.Acc.Pl.Neut	yes	direct.speech.27|indirect.thought.28.nonfact.border=state	-	-	-	-	direct	indirect	x	x	direct	x	indirect	x
+Verhältnisse	Verhältnisse	Verhältnis	NN	N.Reg.Acc.Pl.Neut	no	direct.speech.27|indirect.thought.28.nonfact.border=state	-	-	-	-	direct	indirect	x	x	direct	x	indirect	x
+beurteile	beurteile	beurteilen	VVFIN	VFIN.Full.1.Sg.Pres.Ind	no	direct.speech.27|indirect.thought.28.nonfact.border=state	-	-	-	-	direct	indirect	x	x	direct	x	indirect	x
+–	-	-	$(	SYM.Pun.Hyph	no	direct.speech.27	-	-	-	-	direct	x	x	x	direct	x	indirect	x
+Sie	Sie	sie	PPER	PRO.Pers.Subst.3.Nom.Pl.*	no	direct.speech.27	frame.45	speaker.45	-	-	direct	x	x	x	direct	x	x	x
+wissen	wissen	wissen	VVFIN	VFIN.Full.3.Pl.Pres.Ind	no	direct.speech.27	frame.45	-	intexpr.45	-	direct	x	x	x	direct	x	x	x
+:	:	:	$.	SYM.Pun.Colon	no	direct.speech.27	frame.45	-	-	-	direct	x	x	x	direct	x	x	x
+ich	ich	ich	PPER	PRO.Pers.Subst.1.Nom.Sg.*	yes	direct.speech.27|indirect.thought.45.border=state	-	speaker.30	-	-	direct	indirect	x	x	direct	x	x	x
+war	war	sein	VAFIN	VFIN.Sein.1.Sg.Past.Ind	no	direct.speech.27|indirect.thought.45.border=state	-	-	-	-	direct	indirect	x	x	direct	x	x	x
+früher	früher	früh	ADJD	ADJA.Pos.Nom.Sg.Masc	no	direct.speech.27|indirect.thought.45.border=state	-	-	-	-	direct	indirect	x	x	direct	x	x	x
+Lazarettinspektor	Lazarettinspektor	Lazarettinspektor	NN	N.Reg.Nom.Sg.Masc	no	direct.speech.27|indirect.thought.45.border=state	-	-	-	-	direct	indirect	x	x	direct	x	x	x
+in	in	in	APPR	APPR.In	no	direct.speech.27|indirect.thought.45.border=state	-	-	-	-	direct	indirect	x	x	direct	x	x	x
+Magdeburg	Magdeburg	Magdeburg	NE	N.Name.Dat.Sg.Neut	no	direct.speech.27|indirect.thought.45.border=state	-	-	-	-	direct	indirect	x	x	direct	x	x	x
+und	und	und	KON	CONJ.Coord.-	no	direct.speech.27|indirect.thought.45.border=state	-	-	-	-	direct	indirect	x	x	direct	x	x	x
+weiß	weiß	wissen	VVFIN	VFIN.Full.3.Sg.Pres.Ind	no	direct.speech.27|indirect.thought.45.border=state|reported.thought.30.border=state	-	-	intexpr.30	-	direct	indirect	reported	x	direct	x	x	reported
+also	also	also	ADV	ADV	no	direct.speech.27|indirect.thought.45.border=state|reported.thought.30.border=state	-	-	-	-	direct	indirect	reported	x	direct	x	x	reported
+dort	dort	dort	ADV	ADV	no	direct.speech.27|indirect.thought.45.border=state|reported.thought.30.border=state	-	-	-	-	direct	indirect	reported	x	direct	x	x	reported
+Bescheid	Bescheid	Bescheid	NN	N.Reg.Acc.Sg.Masc	no	direct.speech.27|indirect.thought.45.border=state|reported.thought.30.border=state	-	-	intexpr.30	-	direct	indirect	reported	x	direct	x	x	reported
+–	-	-	$(	SYM.Pun.Hyph	no	direct.speech.27	-	-	-	-	direct	x	x	x	direct	x	x	x
+nach	nach	nach	APPR	APPR.Dat	no	direct.speech.27	-	-	-	-	direct	x	x	x	direct	x	x	x
+meiner	meiner	meine	PPOSAT	PRO.Poss.Attr.-.Dat.Sg.Fem	no	direct.speech.27	-	-	-	-	direct	x	x	x	direct	x	x	x
+Überzeugung	Überzeugung	Überzeugung	NN	N.Reg.Dat.Sg.Fem	no	direct.speech.27	-	-	-	-	direct	x	x	x	direct	x	x	x
+können	können	können	VMFIN	VFIN.Mod.3.Pl.Pres.Ind	no	direct.speech.27	-	-	-	-	direct	x	x	x	direct	x	x	x
+Sie	Sie	sie	PPER	PRO.Pers.Subst.3.Nom.Pl.*	no	direct.speech.27	-	-	-	-	direct	x	x	x	direct	x	x	x
+hiernach	hiernach	hiernach	PAV	PROADV.Dem	no	direct.speech.27	-	-	-	-	direct	x	x	x	direct	x	x	x
+–	-	-	$(	SYM.Pun.Hyph	no	direct.speech.27	-	-	-	-	direct	x	x	x	direct	x	x	x
+voll	voll	voll	ADJD	ADJD.Pos	no	direct.speech.27	-	-	-	-	direct	x	x	x	direct	x	x	x
+und	und	und	KON	CONJ.Coord.-	no	direct.speech.27	-	-	-	-	direct	x	x	x	direct	x	x	x
+ganz	ganz	ganz	ADJD	ADV	no	direct.speech.27	-	-	-	-	direct	x	x	x	direct	x	x	x
+beruhigt	beruhigt	beruhigen	VVPP	ADJD.Pos	no	direct.speech.27	-	-	-	-	direct	x	x	x	direct	x	x	x
+sein	sein	sein	VAINF	VINF.Sein.-	no	direct.speech.27	-	-	-	-	direct	x	x	x	direct	x	x	x
+.	.	.	$.	SYM.Pun.Sent	no	direct.speech.27	-	-	-	-	direct	x	x	x	direct	x	x	x
+Wenn	Wenn	wenn	KOUS	CONJ.SubFin.-	yes	direct.speech.27	-	-	-	-	direct	x	x	x	direct	x	x	x
+sich	sich	sich	PRF	PRO.Refl.Subst.3.Acc.Sg.*	no	direct.speech.27	-	-	-	-	direct	x	x	x	direct	x	x	x
+die	die	d	ART	ART.Def.Nom.Sg.Fem	no	direct.speech.27	-	-	-	-	direct	x	x	x	direct	x	x	x
+Frau	Frau	Frau	NN	N.Reg.Nom.Sg.Fem	no	direct.speech.27	-	-	-	-	direct	x	x	x	direct	x	x	x
+Oberförster	Oberförster	Oberförster	NN	N.Reg.Nom.Sg.Masc	no	direct.speech.27	-	-	-	-	direct	x	x	x	direct	x	x	x
+bei	bei	bei	APPR	APPR.Dat	no	direct.speech.27	-	-	-	-	direct	x	x	x	direct	x	x	x
+ihren	ihren	ihr	PPOSAT	PRO.Poss.Attr.-.Dat.Pl.Fem	no	direct.speech.27	-	-	-	-	direct	x	x	x	direct	x	x	x
+sicherlich	sicherlich	sicherlich	ADV	ADV	no	direct.speech.27	-	-	-	-	direct	x	x	x	direct	x	x	x
+sehr	sehr	sehr	ADV	ADV	no	direct.speech.27	-	-	-	-	direct	x	x	x	direct	x	x	x
+weitgehenden	weitgehenden	weitgehend	ADJA	ADJA.Pos.Dat.Pl.Fem	no	direct.speech.27	-	-	-	-	direct	x	x	x	direct	x	x	x
+Verbindungen	Verbindungen	Verbindung	NN	N.Reg.Dat.Pl.Fem	no	direct.speech.27	-	-	-	-	direct	x	x	x	direct	x	x	x
+in	in	in	APPR	APPR.In	no	direct.speech.27	-	-	-	-	direct	x	x	x	direct	x	x	x
+dieser	dieser	diese	PDAT	PRO.Dem.Attr.-.Dat.Sg.Fem	no	direct.speech.27	-	-	-	-	direct	x	x	x	direct	x	x	x
+energischen	energischen	energisch	ADJA	ADJA.Pos.Dat.Sg.Fem	no	direct.speech.27	-	-	-	-	direct	x	x	x	direct	x	x	x
+Weise	Weise	Weise	NN	N.Reg.Dat.Sg.Fem	no	direct.speech.27	-	-	-	-	direct	x	x	x	direct	x	x	x
+Ihrer	Ihrer	ihr	PPOSAT	PRO.Poss.Attr.-.Gen.Sg.Fem	no	direct.speech.27	-	-	-	-	direct	x	x	x	direct	x	x	x
+annimmt	annimmt	annehmen	VVFIN	VFIN.Full.3.Sg.Pres.Ind	no	direct.speech.27	-	-	-	-	direct	x	x	x	direct	x	x	x
+–	-	-	$(	SYM.Pun.Hyph	no	direct.speech.27	-	-	-	-	direct	x	x	x	direct	x	x	x
+dann	dann	dann	ADV	ADV	no	direct.speech.27	-	-	-	-	direct	x	x	x	direct	x	x	x
+kann	kann	können	VMFIN	VFIN.Mod.3.Sg.Pres.Ind	no	direct.speech.27	-	-	-	-	direct	x	x	x	direct	x	x	x
+Ihnen	Ihnen	sie	PPER	PRO.Pers.Subst.3.Dat.Pl.*	no	direct.speech.27	-	-	-	-	direct	x	x	x	direct	x	x	x
+nie	nie	nie	ADV	ADV	no	direct.speech.27	-	-	-	-	direct	x	x	x	direct	x	x	x
+und	und	und	KON	CONJ.Coord.-	no	direct.speech.27	-	-	-	-	direct	x	x	x	direct	x	x	x
+nimmer	nimmer	nimmer	ADV	ADV	no	direct.speech.27	-	-	-	-	direct	x	x	x	direct	x	x	x
+was	was	was	PWS	PRO.Indef.Subst.-.*.*.Neut	no	direct.speech.27	-	-	-	-	direct	x	x	x	direct	x	x	x
+geschehn	geschehen	geschehen	VVINF	VINF.Full.-	no	direct.speech.27	-	-	-	-	direct	x	x	x	direct	x	x	x
+.	.	.	$.	SYM.Pun.Sent	no	direct.speech.27	-	-	-	-	direct	x	x	x	direct	x	x	x
+–	-	-	$(	SYM.Pun.Hyph	yes	direct.speech.27	-	-	-	-	direct	x	x	x	x	x	x	x
+Ich	Ich	ich	PPER	PRO.Pers.Subst.1.Nom.Sg.*	yes	reported.speech.46	frame.32	speaker.32_46	-	-	x	x	reported	x	x	x	x	x
+pflichtete	pflichtete	pflichten	VVFIN	VFIN.Full.1.Sg.Past.Ind	no	reported.speech.46	frame.32	-	intexpr.46	-	x	x	reported	x	x	x	x	x
+dem	dem	d	ART	ART.Def.Dat.Sg.Masc	no	reported.speech.46	frame.32	-	-	-	x	x	reported	x	x	x	x	x
+Amtsanwalt	Amtsanwalt	Amtsanwalt	NN	N.Reg.Dat.Sg.Masc	no	reported.speech.46	frame.32	-	-	-	x	x	reported	x	x	x	x	x
+eifrig	eifrig	eifrig	ADJD	ADJD.Pos	no	reported.speech.46	frame.32	-	-	-	x	x	reported	x	x	x	x	x
+bei	bei	bei	PTKVZ	PART.Verb	no	reported.speech.46	frame.32	-	intexpr.46	-	x	x	reported	x	x	x	x	x
+und	und	und	KON	CONJ.Coord.-	no	-	frame.32	-	-	-	x	x	x	x	x	x	x	x
+fügte	fügte	fügen	VVFIN	VFIN.Full.3.Sg.Past.Ind	no	-	frame.32	-	intexpr.32	-	x	x	x	x	x	x	x	x
+hinzu	hinzu	hinzu	PTKVZ	PART.Verb	no	-	frame.32	-	intexpr.32	-	x	x	x	x	x	x	x	x
+:	:	:	$.	SYM.Pun.Colon	no	-	frame.32	-	-	-	x	x	x	x	x	x	x	x
+–	-	-	$(	SYM.Pun.Hyph	yes	direct.speech.32	-	-	-	-	direct	x	x	x	direct	x	x	x
+Aber	Aber	aber	KON	CONJ.Coord.Aber	no	direct.speech.32	-	-	-	-	direct	x	x	x	direct	x	x	x
+da	da	da	ADV	ADV	no	direct.speech.32	-	-	-	-	direct	x	x	x	direct	x	x	x
+sehen	sehen	sehen	VVFIN	VFIN.Full.3.Pl.Pres.Ind	no	direct.speech.32	-	-	-	-	direct	x	x	x	direct	x	x	x
+Sies	Sie_es	sie_es	PIS	N.Name.Nom.Sg.*	no	direct.speech.32	-	-	-	-	direct	x	x	x	direct	x	x	x
+nun	nun	nun	ADV	ADV	no	direct.speech.32	-	-	-	-	direct	x	x	x	direct	x	x	x
+mal	Mal	mal	ADV	ADV	no	direct.speech.32	-	-	-	-	direct	x	x	x	direct	x	x	x
+wieder	wieder	wieder	ADV	ADV	no	direct.speech.32	-	-	-	-	direct	x	x	x	direct	x	x	x
+,	,	,	$,	SYM.Pun.Comma	no	direct.speech.32	-	-	-	-	direct	x	x	x	direct	x	x	x
+Herr	Herr	Herr	NN	N.Reg.Nom.Sg.Masc	no	direct.speech.32	-	speaker.34	-	-	direct	x	x	x	direct	x	x	x
+Pastor	Pastor	Pastor	NN	N.Reg.Nom.Sg.Masc	no	direct.speech.32	-	speaker.34	-	-	direct	x	x	x	direct	x	x	x
+:	:	:	$.	SYM.Pun.Colon	no	direct.speech.32	-	-	-	-	direct	x	x	x	direct	x	x	x
+die	die	d	ART	ART.Def.Nom.Pl.Masc	no	direct.speech.32	-	-	-	-	direct	x	x	x	direct	x	x	x
+eigentlichen	eigentlichen	eigentlich	ADJA	ADJA.Pos.Nom.Pl.Masc	no	direct.speech.32	-	-	-	-	direct	x	x	x	direct	x	x	x
+Kleinstädter	Kleinstädter	Kleinstädter	NN	N.Reg.Nom.Pl.Masc	no	direct.speech.32	-	-	-	-	direct	x	x	x	direct	x	x	x
+leben	leben	leben	VVFIN	VFIN.Full.3.Pl.Pres.Ind	no	direct.speech.32	-	-	-	-	direct	x	x	x	direct	x	x	x
+doch	doch	doch	ADV	ADV	no	direct.speech.32	-	-	-	-	direct	x	x	x	direct	x	x	x
+nur	nur	nur	ADV	ADV	no	direct.speech.32	-	-	-	-	direct	x	x	x	direct	x	x	x
+in	in	in	APPR	APPR.In	no	direct.speech.32	-	-	-	-	direct	x	x	x	direct	x	x	x
+der	der	d	ART	ART.Def.Dat.Sg.Fem	no	direct.speech.32	-	-	-	-	direct	x	x	x	direct	x	x	x
+Großstadt	Großstadt	Großstadt	NN	N.Reg.Dat.Sg.Fem	no	direct.speech.32	-	-	-	-	direct	x	x	x	direct	x	x	x
+.	.	.	$.	SYM.Pun.Sent	no	direct.speech.32	-	-	-	-	direct	x	x	x	direct	x	x	x
+Denn	Denn	denn	KON	CONJ.Coord.Denn	yes	direct.speech.32	frame.33	-	-	-	direct	x	x	x	direct	x	x	x
+sagen	sagen	sagen	VVFIN	VFIN.Full.3.Pl.Pres.Ind	no	direct.speech.32	frame.33	-	intexpr.33	-	direct	x	x	x	direct	x	x	x
+Sie	Sie	sie	PPER	PRO.Pers.Subst.3.Nom.Pl.*	no	direct.speech.32	frame.33	speaker.33	-	-	direct	x	x	x	direct	x	x	x
+selbst	selbst	selbst	ADV	ADV	no	direct.speech.32	frame.33	-	-	-	direct	x	x	x	direct	x	x	x
+:	:	:	$.	SYM.Pun.Colon	no	direct.speech.32	frame.33	-	-	-	direct	x	x	x	direct	x	x	x
+gibt	gibt	geben	VVFIN	VFIN.Full.3.Sg.Pres.Ind	no	direct.speech.32|indirect.speech.33.nonfact	-	-	-	-	direct	indirect	x	x	direct	x	indirect	x
+es	es	es	PPER	PRO.Pers.Subst.3.Nom.Sg.Neut	no	direct.speech.32|indirect.speech.33.nonfact	-	-	-	-	direct	indirect	x	x	direct	x	indirect	x
+etwas	etwas	etwas	ADV	PRO.Indef.Attr.-.*.*.*	no	direct.speech.32|indirect.speech.33.nonfact	-	-	-	-	direct	indirect	x	x	direct	x	indirect	x
+Kleinlicheres	Kleinlicheres	kleinlich	ADJA	N.Reg.Acc.Sg.Neut	no	direct.speech.32|indirect.speech.33.nonfact	-	-	-	-	direct	indirect	x	x	direct	x	indirect	x
+,	,	,	$,	SYM.Pun.Comma	no	direct.speech.32|indirect.speech.33.nonfact	-	-	-	-	direct	indirect	x	x	direct	x	indirect	x
+als	als	als	KOKOM	CONJ.Comp.-	no	direct.speech.32|indirect.speech.33.nonfact	-	-	-	-	direct	indirect	x	x	direct	x	indirect	x
+sich	sich	sich	PRF	PRO.Refl.Subst.3.Acc.Sg.*	no	direct.speech.32|indirect.speech.33.nonfact	-	-	-	-	direct	indirect	x	x	direct	x	indirect	x
+an	an	an	APPR	APPR.An	no	direct.speech.32|indirect.speech.33.nonfact	-	-	-	-	direct	indirect	x	x	direct	x	indirect	x
+eine	eine	eine	ART	ART.Indef.Acc.Sg.Fem	no	direct.speech.32|indirect.speech.33.nonfact	-	-	-	-	direct	indirect	x	x	direct	x	indirect	x
+solche	solche	solch	PIAT	PRO.Indef.Attr.-.Acc.Sg.Fem	no	direct.speech.32|indirect.speech.33.nonfact	-	-	-	-	direct	indirect	x	x	direct	x	indirect	x
+Äußerlichkeit	Äußerlichkeit	Äußerlichkeit	NN	N.Reg.Acc.Sg.Fem	no	direct.speech.32|indirect.speech.33.nonfact	-	-	-	-	direct	indirect	x	x	direct	x	indirect	x
+,	,	,	$,	SYM.Pun.Comma	no	direct.speech.32|indirect.speech.33.nonfact	-	-	-	-	direct	indirect	x	x	direct	x	indirect	x
+wie	wie	wie	PWAV	CONJ.Comp.-	no	direct.speech.32|indirect.speech.33.nonfact	-	-	-	-	direct	indirect	x	x	direct	x	indirect	x
+dieses	dieses	diese	PDAT	PRO.Dem.Subst.-.Nom.Sg.Neut	no	direct.speech.32|indirect.speech.33.nonfact	-	-	-	-	direct	indirect	x	x	direct	x	indirect	x
+zum	zum	zum	APPRART	APPRART.Dat.Sg.Neut	no	direct.speech.32|indirect.speech.33.nonfact	-	-	-	-	direct	indirect	x	x	direct	x	indirect	x
+Fenster	Fenster	Fenster	NN	N.Reg.Dat.Sg.Neut	no	direct.speech.32|indirect.speech.33.nonfact	-	-	-	-	direct	indirect	x	x	direct	x	indirect	x
+Hinausrauchen	Hinausrauchen	hinausrauchen	VVINF	VINF.Full.-	no	direct.speech.32|indirect.speech.33.nonfact	-	-	-	-	direct	indirect	x	x	direct	x	indirect	x
+,	,	,	$,	SYM.Pun.Comma	no	direct.speech.32|indirect.speech.33.nonfact	-	-	-	-	direct	indirect	x	x	direct	x	indirect	x
+zu	zu	zu	PTKZU	PART.Zu	no	direct.speech.32|indirect.speech.33.nonfact	-	-	-	-	direct	indirect	x	x	direct	x	indirect	x
+stoßen	stoßen	stoßen	VVINF	VINF.Full.-	no	direct.speech.32|indirect.speech.33.nonfact	-	-	-	-	direct	indirect	x	x	direct	x	indirect	x
+?	?	?	$.	SYM.Pun.Sent	no	direct.speech.32|indirect.speech.33.nonfact	-	-	-	-	direct	indirect	x	x	direct	x	indirect	x
+–	-	-	$(	SYM.Pun.Hyph	yes	direct.speech.34	-	-	-	-	direct	x	x	x	direct	x	x	x
+Nein	Nein	nein	PTKANT	PART.Ans	no	direct.speech.34	-	-	-	-	direct	x	x	x	direct	x	x	x
+,	,	,	$,	SYM.Pun.Comma	no	direct.speech.34	-	-	-	-	direct	x	x	x	direct	x	x	x
+das	das	die	PDS	PRO.Dem.Subst.-.Acc.Sg.Neut	no	direct.speech.34	frame.35	-	-	-	direct	x	x	x	direct	x	x	reported
+muß	muß	müssen	VMFIN	VFIN.Mod.1.Sg.Pres.Ind	no	direct.speech.34	frame.35	-	-	-	direct	x	x	x	direct	x	x	reported
+ich	ich	ich	PPER	PRO.Pers.Subst.1.Nom.Sg.*	no	direct.speech.34	frame.35	speaker.35	-	-	direct	x	x	x	direct	x	x	reported
+auch	auch	auch	ADV	ADV	no	direct.speech.34	frame.35	-	-	-	direct	x	x	x	direct	x	x	reported
+sagen	sagen	sagen	VVINF	VINF.Full.-	no	direct.speech.34	frame.35	-	intexpr.35	-	direct	x	x	x	direct	x	x	reported
+:	:	:	$.	SYM.Pun.Colon	no	direct.speech.34	frame.35	-	-	-	direct	x	x	x	direct	x	x	x
+das	das	die	PDS	PRO.Dem.Subst.-.Nom.Sg.Neut	yes	direct.speech.34|indirect.speech.35	-	-	-	-	direct	indirect	x	x	direct	x	x	x
+haben	haben	haben	VAFIN	VFIN.Haben.3.Pl.Pres.Ind	no	direct.speech.34|indirect.speech.35	-	-	-	-	direct	indirect	x	x	direct	x	x	x
+wir	wir	wir	PPER	PRO.Pers.Subst.1.Nom.Pl.*	no	direct.speech.34|indirect.speech.35	-	-	-	-	direct	indirect	x	x	direct	x	x	x
+doch	doch	doch	ADV	ADV	no	direct.speech.34|indirect.speech.35	-	-	-	-	direct	indirect	x	x	direct	x	x	x
+als	als	als	KOKOM	APPR.Als	no	direct.speech.34|indirect.speech.35	-	-	-	-	direct	indirect	x	x	direct	x	x	x
+Studenten	Studenten	Student	NN	N.Reg.Nom.Pl.Masc	no	direct.speech.34|indirect.speech.35	-	-	-	-	direct	indirect	x	x	direct	x	x	x
+in	in	in	APPR	APPR.In	no	direct.speech.34|indirect.speech.35	-	-	-	-	direct	indirect	x	x	direct	x	x	x
+Göttingen	Göttingen	Göttingen	NE	N.Name.Dat.Sg.Neut	no	direct.speech.34|indirect.speech.35	-	-	-	-	direct	indirect	x	x	direct	x	x	x
+ganz	ganz	ganz	ADV	ADV	no	direct.speech.34|indirect.speech.35	-	-	-	-	direct	indirect	x	x	direct	x	x	x
+ruhig	ruhig	ruhig	ADJD	ADJD.Pos	no	direct.speech.34|indirect.speech.35	-	-	-	-	direct	indirect	x	x	direct	x	x	x
+getan	getan	tun	VVPP	VPP.Full.Psp	no	direct.speech.34|indirect.speech.35	-	-	-	-	direct	indirect	x	x	direct	x	x	x
+.	.	.	$.	SYM.Pun.Sent	no	direct.speech.34|indirect.speech.35	-	-	-	-	direct	indirect	x	x	direct	x	x	x
+–	-	-	$(	SYM.Pun.Hyph	yes	direct.speech.36	-	-	-	-	direct	x	x	x	direct	x	x	x
+Ja	Ja	ja	PTKANT	N.Reg.Nom.Sg.Neut	no	direct.speech.36	-	-	-	-	direct	x	x	x	direct	x	x	x
+Göttingen	Göttingen	Göttingen	NE	N.Name.Nom.Sg.Neut	no	direct.speech.36	-	-	-	-	direct	x	x	x	direct	x	x	x
+–	-	-	$(	SYM.Pun.Hyph	no	direct.speech.36	-	-	-	-	direct	x	x	x	x	x	x	x
+rief	rief	rufen	VVFIN	VFIN.Full.3.Sg.Past.Ind	no	-	frame.36	-	intexpr.36	-	x	x	x	x	x	x	x	x
+der	der	d	ART	ART.Def.Nom.Sg.Masc	no	-	frame.36	-	-	-	x	x	x	x	x	x	x	x
+Oberstabsarzt	Oberstabsarzt	Oberstabsarzt	NN	N.Reg.Nom.Sg.Masc	no	-	frame.36	speaker.36	-	-	x	x	x	x	x	x	x	x
+–	-	-	$(	SYM.Pun.Hyph	no	direct.speech.36	-	-	-	-	direct	x	x	x	x	x	x	x
+Göttingen	Göttingen	Göttingen	NE	N.Name.Nom.Sg.Neut	no	direct.speech.36	-	-	-	-	direct	x	x	x	direct	x	x	x
+ist	ist	sein	VAFIN	VFIN.Sein.3.Sg.Pres.Ind	no	direct.speech.36	-	-	-	-	direct	x	x	x	direct	x	x	x
+eine	eine	eine	ART	ART.Indef.Nom.Sg.Fem	no	direct.speech.36	-	-	-	-	direct	x	x	x	direct	x	x	x
+Weltstadt	Weltstadt	Weltstadt	NN	N.Reg.Nom.Sg.Fem	no	direct.speech.36	-	-	-	-	direct	x	x	x	direct	x	x	x
+im	im	im	APPRART	APPRART.Dat.Sg.Masc	no	direct.speech.36	-	-	-	-	direct	x	x	x	direct	x	x	x
+Vergleich	Vergleich	Vergleich	NN	N.Reg.Dat.Sg.Masc	no	direct.speech.36	-	-	-	-	direct	x	x	x	direct	x	x	x
+mit	mit	mit	APPR	APPR.Dat	no	direct.speech.36	-	-	-	-	direct	x	x	x	direct	x	x	x
+Magdeburg	Magdeburg	Magdeburg	NE	N.Name.Dat.Sg.Neut	no	direct.speech.36	-	-	-	-	direct	x	x	x	direct	x	x	x
+!	!	!	$.	SYM.Pun.Sent	no	direct.speech.36	-	-	-	-	direct	x	x	x	direct	x	x	x
+–	-	-	$(	SYM.Pun.Hyph	yes	direct.speech.36	-	-	-	-	direct	x	x	x	direct	x	x	x
+–	-	-	$(	SYM.Pun.Hyph	no	direct.speech.36	-	-	-	-	direct	x	x	x	direct	x	x	x
+–	-	-	$(	SYM.Pun.Hyph	no	-	-	-	-	-	x	x	x	x	direct	x	x	x
+–	-	-	$(	SYM.Pun.Hyph	no	-	-	-	-	-	x	x	x	x	direct	x	x	x
+Nun	Nun	nun	ADV	ADV	yes	-	-	-	-	-	x	x	x	x	direct	x	x	x
+wurde	wurde	werden	VAFIN	VFIN.Aux.3.Sg.Past.Ind	no	-	-	-	-	-	x	x	x	x	direct	x	x	x
+es	es	es	PPER	PRO.Pers.Subst.3.Nom.Sg.Neut	no	-	-	-	-	-	x	x	x	x	direct	x	x	x
+sehr	sehr	sehr	ADV	ADV	no	-	-	-	-	-	x	x	x	x	direct	x	x	x
+fidel	fidel	fidel	ADJD	ADJD.Pos	no	-	-	-	-	-	x	x	x	x	direct	x	x	x
+.	.	.	$.	SYM.Pun.Sent	no	-	-	-	-	-	x	x	x	x	direct	x	x	x
+Wir	Wir	wir	PPER	PRO.Pers.Subst.1.Nom.Pl.*	yes	-	-	-	-	-	x	x	x	x	direct	x	x	x
+tranken	tranken	trinken	VVFIN	VFIN.Full.1.Pl.Past.Ind	no	-	-	-	-	-	x	x	x	x	direct	x	x	x
+auf	auf	auf	APPR	APPR.Auf	no	-	-	-	-	-	x	x	x	x	direct	x	x	x
+das	das	d	ART	ART.Def.Acc.Sg.Neut	no	-	-	-	-	-	x	x	x	x	direct	x	x	x
+Wohl	Wohl	Wohl	NN	N.Reg.Acc.Sg.Neut	no	-	-	-	-	-	x	x	x	x	direct	x	x	x
+des	des	d	ART	ART.Def.Gen.Sg.Masc	no	-	-	-	-	-	x	x	x	x	direct	x	x	x
+Vereins	Vereins	Verein	NN	N.Reg.Gen.Sg.Masc	no	-	-	-	-	-	x	x	x	x	direct	x	x	x
+für	für	für	APPR	APPR.Acc	no	-	-	-	-	-	x	x	x	x	direct	x	x	x
+Innere	Innere	inner	ADJA	ADJA.Pos.Acc.Sg.Fem	no	-	-	-	-	-	x	x	x	x	direct	x	x	x
+Mission	Mission	Mission	NN	N.Reg.Acc.Sg.Fem	no	-	-	-	-	-	x	x	x	x	direct	x	x	x
+.	.	.	$.	SYM.Pun.Sent	no	-	-	-	-	-	x	x	x	x	direct	x	x	x

@@ -60,12 +60,12 @@ to perform tokenization and sentence splitting. Additionally, like Spacy's [sent
 
 Additionally, the constructor takes the following optional keyword arguments:
 
-| Name                  | Description                                                                                                                                                                                                                                                                          |
-|-----------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `normalize`           | Before tokenization, normalizes the input text to NFKC normal form. Default: `True`                                                                                                                                                                                                  |
-| `check_characters`    | Warn to stderr if the tokenizer encounters “unusual” characters (mostly non-Latin, non-punctuation characters). Default: `True`                                                                                                                                                      |
-| `paragraph_separator` | If not `None`, the value is interpreted as regular expression and the text is split at every match. The matching spans are discarded. Paragraphs starts are stored at the attribute `token._is_para_start`. Default: `None`                                                          |
-| `section_pattern`     | If not `None`, the value is interpreted as regular expression. If a paragraph fully matches the pattern, the paragraph is interpreted as section start. The matching paragraphs are discarded. Section starts are stored at the attribute `token._is_section_start`. Default: `None` |
+| Name                  | Description                                                                                                                                                                                                                                                                                  |
+|-----------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `normalize`           | Before tokenization, normalizes the input text to NFKC normal form. Default: `True`                                                                                                                                                                                                          |
+| `check_characters`    | Warn to stderr if the tokenizer encounters “unusual” characters (mostly non-Latin, non-punctuation characters). Default: `True`                                                                                                                                                              |
+| `paragraph_separator` | If not `None`, the value is interpreted as regular expression and the text is split at every match. The matching spans are discarded. Paragraphs starts are stored at the custom attribute `token._.is_para_start`. Default: `None`                                                          |
+| `section_pattern`     | If not `None`, the value is interpreted as regular expression. If a paragraph fully matches the pattern, the paragraph is interpreted as section start. The matching paragraphs are discarded. Section starts are stored at the custom attribute `token._.is_section_start`. Default: `None` |
 
 In the default implementation `main.py`, arguments `paragraph_separator` and `section_pattern` are supplied by the command-line arguments.
 
@@ -107,7 +107,7 @@ The RNNTagger component uses the POS tagger and Analyzer [RNNTagger](https://www
 to predict for each token a morphological analysis and an additional POS token for further processing.
 
 Like Spacy's [default morphological analyzer](https://spacy.io/usage/linguistic-features#morphology), it assigns a `MorphAnalysis` object to the attribute `token.morph`.
-Additionally, the predicted POS tag is stored in the custom attribute `token._rnntagger_tag`. This second attribute is only used for further processing by RNNTagger's lemmatizer (`lemma_rnntagger`).
+Additionally, the predicted POS tag is stored in the custom attribute `token._.rnntagger_tag`. This second attribute is only used for further processing by RNNTagger's lemmatizer (`lemma_rnntagger`).
 
 ### Lemmatization
 
@@ -236,7 +236,7 @@ This component assigns to each token a subset of the four speech types `direct`,
 
 * Component name: `scenes_stss_se`
 * Implementing class: `llpro.components.scenes_stss_se.SceneSegmenter`
-* Assigns: `doc._.scenes`
+* Assigns: `doc._.scenes`, `token._.scene`
 
 Options:
 
@@ -250,8 +250,10 @@ Options:
 
 The SceneSegmenter uses a neural classifier proposed by Kurfalı and Wirén [(2021)](#ref-kurfali_breaking_2021) to predict after each sentence if a new scene/non-scene begins.
 
-This component assigns to the document a list of [`Span`](https://spacy.io/api/span) objects to the attribute `doc._.scenes`, where each span represents one scene/non-scene.
-For each span `scene` in `doc._.scenes`, the attribute `scene.label` is one of `'Scene'` or `'Nonscene'`.
+This component assigns to the document a list of [`Span`](https://spacy.io/api/span) objects to the custom attribute `doc._.scenes`, where each span represents one scene/non-scene.
+For each span `scene` in `doc._.scenes`, the attribute `scene.label_` is one of `'Scene'` or `'Nonscene'`.
+
+Additionally, this component also assigns to each token the containing span to the custom attribute `token._.scene`, again represented by a `Span` object as defined above.
 
 
 ### Event Classification
@@ -274,7 +276,7 @@ Options:
 
 The EventClassifier uses a neural classifier proposed by Vauth, Hatzel, Gius, and Biemann [(2021)](#ref-vauth_automated_2021) to annotate every verbal phrase with one of four event types `change_of_state`, `process_event`, `stative_event` and `non_event`.
 
-This component assigns to the document a list of [`SpanGroup`](https://spacy.io/api/spangroup) objects to the attribute `doc._.events`, where each span group represents one verbal phrase.
+This component assigns to the document a list of [`SpanGroup`](https://spacy.io/api/spangroup) objects to the custom attribute `doc._.events`, where each span group represents one verbal phrase.
 For each span group `event` in `doc._.events`, the attribute `event.spans` holds a list of spans that constitute the verbal phrase.
 The value `event.attrs["event_type"]` holds the annotated event type, i.e. one of `change_of_state`, `process_event`, `stative_event`, `non_event`.
 
