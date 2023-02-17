@@ -94,7 +94,7 @@ tests = ["mypy", "PyHamcrest (>=2.0.2)", "pytest (>=4.6)", "pytest-benchmark", "
 
 [[package]]
 name = "beautifulsoup4"
-version = "4.11.1"
+version = "4.11.2"
 description = "Screen-scraping library"
 category = "main"
 optional = false
@@ -120,14 +120,14 @@ numpy = ">=1.15.0"
 
 [[package]]
 name = "boto3"
-version = "1.26.59"
+version = "1.26.73"
 description = "The AWS SDK for Python"
 category = "main"
 optional = false
 python-versions = ">= 3.7"
 
 [package.dependencies]
-botocore = ">=1.29.59,<1.30.0"
+botocore = ">=1.29.73,<1.30.0"
 jmespath = ">=0.7.1,<2.0.0"
 s3transfer = ">=0.6.0,<0.7.0"
 
@@ -136,7 +136,7 @@ crt = ["botocore[crt] (>=1.21.0,<2.0a0)"]
 
 [[package]]
 name = "botocore"
-version = "1.29.59"
+version = "1.29.73"
 description = "Low-level, data-driven core of boto 3."
 category = "main"
 optional = false
@@ -148,7 +148,7 @@ python-dateutil = ">=2.1,<3.0.0"
 urllib3 = ">=1.25.4,<1.27"
 
 [package.extras]
-crt = ["awscrt (==0.15.3)"]
+crt = ["awscrt (==0.16.9)"]
 
 [[package]]
 name = "bpemb"
@@ -167,7 +167,7 @@ tqdm = "*"
 
 [[package]]
 name = "cached-path"
-version = "1.3.1"
+version = "1.3.3"
 description = ""
 category = "main"
 optional = false
@@ -177,7 +177,7 @@ python-versions = ">=3.7"
 boto3 = ">=1.0,<2.0"
 filelock = ">=3.4,<3.10"
 google-cloud-storage = ">=1.32.0,<3.0"
-huggingface-hub = ">=0.8.1,<0.12.0"
+huggingface-hub = ">=0.8.1,<0.13.0"
 requests = ">=2.0,<3.0"
 rich = ">=12.1,<14.0"
 
@@ -293,6 +293,21 @@ category = "main"
 optional = false
 python-versions = ">=2.6, !=3.0.*, !=3.1.*, !=3.2.*"
 
+[[package]]
+name = "de-dep-news-trf"
+version = "3.5.0"
+description = "German transformer pipeline (bert-base-german-cased). Components: transformer, tagger, morphologizer, parser, lemmatizer (trainable_lemmatizer)."
+category = "dev"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+spacy = ">=3.5.0,<3.6.0"
+spacy-transformers = ">=1.2.0.dev0,<1.3.0"
+
+[package.source]
+type = "url"
+url = "https://github.com/explosion/spacy-models/releases/download/de_dep_news_trf-3.5.0/de_dep_news_trf-3.5.0-py3-none-any.whl"
 [[package]]
 name = "deprecated"
 version = "1.2.13"
@@ -495,8 +510,8 @@ smmap = ">=3.0.1,<6"
 
 [[package]]
 name = "gitpython"
-version = "3.1.30"
-description = "GitPython is a python library used to interact with Git repositories"
+version = "3.1.31"
+description = "GitPython is a Python library used to interact with Git repositories"
 category = "main"
 optional = false
 python-versions = ">=3.7"
@@ -507,22 +522,20 @@ typing-extensions = {version = ">=3.7.4.3", markers = "python_version < \"3.8\""
 
 [[package]]
 name = "google-api-core"
-version = "2.11.0"
+version = "2.8.2"
 description = "Google API client core library"
 category = "main"
 optional = false
-python-versions = ">=3.7"
+python-versions = ">=3.6"
 
 [package.dependencies]
-google-auth = ">=2.14.1,<3.0dev"
+google-auth = ">=1.25.0,<3.0dev"
 googleapis-common-protos = ">=1.56.2,<2.0dev"
-protobuf = ">=3.19.5,<3.20.0 || >3.20.0,<3.20.1 || >3.20.1,<4.21.0 || >4.21.0,<4.21.1 || >4.21.1,<4.21.2 || >4.21.2,<4.21.3 || >4.21.3,<4.21.4 || >4.21.4,<4.21.5 || >4.21.5,<5.0.0dev"
+protobuf = ">=3.15.0,<5.0.0dev"
 requests = ">=2.18.0,<3.0.0dev"
 
 [package.extras]
-grpc = ["grpcio (>=1.33.2,<2.0dev)", "grpcio-status (>=1.33.2,<2.0dev)", "grpcio (>=1.49.1,<2.0dev)", "grpcio-status (>=1.49.1,<2.0dev)"]
-grpcgcp = ["grpcio-gcp (>=0.2.2,<1.0dev)"]
-grpcio-gcp = ["grpcio-gcp (>=0.2.2,<1.0dev)"]
+grpc = ["grpcio (>=1.33.2,<2.0dev)", "grpcio-status (>=1.33.2,<2.0dev)"]
 
 [[package]]
 name = "google-auth"
@@ -606,17 +619,17 @@ requests = ["requests (>=2.18.0,<3.0.0dev)"]
 
 [[package]]
 name = "googleapis-common-protos"
-version = "1.58.0"
+version = "1.56.4"
 description = "Common protobufs used in Google APIs"
 category = "main"
 optional = false
 python-versions = ">=3.7"
 
 [package.dependencies]
-protobuf = ">=3.19.5,<3.20.0 || >3.20.0,<3.20.1 || >3.20.1,<4.21.1 || >4.21.1,<4.21.2 || >4.21.2,<4.21.3 || >4.21.3,<4.21.4 || >4.21.4,<4.21.5 || >4.21.5,<5.0.0dev"
+protobuf = ">=3.15.0,<5.0.0dev"
 
 [package.extras]
-grpc = ["grpcio (>=1.44.0,<2.0.0dev)"]
+grpc = ["grpcio (>=1.0.0,<2.0.0dev)"]
 
 [[package]]
 name = "h5py"
@@ -948,7 +961,7 @@ twitter = ["twython"]
 
 [[package]]
 name = "numpy"
-version = "1.21.6"
+version = "1.21.4"
 description = "NumPy is the fundamental package for array computing with Python."
 category = "main"
 optional = false
@@ -1117,11 +1130,11 @@ murmurhash = ">=0.28.0,<1.1.0"
 
 [[package]]
 name = "protobuf"
-version = "3.19.6"
+version = "3.20.0"
 description = "Protocol Buffers"
 category = "main"
 optional = false
-python-versions = ">=3.5"
+python-versions = ">=3.7"
 
 [[package]]
 name = "psutil"
@@ -1171,7 +1184,7 @@ pyasn1 = ">=0.4.6,<0.5.0"
 
 [[package]]
 name = "pydantic"
-version = "1.10.4"
+version = "1.10.5"
 description = "Data validation and settings management using python type hints"
 category = "main"
 optional = false
@@ -1197,25 +1210,28 @@ plugins = ["importlib-metadata"]
 
 [[package]]
 name = "pyhocon"
-version = "0.3.59"
+version = "0.3.60"
 description = "HOCON parser for Python"
 category = "main"
 optional = false
 python-versions = "*"
 
 [package.dependencies]
-pyparsing = ">=2.0,<3.0"
+pyparsing = {version = ">=2,<4", markers = "python_version >= \"3.0\""}
 
 [package.extras]
 Duration = ["python-dateutil (>=2.8.0)"]
 
 [[package]]
 name = "pyparsing"
-version = "2.4.7"
-description = "Python parsing module"
+version = "3.0.9"
+description = "pyparsing module - Classes and methods to define and execute parsing grammars"
 category = "main"
 optional = false
-python-versions = ">=2.6, !=3.0.*, !=3.1.*, !=3.2.*"
+python-versions = ">=3.6.8"
+
+[package.extras]
+diagrams = ["railroad-diagrams", "jinja2"]
 
 [[package]]
 name = "pysocks"
@@ -1442,7 +1458,7 @@ python-versions = "*"
 
 [[package]]
 name = "sentry-sdk"
-version = "1.14.0"
+version = "1.15.0"
 description = "Python client for Sentry (https://sentry.io)"
 category = "main"
 optional = false
@@ -1463,6 +1479,7 @@ falcon = ["falcon (>=1.4)"]
 fastapi = ["fastapi (>=0.79.0)"]
 flask = ["flask (>=0.11)", "blinker (>=1.1)"]
 httpx = ["httpx (>=0.16.0)"]
+huey = ["huey (>=2)"]
 opentelemetry = ["opentelemetry-distro (>=0.35b0)"]
 pure_eval = ["pure-eval", "executing", "asttokens"]
 pymongo = ["pymongo (>=3.1)"]
@@ -1538,7 +1555,7 @@ python-versions = ">=3.6"
 
 [[package]]
 name = "somajo"
-version = "2.2.2"
+version = "2.2.3"
 description = "A tokenizer and sentence splitter for German and English web and social media texts."
 category = "main"
 optional = false
@@ -1561,11 +1578,11 @@ regex = ">=2019.02.18"
 
 [[package]]
 name = "soupsieve"
-version = "2.3.2.post1"
+version = "2.4"
 description = "A modern CSS selector implementation for Beautiful Soup."
 category = "main"
 optional = false
-python-versions = ">=3.6"
+python-versions = ">=3.7"
 
 [[package]]
 name = "spacy"
@@ -1709,7 +1726,7 @@ widechars = ["wcwidth"]
 
 [[package]]
 name = "tensorboardx"
-version = "2.5.1"
+version = "2.6"
 description = "TensorBoardX lets you watch Tensors Flow without Tensorflow"
 category = "main"
 optional = false
@@ -1717,7 +1734,8 @@ python-versions = "*"
 
 [package.dependencies]
 numpy = "*"
-protobuf = ">=3.8.0,<=3.20.1"
+packaging = "*"
+protobuf = ">=3.8.0,<4"
 
 [[package]]
 name = "termcolor"
@@ -1857,7 +1875,7 @@ telegram = ["requests"]
 
 [[package]]
 name = "traitlets"
-version = "5.8.1"
+version = "5.9.0"
 description = "Traitlets Python configuration system"
 category = "main"
 optional = false
@@ -1972,7 +1990,7 @@ socks = ["PySocks (>=1.5.6,!=1.5.7,<2.0)"]
 
 [[package]]
 name = "wandb"
-version = "0.13.9"
+version = "0.13.10"
 description = "A CLI and library for interacting with the Weights and Biases API."
 category = "main"
 optional = false
@@ -2048,7 +2066,7 @@ python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,>=2.7"
 
 [[package]]
 name = "zipp"
-version = "3.12.0"
+version = "3.13.0"
 description = "Backport of pathlib-compatible object wrapper for zip files"
 category = "main"
 optional = false
@@ -2061,7 +2079,7 @@ testing = ["pytest (>=6)", "pytest-checkdocs (>=2.4)", "flake8 (<5)", "pytest-co
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.7.1,<3.11"
-content-hash = "f3e48a21f2b13bc8cd96fc30633814a01bec6e2e9bc1c1034d128e08c15067c4"
+content-hash = "5ca7cbba3bc14b64431e063355c29b6553b10054f206d2422268f4d946f213ec"
 
 [metadata.files]
 allennlp = []
@@ -2087,6 +2105,7 @@ conllu = []
 cycler = []
 cymem = []
 cython = []
+de-dep-news-trf = []
 deprecated = []
 dill = []
 docker-pycreds = []

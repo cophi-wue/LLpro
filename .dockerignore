@@ -1,0 +1,15 @@
+Dockerfile
+doc
+files
+.venv
+dist
+build
+tests
+*.cpp
+*.so
+resources/zmorge-20150315-smor_newlemma.ca
+resources/RNNTagger
+resources/rwtagger_models
+resources/model_droc_incremental_no_segment_distance_May02_17
+resources/stss-se-scene-segmenter/extracted_model
+resources/eventclassifier_model

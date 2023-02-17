@@ -6,11 +6,11 @@ from distutils.core import Distribution, Extension
 
 from Cython.Build import cythonize
 
-#import numpy
+import numpy
 
 compile_args = ["-march=native", "-O3", "-msse", "-msse2", "-mfma", "-mfpmath=sse"]
 link_args = []
-include_dirs = []
+include_dirs = [numpy.get_include()]
 
 
 def build():
