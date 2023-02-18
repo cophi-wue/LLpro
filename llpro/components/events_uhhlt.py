@@ -113,23 +113,25 @@ class EventClassifier(Module):
         predictions = []
         labled_annotations = []
         all_predictions = collections.defaultdict(list)
-        for input_data, gold_labels, annotations in dataloader:
-            out = self.model(**input_data.to(self.device))
-            for anno, label in zip(annotations, out.event_type.cpu()):
-                labled_annotations.append((label, anno))
-            predictions.append(out.event_type.cpu())
-            for name in ["mental", "iterative"]:
-                selector = out.event_type != 0
-                all_predictions[name].append(
-                    torch.masked_select(getattr(out, name).cpu(), selector.cpu())
-                )
-            for name in ["speech_type", "thought_representation"]:
-                all_predictions[name].append(getattr(out, name).cpu())
+        with torch.no_grad():
+            for input_data, gold_labels, annotations in dataloader:
+                out = self.model(**input_data.to(self.device))
+                for anno, label in zip(annotations, out.event_type.cpu()):
+                    labled_annotations.append((label, anno))
+                predictions.append(out.event_type.cpu())
+                for name in ["mental", "iterative"]:
+                    selector = out.event_type != 0
+                    all_predictions[name].append(
+                        torch.masked_select(getattr(out, name).cpu(), selector.cpu())
+                    )
+                for name in ["speech_type", "thought_representation"]:
+                    all_predictions[name].append(getattr(out, name).cpu())
 
-            new_progress_counter = doc.char_span(annotations[0].start, annotations[-1].end,
-                                                 alignment_mode='expand').end  # token index of the last processed span
-            progress_fn(new_progress_counter - progress_counter)
-            progress_counter = new_progress_counter
+                # set new_progress_counter to token index of the last processed span
+                new_progress_counter = doc.char_span(annotations[0].start, annotations[-1].end,
+                                                     alignment_mode='expand').end
+                progress_fn(new_progress_counter - progress_counter)
+                progress_counter = new_progress_counter
 
         all_predictions = {
             name: torch.cat(values) for name, values in all_predictions.items()

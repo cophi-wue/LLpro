@@ -74,17 +74,13 @@ class FLERTNERTagger(Module):
             torch.cuda.empty_cache()
 
     def _annotate_batch(self, batch):
-        from flair.models.sequence_tagger_utils.bioes import get_spans_from_bio
+        from flair.data import get_spans_from_bio
         import torch
 
         # cf. flair/models/sequence_tagger_model.py
         # get features from forward propagation
-        features, gold_labels = self.tagger.forward(batch)
-
-        # Sort batch in same way as forward propagation
-        lengths = torch.LongTensor([len(sentence) for sentence in batch])
-        _, sort_indices = lengths.sort(dim=0, descending=True)
-        batch = [batch[i] for i in sort_indices]
+        sentence_tensor, lengths = self.tagger._prepare_tensors(batch)
+        features = self.tagger.forward(sentence_tensor, lengths)
 
         # make predictions
         if self.tagger.use_crf:

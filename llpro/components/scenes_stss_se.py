@@ -34,6 +34,7 @@ class SceneSegmenter(Module):
         from stss_se_code.sequential_sentence_classification.dataset_reader import SeqClassificationReader
         import allennlp.models.archival
         self.archive = allennlp.models.archival.load_archive(str(model_path))
+        self.archive.model.eval()
         if not self.device_on_run:
             self.archive.model.to(self.device)
 
@@ -55,16 +56,17 @@ class SceneSegmenter(Module):
         # cf. resources/stss-se-scene-segmenter/stss_se_code/sequential_sentence_classification/predictor.py
         sentence_counter = 0
         pred_labels = []
-        for sentences_loop, _, _, _ in self.archive.dataset_reader.enforce_max_sent_per_example(prepared_sentences):
-            instance = self.archive.dataset_reader.text_to_instance(sentences_loop, predict=True)
-            self.archive.dataset_reader.apply_token_indexers(instance)
-            output = self.archive.model.forward_on_instance(instance)
-            idx = output['action_probs'].argmax(axis=1).tolist()
-            labels = [self.archive.model.vocab.get_token_from_index(i, namespace='labels') for i in idx]
-            for l in labels:
-                pred_labels.append((l, sentence_counter))
-                progress_fn(len(sentences[sentence_counter]))
-                sentence_counter = sentence_counter + 1
+        with torch.no_grad():
+            for sentences_loop, _, _, _ in self.archive.dataset_reader.enforce_max_sent_per_example(prepared_sentences):
+                instance = self.archive.dataset_reader.text_to_instance(sentences_loop, predict=True)
+                self.archive.dataset_reader.apply_token_indexers(instance)
+                output = self.archive.model.forward_on_instance(instance)
+                idx = output['action_probs'].argmax(axis=1).tolist()
+                labels = [self.archive.model.vocab.get_token_from_index(i, namespace='labels') for i in idx]
+                for l in labels:
+                    pred_labels.append((l, sentence_counter))
+                    progress_fn(len(sentences[sentence_counter]))
+                    sentence_counter = sentence_counter + 1
 
         scenes = self.postprocess(pred_labels)
         for segment_counter, scene in enumerate(scenes):
