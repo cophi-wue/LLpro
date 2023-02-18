@@ -39,11 +39,9 @@ class Module:
         pbar.close()
         end_time = time.monotonic()
 
-        if getattr(doc._, 'filename', None) is not None:
-            logging.info(
-                f'Finished module {self.name} for {doc._.filename} ({len(doc) / (end_time - start_time):.0f}tok/s)')
-        else:
-            logging.info(f'Finished module {self.name} ({len(doc) / (end_time - start_time):.0f}tok/s)')
+        filename = getattr(doc._, 'filename', 'stdin')
+        logging.info(f'Finished module {self.name} for {filename} in {end_time-start_time:.0f}s '
+                     f'({len(doc) / (end_time-start_time):.0f}tok/s)')
 
         return doc
 
