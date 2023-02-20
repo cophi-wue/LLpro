@@ -108,6 +108,7 @@ if __name__ == "__main__":
     except:
         pass
     logging.info('Picked up following arguments: ' + repr(vars(args)))
+    logging.info('LLpro resources root: ' + llpro.LLPRO_RESOURCES_ROOT)
 
     if 'OMP_NUM_THREADS' not in os.environ:
         torch.set_num_threads(get_cpu_limit())

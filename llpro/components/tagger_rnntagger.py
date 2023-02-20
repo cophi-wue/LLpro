@@ -11,10 +11,11 @@ from typing import Callable
 
 from ..common import Module
 from ..stts2upos import conv_table
+from .. import LLPRO_RESOURCES_ROOT
 
 
 @Language.factory("tagger_rnntagger", assigns=['token._.rnntagger_tag', 'token.morph'], default_config={
-    'rnntagger_home': 'resources/RNNTagger', 'use_cuda': True, 'device_on_run': True, 'pbar_opts': None
+    'rnntagger_home': LLPRO_RESOURCES_ROOT + '/RNNTagger', 'use_cuda': True, 'device_on_run': True, 'pbar_opts': None
 })
 def tagger_rnntagger(nlp, name, rnntagger_home, use_cuda, device_on_run, pbar_opts):
     if not Token.has_extension('rnntagger_tag'):
@@ -24,7 +25,7 @@ def tagger_rnntagger(nlp, name, rnntagger_home, use_cuda, device_on_run, pbar_op
 
 class RNNTagger(Module):
 
-    def __init__(self, name, rnntagger_home='resources/RNNTagger', use_cuda=True, device_on_run=True, pbar_opts=None):
+    def __init__(self, name, rnntagger_home=LLPRO_RESOURCES_ROOT + '/RNNTagger', use_cuda=True, device_on_run=True, pbar_opts=None):
         super().__init__(name, pbar_opts=pbar_opts)
         self.device = torch.device('cuda' if torch.cuda.is_available() and use_cuda else "cpu")
         self.device_on_run = device_on_run

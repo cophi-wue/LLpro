@@ -10,6 +10,7 @@ from spacy import Language
 from spacy.tokens import Doc, Token
 
 from ..common import Module
+from .. import LLPRO_RESOURCES_ROOT
 
 
 @Language.factory("speech_redewiedergabe", assigns=['token._.speech', 'token._.speech_prob'], default_config={
@@ -34,10 +35,10 @@ class RedewiedergabeTagger(Module):
         flair.device = 'cpu'
 
         self.model_paths = model_paths if model_paths is not None else \
-            {'direct': 'resources/rwtagger_models/models/direct/final-model.pt',
-             'indirect': 'resources/rwtagger_models/models/indirect/final-model.pt',
-             'reported': 'resources/rwtagger_models/models/reported/final-model.pt',
-             'freeIndirect': 'resources/rwtagger_models/models/freeIndirect/final-model.pt'}
+            {'direct': LLPRO_RESOURCES_ROOT + '/rwtagger_models/models/direct/final-model.pt',
+             'indirect': LLPRO_RESOURCES_ROOT + '/rwtagger_models/models/indirect/final-model.pt',
+             'reported': LLPRO_RESOURCES_ROOT + '/rwtagger_models/models/reported/final-model.pt',
+             'freeIndirect': LLPRO_RESOURCES_ROOT + '/rwtagger_models/models/freeIndirect/final-model.pt'}
         self.device_on_run = device_on_run
         self.device = torch.device('cuda' if torch.cuda.is_available() and use_cuda else "cpu")
 

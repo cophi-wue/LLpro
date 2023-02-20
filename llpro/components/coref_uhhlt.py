@@ -9,6 +9,7 @@ from spacy import Language
 from spacy.tokens import Span, Doc, Token, SpanGroup
 
 from ..common import Module
+from .. import LLPRO_RESOURCES_ROOT
 
 
 def add_extension(cls, ext, **kwargs):
@@ -19,8 +20,8 @@ def add_extension(cls, ext, **kwargs):
 @Language.factory("coref_uhhlt",
                   assigns=['token._.in_coref', 'token._.coref_clusters', 'doc._.has_coref', 'doc._.coref_clusters'],
                   default_config={
-                      'coref_home': 'resources/uhh-lt-neural-coref',
-                      'model': 'resources/model_droc_incremental_no_segment_distance_May02_17-32-58_1800.bin',
+                      'coref_home': LLPRO_RESOURCES_ROOT + '/uhh-lt-neural-coref',
+                      'model': LLPRO_RESOURCES_ROOT + '/model_droc_incremental_no_segment_distance_May02_17-32-58_1800.bin',
                       'config_name': 'droc_incremental_no_segment_distance',
                       'pbar_opts': None,
                       'use_cuda': True,
@@ -42,8 +43,8 @@ def coref_uhhlt(nlp, name, coref_home, model, config_name, pbar_opts, use_cuda, 
 
 class CorefTagger(Module):
 
-    def __init__(self, name, coref_home='resources/uhh-lt-neural-coref',
-                 model='resources/model_droc_incremental_no_segment_distance_May02_17-32-58_1800.bin',
+    def __init__(self, name, coref_home=LLPRO_RESOURCES_ROOT + 'uhh-lt-neural-coref',
+                 model=LLPRO_RESOURCES_ROOT + '/model_droc_incremental_no_segment_distance_May02_17-32-58_1800.bin',
                  config_name='droc_incremental_no_segment_distance', use_cuda=True, device_on_run=True,
                  pbar_opts=None):
         super().__init__(name, pbar_opts)

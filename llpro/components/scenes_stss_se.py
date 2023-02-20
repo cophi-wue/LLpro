@@ -8,10 +8,11 @@ from spacy.tokens import Doc, Span, Token
 from typing import Callable
 
 from ..common import Module
+from .. import LLPRO_RESOURCES_ROOT
 
 @Language.factory("scenes_stss_se", assigns=['doc._.scenes', 'token._.scene'], default_config={
-    'stss_se_home': 'resources/stss-se-scene-segmenter',
-    'model_path': 'resources/stss-se-scene-segmenter/extracted_model', 'use_cuda': True, 'device_on_run': True,
+    'stss_se_home': LLPRO_RESOURCES_ROOT + '/stss-se-scene-segmenter',
+    'model_path': LLPRO_RESOURCES_ROOT + '/stss-se-scene-segmenter/extracted_model', 'use_cuda': True, 'device_on_run': True,
     'pbar_opts': None
 })
 def scenes_stss_se(nlp, name, stss_se_home, model_path, use_cuda, device_on_run, pbar_opts):
@@ -23,7 +24,7 @@ def scenes_stss_se(nlp, name, stss_se_home, model_path, use_cuda, device_on_run,
 
 class SceneSegmenter(Module):
 
-    def __init__(self, name, stss_se_home='resources/stss-se-scene-segmenter', model_path='resources/stss-se-scene-segmenter/extracted_model', use_cuda=True,
+    def __init__(self, name, stss_se_home=LLPRO_RESOURCES_ROOT + '/stss-se-scene-segmenter', model_path=LLPRO_RESOURCES_ROOT + '/stss-se-scene-segmenter/extracted_model', use_cuda=True,
                  device_on_run=True, pbar_opts=None):
         super().__init__(name, pbar_opts=pbar_opts)
         self.device = torch.device('cuda' if torch.cuda.is_available() and use_cuda else "cpu")

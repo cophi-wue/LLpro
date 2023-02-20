@@ -2,6 +2,7 @@ import itertools
 import logging
 import queue
 import sys
+from pathlib import Path
 
 import more_itertools
 import multiprocessing_on_dill as multiprocessing
@@ -11,15 +12,18 @@ from typing import List, Iterable, Callable, Tuple, Sequence
 
 from ..spacy_cython_utils import apply_dependency_to_doc
 from ..common import Module
+from .. import LLPRO_RESOURCES_ROOT
 
 
 @Language.factory("parser_parzu_parallelized", requires=['token.tag'], assigns=['token.dep', 'token.head'],
                   default_config={
-                      'parzu_home': 'resources/ParZu', 'num_processes': 1, 'tokens_per_process': 1000, 'pbar_opts': None
+                      'parzu_home': LLPRO_RESOURCES_ROOT + '/ParZu',
+                      'zmorge_transducer': LLPRO_RESOURCES_ROOT + '/zmorge-20150315-smor_newlemma.ca',
+                      'num_processes': 1, 'tokens_per_process': 1000, 'pbar_opts': None
                   })
-def parser_parzu_parallelized(nlp, name, parzu_home, num_processes, tokens_per_process, pbar_opts):
-    return ParzuParallelized(name=name, parzu_home=parzu_home, num_processes=num_processes,
-                             tokens_per_process=tokens_per_process, pbar_opts=pbar_opts)
+def parser_parzu_parallelized(nlp, name, parzu_home, zmorge_transducer, num_processes, tokens_per_process, pbar_opts):
+    return ParzuParallelized(name=name, parzu_home=parzu_home, zmorge_transducer=zmorge_transducer,
+                             num_processes=num_processes, tokens_per_process=tokens_per_process, pbar_opts=pbar_opts)
 
 
 class ParzuParallelized(Module):
@@ -30,14 +34,16 @@ class ParzuParallelized(Module):
     hence we do not lose any information.
     """
 
-    def __init__(self, name, parzu_home='resources/ParZu', num_processes: int = 1, tokens_per_process: int = 1000,
+    def __init__(self, name, parzu_home=LLPRO_RESOURCES_ROOT + '/ParZu',
+                 zmorge_transducer=LLPRO_RESOURCES_ROOT + '/zmorge-20150315-smor_newlemma.ca',
+                 num_processes: int = 1, tokens_per_process: int = 1000,
                  pbar_opts=None):
         super().__init__(name, pbar_opts=pbar_opts)
         self.num_processes = num_processes
         self.tokens_per_process = tokens_per_process
         logging.info(f"Starting {num_processes} processes of {name}")
         self.pool = multiprocessing.Pool(processes=num_processes, initializer=ParzuParallelized._init_worker,
-                                         initargs=({'parzu_home': parzu_home},))
+                                         initargs=({'parzu_home': parzu_home, 'zmorge_transducer': zmorge_transducer},))
 
     def split_doc_into_chunks(self, doc: Doc) -> Iterable[Sequence[Span]]:
         def sentlist_len(list_of_sents):
@@ -91,11 +97,14 @@ class ParzuParallelized(Module):
 
 class ParzuWorker:
 
-    def __init__(self, parzu_home='resources/ParZu'):
+    def __init__(self, parzu_home=LLPRO_RESOURCES_ROOT + '/ParZu',
+                 zmorge_transducer=LLPRO_RESOURCES_ROOT + '/zmorge-20150315-smor_newlemma.ca'):
         sys.path.insert(0, str(parzu_home))
         from parzu_class import process_arguments, Parser
 
         self.opts = process_arguments(commandline=False)
+        self.opts['smor_model'] = zmorge_transducer
+        self.opts['tempdir'] = str(Path(parzu_home) / Path('tmp'))
         self.parser = Parser(self.opts, timeout=1000)
 
     def process_parzu(self, serialized_sentence: List[Tuple]):

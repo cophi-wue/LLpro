@@ -10,12 +10,13 @@ from spacy.tokens import Doc, SpanGroup, Span
 from torch.utils.data import DataLoader
 
 from ..common import Module
+from .. import LLPRO_RESOURCES_ROOT
 
 
 @Language.factory("events_uhhlt", requires=['token.tag', 'token.dep', 'token.head'], assigns=['doc._.events'],
                   default_config={
-                      'event_classify_home': 'resources/uhh-lt-event-classify',
-                      'model_dir': './resources/eventclassifier_model/demo_model',
+                      'event_classify_home': LLPRO_RESOURCES_ROOT + '/uhh-lt-event-classify',
+                      'model_dir': LLPRO_RESOURCES_ROOT + '/eventclassifier_model/demo_model',
                       'batch_size': 8,
                       'pbar_opts': None,
                       'use_cuda': True,
