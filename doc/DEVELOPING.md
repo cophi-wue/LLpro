@@ -16,7 +16,7 @@ nlp.add_pipe('tagger_rnntagger')
 nlp.add_pipe('lemma_rnntagger')
 nlp.add_pipe('parser_parzu_parallelized')
 nlp.add_pipe('speech_redewiedergabe')
-nlp.add_pipe('scenes_stss_se')
+nlp.add_pipe('su_scene_segmenter')
 nlp.add_pipe('coref_uhhlt')
 nlp.add_pipe('ner_flair')
 nlp.add_pipe('events_uhhlt')
@@ -234,19 +234,19 @@ This component assigns to each token a subset of the four speech types `direct`,
 
 ### Scene Segmentation
 
-* Component name: `scenes_stss_se`
-* Implementing class: `llpro.components.scenes_stss_se.SceneSegmenter`
+* Component name: `su_scene_segmenter`
+* Implementing class: `llpro.components.su_scene_segmenter.SceneSegmenter`
 * Assigns: `doc._.scenes`, `token._.scene`
 
 Options:
 
-| Name            | Description                                                                                                                   |
-|:----------------|:------------------------------------------------------------------------------------------------------------------------------|
-| `stss_se_home`  | Root directory of the `scene_segmentation` repository *adapted for use with the LLpro pipeline*. Default: `resources/stss-se` |
-| `model_path`    | The scene segmenter model to use. Default: `resources/stss-se/extracted_model`                                                |
-| `use_cuda`      | as specified above                                                                                                            |
-| `device_on_run` | as specified above                                                                                                            |
-| `pbar_opts`     | as specified above                                                                                                            |
+| Name            | Description                                                                                                                              |
+|:----------------|:-----------------------------------------------------------------------------------------------------------------------------------------|
+| `stss_se_home`  | Root directory of the `scene_segmentation` repository *adapted for use with the LLpro pipeline*. Default: `resources/su-scene-segmenter` |
+| `model_path`    | The scene segmenter model to use. Default: `resources/extracted-scene-segmenter-model`                                                   |
+| `use_cuda`      | as specified above                                                                                                                       |
+| `device_on_run` | as specified above                                                                                                                       |
+| `pbar_opts`     | as specified above                                                                                                                       |
 
 The SceneSegmenter uses a neural classifier proposed by Kurfalı and Wirén [(2021)](#ref-kurfali_breaking_2021) to predict after each sentence if a new scene/non-scene begins.
 

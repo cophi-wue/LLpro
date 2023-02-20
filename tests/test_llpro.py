@@ -155,7 +155,7 @@ class TestSceneSegmenterComponent(LLproReproduction):
 
     def run_pipeline(self, doc: Doc) -> List[Tuple[str, int, str]]:
         nlp = spacy.blank("de")
-        nlp.add_pipe('scenes_stss_se')
+        nlp.add_pipe('su_scene_segmenter')
         nlp(doc)
 
         for tok in doc:

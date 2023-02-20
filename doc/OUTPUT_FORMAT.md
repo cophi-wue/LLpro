@@ -87,7 +87,7 @@ Fields
 * `entity`: NER tag of this token, in [IOB encoding](https://en.wikipedia.org/wiki/Inside%E2%80%93outside%E2%80%93beginning_(tagging)). Uses the usual four classes `PER, LOC, ORG, MISC` as employed by the respective CoNLL-2003 shared task on named entity recognition. ([Sang and De Meulder, 2003](#ref-tjong_kim_sang_introduction_2003)). Cf. component [ner_flair](./DEVELOPING.md#named-entity-recognition).
 * `speech`: Comma-separated list of speech types annotated on this token, or `_` if none. A subset of `direct`, `indirect`, `freeIndirect` and `reported`, as defined by [Brunner et al. (2021)](#ref-brunner_bert_2021). Cf. component [speech_redewiedergabe](./DEVELOPING.md#recognition-of-speech-thought-and-writing-representation).
 * `coref_clusters`: Comma-separated list of coreference clusters (represented by integer IDs) annotated on this token, or `_` if none. Cf. component [coref_uhhlt](./DEVELOPING.md#coreference-resolution).
-* `scene_id`: Numerical index of the scene which contains this token, cf. component [scenes_stss_se](./DEVELOPING.md#scene-segmentation).
+* `scene_id`: Numerical index of the scene which contains this token, cf. component [su_scene_segmenter](./DEVELOPING.md#scene-segmentation).
 * `scene_label`: Annotated label of the scene having index `scene_id`. One of `Scene` or `Nonscene`.
 * `event_id`: Numerical index of the event which contains this token, or `_` if token is not contained in an event. Cf. component [events_uhhlt](./DEVELOPING.md#event-classification).
 * `event_label`: Annotated label of the event having index `event_id`. One of `non_event`, `change_of_state`, `process` or `stative_event`, as defined by [Vauth et al. (2021)](#ref-vauth_automated_2021).

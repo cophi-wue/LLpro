@@ -10,12 +10,12 @@ from typing import Callable
 from ..common import Module
 from .. import LLPRO_RESOURCES_ROOT
 
-@Language.factory("scenes_stss_se", assigns=['doc._.scenes', 'token._.scene'], default_config={
-    'stss_se_home': LLPRO_RESOURCES_ROOT + '/stss-se-scene-segmenter',
-    'model_path': LLPRO_RESOURCES_ROOT + '/stss-se-scene-segmenter/extracted_model', 'use_cuda': True, 'device_on_run': True,
+@Language.factory("su_scene_segmenter", assigns=['doc._.scenes', 'token._.scene'], default_config={
+    'stss_se_home': LLPRO_RESOURCES_ROOT + '/su-scene-segmenter',
+    'model_path': LLPRO_RESOURCES_ROOT + '/extracted-scene-segmenter-model', 'use_cuda': True, 'device_on_run': True,
     'pbar_opts': None
 })
-def scenes_stss_se(nlp, name, stss_se_home, model_path, use_cuda, device_on_run, pbar_opts):
+def su_scene_segmenter(nlp, name, stss_se_home, model_path, use_cuda, device_on_run, pbar_opts):
     if not Doc.has_extension('scenes'):
         Doc.set_extension('scenes', default=list())
     if not Token.has_extension('scene'):
@@ -24,15 +24,15 @@ def scenes_stss_se(nlp, name, stss_se_home, model_path, use_cuda, device_on_run,
 
 class SceneSegmenter(Module):
 
-    def __init__(self, name, stss_se_home=LLPRO_RESOURCES_ROOT + '/stss-se-scene-segmenter', model_path=LLPRO_RESOURCES_ROOT + '/stss-se-scene-segmenter/extracted_model', use_cuda=True,
+    def __init__(self, name, stss_se_home=LLPRO_RESOURCES_ROOT + '/su-scene-segmenter', model_path=LLPRO_RESOURCES_ROOT + '/extracted-scene-segementer-model', use_cuda=True,
                  device_on_run=True, pbar_opts=None):
         super().__init__(name, pbar_opts=pbar_opts)
         self.device = torch.device('cuda' if torch.cuda.is_available() and use_cuda else "cpu")
         self.device_on_run = device_on_run
         self.stss_se_home = Path(stss_se_home)
         sys.path.insert(0, str(self.stss_se_home))
-        from stss_se_code.sequential_sentence_classification.model import SeqClassificationModel
-        from stss_se_code.sequential_sentence_classification.dataset_reader import SeqClassificationReader
+        from su_scene_segmenter_code.sequential_sentence_classification.model import SeqClassificationModel
+        from su_scene_segmenter_code.sequential_sentence_classification.dataset_reader import SeqClassificationReader
         import allennlp.models.archival
         self.archive = allennlp.models.archival.load_archive(str(model_path))
         self.archive.model.eval()
@@ -54,7 +54,7 @@ class SceneSegmenter(Module):
         # as the text is further tokenized by BERT in the scene segmenter anyway, which always splits at whitespace.
         prepared_sentences = [' '.join(tok.text for tok in sent) for sent in sentences]
 
-        # cf. resources/stss-se-scene-segmenter/stss_se_code/sequential_sentence_classification/predictor.py
+        # cf. resources/su-scene-segmenter/su_scene_segmenter_code/sequential_sentence_classification/predictor.py
         sentence_counter = 0
         pred_labels = []
         with torch.no_grad():
@@ -80,7 +80,7 @@ class SceneSegmenter(Module):
         return doc
 
     def postprocess(self, pred_labels):
-        # cf. resources/stss-se-scene-segmenter/stss_se_code/utils/postprocess.py
+        # cf. resources/su-scene-segmenter/su_scene_segmenter_code/utils/postprocess.py
         scenes = []
         group = {}
         last_border = 0
