@@ -20,9 +20,9 @@ See also the section about the [Output Format](./doc/OUTPUT_FORMAT.md) for a des
 ## Usage
 
 ```text
-usage: main.py [-h] [-v] [--paragraph-pattern PAT] [--section-pattern PAT]
-               [--stdout | --writefiles DIR]
-               FILE [FILE ...]
+usage: bin/llpro_cli.py [-h] [-v] [--paragraph-pattern PAT] [--section-pattern PAT]
+                        [--stdout | --writefiles DIR]
+                        FILE [FILE ...]
 
 NLP Pipeline for literary texts written in German.
 
@@ -50,7 +50,7 @@ optional arguments:
 ## Installation
 
 The LLpro pipeline can be run either locally or as a Docker container. Running
-the pipelie using Docker is strongly recommended.
+the pipeline using Docker is strongly recommended.
 
 
 **WINDOWS USERS**: For building the Docker image, clone using
@@ -102,16 +102,17 @@ Verify that the following dependencies are installed:
   * SWI-Prolog >= 5.6
   * SFST >= 1.4
 
-Execute `pip install -r requirements.txt` and `./prepare.sh`. The script downloads all remaining prerequisites.
-Execute `./setup.py build_ext --inplace` to complie the required Cython files.
-
+Execute `poetry install` and `./prepare.sh`. The script downloads all remaining prerequisites.
 Example usage:
 
 ```shell
-pip install -r requirements.txt
+poetry install
 ./prepare.sh
-./setup.py build_ext --inplace
-python ./main.py -v --writefiles files/out files/in
+# NOTICE: use the prepared poetry venv!
+poetry run python ./bin/llpro_cli.py -v --writefiles files/out files/in
+
+# if desired, run tests
+poetry run pytest -vv
 ```
 
 
@@ -132,7 +133,12 @@ Narrative Texts. 2022. <https://github.com/aehrm/LLpro>
 
 In accordance with the license terms of ParZu+Zmorge (GPL v2), and of SoMeWeTa
 (GPL v3) the LLpro pipeline is licensed under the terms of GPL v3. See
-[LICENSE](LICENSE.md). NOTICE: Some subsystems and resources used by the
+[LICENSE](LICENSE.md). 
+
+NOTICE: The code of the ParZu parser located in `resources/ParZu` has been modified to be compatible with LLpro.
+See `git log -p df1e91a.. -- resources/ParZu` for a summary of these changes.
+
+NOTICE: Some subsystems and resources used by the
 LLpro pipeline have additional license terms:
 
 * RNNTagger: see
@@ -140,6 +146,7 @@ LLpro pipeline have additional license terms:
 * SoMeWeTa model `german_web_social_media_2020-05-28.model`: derived from the
   TIGER corpus; see
 <https://www.ims.uni-stuttgart.de/documents/ressourcen/korpora/tiger-corpus/license/htmlicense.html>
+* Scene Segmenter by Kurfalı and Wirén: Code provided as is on Github by the author, but no license terms provided.
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
