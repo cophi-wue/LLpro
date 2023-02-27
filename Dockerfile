@@ -30,9 +30,9 @@ RUN if [ -z "${UID}" ]; then adduser ${USER} --home /docker_home --disabled-pass
         else adduser ${USER} --uid ${UID} --home /docker_home --disabled-password --gecos ""; fi
 
 RUN mkdir /LLpro
-RUN chown extehrmanntraut /LLpro
+RUN chown ${USER} /LLpro
 
-USER extehrmanntraut
+USER ${USER}
 RUN curl -sSL https://install.python-poetry.org | python3 -
 ENV PATH="${PATH}:/docker_home/.local/bin"
 

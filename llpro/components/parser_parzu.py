@@ -148,7 +148,7 @@ class ParzuWorker:
                         head = int(line.split('\t')[6])
 
                     result.append({'index': i,
-                                   'head': 0 if head is None else index_of_first_token + int(head) - 1,
+                                   'head': i if head is None else index_of_first_token + int(head) - 1,
                                    'deprel': deprel})
                     update_fn(1)
 

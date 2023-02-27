@@ -30,7 +30,7 @@ class Module:
                  update_hook: Optional[Callable[[Module, Doc, int], None]] = None) -> Doc:
         pbar_opts = dict(self.pbar_opts)
         if disable_pbar:
-            pbar_opts['disalbe'] = True
+            pbar_opts['disable'] = True
 
         pbar_opts.update({'total': len(doc)})
         pbar = tqdm(**pbar_opts)
@@ -95,11 +95,12 @@ def spacy_doc_to_dataframe(doc):
                 val = str(val)
             token_attribute_dictionary[column].append(val)
 
-    for tok in doc:
-        if len(tok._.speech) > 0:
-            token_attribute_dictionary['speech'].append(','.join(tok._.speech))
-        else:
-            token_attribute_dictionary['speech'].append('_')
+    if hasattr(doc._, 'speech'):
+        for tok in doc:
+            if len(tok._.speech) > 0:
+                token_attribute_dictionary['speech'].append(','.join(tok._.speech))
+            else:
+                token_attribute_dictionary['speech'].append('_')
 
     for tok in doc:
         ent_str = 'O' if tok.ent_iob_ == 'O' else tok.ent_iob_ + '-' + tok.ent_type_

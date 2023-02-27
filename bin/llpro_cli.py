@@ -69,7 +69,7 @@ def create_pipe():
     nlp.add_pipe('tagger_someweta')
     nlp.add_pipe('tagger_rnntagger')
     nlp.add_pipe('lemma_rnntagger')
-    nlp.add_pipe('parser_parzu_parallelized', config={'num_processes': get_cpu_limit()})
+    nlp.add_pipe('parser_parzu_parallelized', config={'num_processes': torch.get_num_threads()})
     nlp.add_pipe('speech_redewiedergabe')
     nlp.add_pipe('su_scene_segmenter')
     nlp.add_pipe('coref_uhhlt')
@@ -117,7 +117,8 @@ if __name__ == "__main__":
         logging.info(f'torch: CUDA available, version {torch.version.cuda}, architectures {torch.cuda.get_arch_list()}')
     else:
         logging.info('torch: CUDA not available')
-        logging.info(f'torch: num_threads is {torch.get_num_threads()}')
+
+    logging.info(f'torch: num_threads is {torch.get_num_threads()}')
 
     filenames = []
     for f in args.infiles:
