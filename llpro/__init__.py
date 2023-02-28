@@ -3,6 +3,8 @@ import os
 __version__ = '0.1.0'
 LLPRO_RESOURCES_ROOT = os.getenv('LLPRO_RESOURCES_ROOT',
         os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'resources')))
+LLPRO_TEMPDIR = os.getenv('LLPRO_TEMPDIR',
+        os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'resources', 'tmp')))
 
 from .components.tokenizer_somajo import SoMaJoTokenizer
 from .components.tagger_someweta import tagger_someweta
