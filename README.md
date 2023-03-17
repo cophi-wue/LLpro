@@ -47,6 +47,9 @@ optional arguments:
                         separate file in DIR.
 ```
 
+Note: you can specify the resources directory (containing `ParZu` etc.) with the environment
+variable `LLPRO_RESOURCES_ROOT`, and the temporary workdir with the environment variable `LLPRO_TEMPDIR`.
+
 ## Installation
 
 The LLpro pipeline can be run either locally or as a Docker container. Running
