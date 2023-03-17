@@ -13,6 +13,8 @@ from ..common import Module
 from ..stts2upos import conv_table
 from .. import LLPRO_RESOURCES_ROOT
 
+logger = logging.getLogger(__name__)
+
 
 @Language.factory("tagger_rnntagger", assigns=['token._.rnntagger_tag', 'token.morph'], default_config={
     'rnntagger_home': LLPRO_RESOURCES_ROOT + '/RNNTagger', 'use_cuda': True, 'device_on_run': True, 'pbar_opts': None
@@ -46,7 +48,7 @@ class RNNTagger(Module):
 
         if not self.device_on_run:
             self.model.to(self.device)
-            logging.info(f"{self.name} using device {next(self.model.parameters()).device}")
+            logger.info(f"{self.name} using device {next(self.model.parameters()).device}")
 
         def annotate_sentence(words):
             data = self.vector_mappings
@@ -75,7 +77,7 @@ class RNNTagger(Module):
 
     def before_run(self):
         self.model.to(self.device)
-        logging.info(f"{self.name} using device {next(self.model.parameters()).device}")
+        logger.info(f"{self.name} using device {next(self.model.parameters()).device}")
 
     def after_run(self):
         if self.device_on_run:

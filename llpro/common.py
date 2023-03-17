@@ -11,6 +11,8 @@ from typing import Callable, Optional
 
 from tqdm import tqdm
 
+logger = logging.getLogger(__name__)
+
 
 class Module:
 
@@ -49,7 +51,7 @@ class Module:
             end_time = time.monotonic()
 
             filename = getattr(doc._, 'filename', 'stdin')
-            logging.info(f'Finished module {self.name} for {filename} in {end_time-start_time:.0f}s '
+            logger.info(f'Finished module {self.name} for {filename} in {end_time-start_time:.0f}s '
                          f'({len(doc) / (end_time-start_time):.0f}tok/s)')
 
         if before_run_hook is None and after_run_hook is None:

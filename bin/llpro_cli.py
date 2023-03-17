@@ -16,6 +16,8 @@ import llpro.components
 from llpro.common import spacy_doc_to_dataframe
 from llpro.components.tokenizer_somajo import SoMaJoTokenizer
 
+logger = logging.getLogger('llpro_cli')
+
 
 def get_cpu_limit():
     with open("/sys/fs/cgroup/cpu/cpu.cfs_quota_us") as fp:
@@ -47,7 +49,7 @@ def run_pipeline_on_files(filenames, nlp, tokenizer=None):
                 tokenization_start_time = time.monotonic()
                 doc = tokenizer(content)
                 tokenization_end_time = time.monotonic()
-                logging.info(
+                logger.info(
                     f'Finished tokenization for {filename} in {tokenization_end_time - tokenization_start_time:.0f}s '
                     f'({len(doc) / (tokenization_end_time - tokenization_start_time):.0f}tok/s)')
 
@@ -55,7 +57,7 @@ def run_pipeline_on_files(filenames, nlp, tokenizer=None):
                 nlp(doc)
 
             end_time = time.monotonic()
-            logging.info(f'Finished processing {filename} in {(end_time - start_time):.0f}s')
+            logger.info(f'Finished processing {filename} in {(end_time - start_time):.0f}s')
 
             file_pbar.update(size)
             file_pbar.set_description_str(f'{i + 1}/{len(filenames)}')
@@ -107,24 +109,24 @@ if __name__ == "__main__":
         logging.getLogger('flair').propagate = True
     except:
         pass
-    logging.info('Picked up following arguments: ' + repr(vars(args)))
-    logging.info('LLpro resources root: ' + llpro.LLPRO_RESOURCES_ROOT)
-    logging.info('LLpro temporary directory: ' + llpro.LLPRO_TEMPDIR)
+    logger.info('Picked up following arguments: ' + repr(vars(args)))
+    logger.info('LLpro resources root: ' + llpro.LLPRO_RESOURCES_ROOT)
+    logger.info('LLpro temporary directory: ' + llpro.LLPRO_TEMPDIR)
 
     if 'OMP_NUM_THREADS' not in os.environ:
         torch.set_num_threads(get_cpu_limit())
 
     if torch.cuda.is_available():
-        logging.info(f'torch: CUDA available, version {torch.version.cuda}, architectures {torch.cuda.get_arch_list()}')
+        logger.info(f'torch: CUDA available, version {torch.version.cuda}, architectures {torch.cuda.get_arch_list()}')
     else:
-        logging.info('torch: CUDA not available')
+        logger.info('torch: CUDA not available')
 
-    logging.info(f'torch: num_threads is {torch.get_num_threads()}')
+    logger.info(f'torch: num_threads is {torch.get_num_threads()}')
 
     filenames = []
     for f in args.infiles:
         if not os.path.exists(f):
-            logging.error(f'file {f} does not exist, aborting!')
+            logger.error(f'file {f} does not exist, aborting!')
             sys.exit(1)
 
         if os.path.isfile(f):
@@ -133,8 +135,7 @@ if __name__ == "__main__":
             for root, dirs, members in os.walk(f, followlinks=True):
                 filenames.extend([os.path.join(root, m) for m in members])
 
-
-    logging.info('Loading pipeline')
+    logger.info('Loading pipeline')
     nlp = create_pipe()
     # nlp.analyze_pipes(pretty=True)
 
@@ -142,7 +143,7 @@ if __name__ == "__main__":
     for filename, tagged_doc in run_pipeline_on_files(filenames, nlp, tokenizer):
         if args.writefiles:
             with open(os.path.join(args.writefiles, os.path.basename(filename) + '.tsv'), 'w') as output_file:
-                logging.info(f'writing processed tokens of {filename} to {output_file.name}')
+                logger.info(f'writing processed tokens of {filename} to {output_file.name}')
                 print(spacy_doc_to_dataframe(tagged_doc).to_csv(None, sep='\t', index=True), file=output_file)
         elif args.outtype == 'stdout':
             print(spacy_doc_to_dataframe(tagged_doc).to_csv(None, sep='\t', index=True), file=sys.stdout)

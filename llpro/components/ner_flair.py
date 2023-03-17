@@ -12,6 +12,8 @@ from spacy.tokens import Doc, Span
 
 from ..common import Module
 
+logger = logging.getLogger(__name__)
+
 
 @Language.factory("ner_flair", assigns=['doc.ents', 'token.ent_iob', 'token.ent_type'], default_config={
     'batch_size': 8, 'use_cuda': True, 'device_on_run': True, 'pbar_opts': None
@@ -58,13 +60,13 @@ class FLERTNERTagger(Module):
 
         if not self.device_on_run:
             self.tagger.to(self.device)
-            logging.info(f"{self.name} using device {str(next(self.tagger.parameters()).device)}")
+            logger.info(f"{self.name} using device {str(next(self.tagger.parameters()).device)}")
 
     def before_run(self):
         import flair
         flair.device = self.device
         self.tagger.to(self.device)
-        logging.info(f"{self.name} using device {str(next(self.tagger.parameters()).device)}")
+        logger.info(f"{self.name} using device {str(next(self.tagger.parameters()).device)}")
 
     def after_run(self):
         import flair

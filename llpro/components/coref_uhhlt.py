@@ -11,6 +11,8 @@ from spacy.tokens import Span, Doc, Token, SpanGroup
 from ..common import Module
 from .. import LLPRO_RESOURCES_ROOT
 
+logger = logging.getLogger(__name__)
+
 
 def add_extension(cls, ext, **kwargs):
     if not cls.has_extension(ext):
@@ -70,7 +72,7 @@ class CorefTagger(Module):
         self.model.eval()
         if not self.device_on_run:
             self.model.to(self.device)
-            logging.info(f"{self.name} using device {next(self.model.parameters()).device}")
+            logger.info(f"{self.name} using device {next(self.model.parameters()).device}")
         self.window_size = 384  # fixed hyperparameter, should be read out of config from MAR file
 
         self.tensorizer = Tensorizer(self.config)
@@ -93,7 +95,7 @@ class CorefTagger(Module):
 
     def before_run(self):
         self.model.to(self.device)
-        logging.info(f"{self.name} using device {str(next(self.model.parameters()).device)}")
+        logger.info(f"{self.name} using device {str(next(self.model.parameters()).device)}")
 
     def after_run(self):
         if self.device_on_run:

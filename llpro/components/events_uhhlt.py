@@ -12,6 +12,8 @@ from torch.utils.data import DataLoader
 from ..common import Module
 from .. import LLPRO_RESOURCES_ROOT
 
+logger = logging.getLogger(__name__)
+
 
 @Language.factory("events_uhhlt", requires=['token.tag', 'token.dep', 'token.head'], assigns=['doc._.events'],
                   default_config={
@@ -44,12 +46,12 @@ class EventClassifier(Module):
 
         if not self.device_on_run:
             self.model.to(self.device)
-            logging.info(f"{self.name} using device {next(self.model.parameters()).device}")
+            logger.info(f"{self.name} using device {next(self.model.parameters()).device}")
 
     def before_run(self):
         if self.device_on_run:
             self.model.to(self.device)
-            logging.info(f"{self.name} using device {next(self.model.parameters()).device}")
+            logger.info(f"{self.name} using device {next(self.model.parameters()).device}")
 
     def after_run(self):
         if self.device_on_run:

@@ -14,6 +14,8 @@ from ..spacy_cython_utils import apply_dependency_to_doc
 from ..common import Module
 from .. import LLPRO_RESOURCES_ROOT, LLPRO_TEMPDIR
 
+logger = logging.getLogger(__name__)
+
 
 @Language.factory("parser_parzu_parallelized", requires=['token.tag'], assigns=['token.dep', 'token.head'],
                   default_config={
@@ -44,7 +46,7 @@ class ParzuParallelized(Module):
         super().__init__(name, pbar_opts=pbar_opts)
         self.num_processes = num_processes
         self.tokens_per_process = tokens_per_process
-        logging.info(f"Starting {num_processes} processes of {name}")
+        logger.info(f"Starting {num_processes} processes of {name}")
         self.pool = multiprocessing.Pool(processes=num_processes, initializer=ParzuParallelized._init_worker,
                                          initargs=({'parzu_home': parzu_home,
                                                     'parzu_tmpdir': parzu_tmpdir,

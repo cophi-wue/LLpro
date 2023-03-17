@@ -10,6 +10,8 @@ from typing import Callable
 from ..common import Module
 from .. import LLPRO_RESOURCES_ROOT
 
+logger = logging.getLogger(__name__)
+
 @Language.factory("su_scene_segmenter", assigns=['doc._.scenes', 'token._.scene'], default_config={
     'stss_se_home': LLPRO_RESOURCES_ROOT + '/su-scene-segmenter',
     'model_path': LLPRO_RESOURCES_ROOT + '/extracted-scene-segmenter-model', 'use_cuda': True, 'device_on_run': True,
@@ -41,7 +43,7 @@ class SceneSegmenter(Module):
 
     def before_run(self):
         self.archive.model.to(self.device)
-        logging.info(f"{self.name} using device {self.archive.model._get_prediction_device()}")
+        logger.info(f"{self.name} using device {self.archive.model._get_prediction_device()}")
 
     def after_run(self):
         if self.device_on_run:

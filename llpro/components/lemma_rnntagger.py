@@ -13,6 +13,8 @@ import torch
 from ..common import Module
 from .. import LLPRO_RESOURCES_ROOT
 
+logger = logging.getLogger(__name__)
+
 
 @Language.factory("lemma_rnntagger", requires=['token._.rnntagger_tag'], assigns=['token.lemma'], default_config={
     'rnntagger_home': LLPRO_RESOURCES_ROOT + '/RNNTagger', 'use_cuda': True, 'device_on_run': True, 'pbar_opts': None
@@ -46,7 +48,7 @@ class RNNLemmatizer(Module):
         if torch.cuda.is_available() and use_cuda:
             self.model = self.model.cuda()
         self.model.eval()
-        logging.info(f"RNNLemmatizer using device {next(self.model.parameters()).device}")
+        logger.info(f"RNNLemmatizer using device {next(self.model.parameters()).device}")
 
         def process_batch(batch):
             # see RNNTagger/PyNMT/nmt-translate.py
@@ -83,7 +85,7 @@ class RNNLemmatizer(Module):
     def before_run(self):
         if self.device_on_run:
             self.model.to(self.device)
-            logging.info(f"{self.name} using device {next(self.model.parameters()).device}")
+            logger.info(f"{self.name} using device {next(self.model.parameters()).device}")
 
     def after_run(self):
         if self.device_on_run:

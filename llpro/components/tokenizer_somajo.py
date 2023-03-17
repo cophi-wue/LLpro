@@ -8,6 +8,8 @@ from spacy import Vocab
 from spacy.tokens import Doc, Token, Span
 from typing import Iterable, Tuple
 
+logger = logging.getLogger(__name__)
+
 IRREGULAR_CHARACTERS = re.compile(
     r'[^\P{dt}\p{dt=canonical}]|[^\p{Latin}\pN-"‚‘„“.?!,;:\-–—*()\[\]{}/\'«‹›»’+&%# \t\n]',
     flags=re.UNICODE | re.MULTILINE)
@@ -34,7 +36,7 @@ class SoMaJoTokenizer:
         if self.check_characters:
             irr = [unicodedata.name(x) for x in set(IRREGULAR_CHARACTERS.findall(text))]
             if len(irr) > 0:
-                logging.warning(f'Found irregular characters: {", ".join(irr)}')
+                logger.warning(f'Found irregular characters: {", ".join(irr)}')
 
         words = []
         spaces = []

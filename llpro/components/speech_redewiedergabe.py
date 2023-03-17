@@ -12,6 +12,8 @@ from spacy.tokens import Doc, Token
 from ..common import Module
 from .. import LLPRO_RESOURCES_ROOT
 
+logger = logging.getLogger(__name__)
+
 
 @Language.factory("speech_redewiedergabe", assigns=['token._.speech', 'token._.speech_prob'], default_config={
     'model_paths': None, 'use_cuda': True, 'device_on_run': True, 'pbar_opts': None
@@ -52,7 +54,7 @@ class RedewiedergabeTagger(Module):
             for model in self.models.values():
                 model.to(self.device)
             flair.device = self.device
-            logging.info(
+            logger.info(
                 f"{name} using devices {','.join(str(next(m.parameters()).device) for m in self.models.values())}")
 
     def before_run(self):
@@ -60,7 +62,7 @@ class RedewiedergabeTagger(Module):
         flair.device = self.device
         for model in self.models.values():
             model.to(self.device)
-        logging.info(
+        logger.info(
             f"{self.name} using devices {','.join(str(next(m.parameters()).device) for m in self.models.values())}")
 
     def after_run(self):
