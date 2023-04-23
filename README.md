@@ -149,7 +149,7 @@ LLpro pipeline have additional license terms:
 * SoMeWeTa model `german_web_social_media_2020-05-28.model`: derived from the
   TIGER corpus; see
 <https://www.ims.uni-stuttgart.de/documents/ressourcen/korpora/tiger-corpus/license/htmlicense.html>
-* Scene Segmenter by Kurfalı and Wirén: Code provided as is on Github by the author, but no license terms provided.
+* Scene Segmenter by Kurfalı and Wirén: Model provided as is by the author, but no license terms provided. (Code licenses under Apache v2.0.)
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
