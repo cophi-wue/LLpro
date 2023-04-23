@@ -1,5 +1,6 @@
 [tool.poetry]
 name = "LLpro"
+license = "GPL-3.0-or-later"
 description = "A Literary Language Processing Pipeline for German Narrative Texts"
 version = "0.1.0"
 authors = ["Anton Ehrmanntraut <anton.ehrmanntraut@uni-wuerzburg.de>"]
