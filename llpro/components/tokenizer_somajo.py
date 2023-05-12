@@ -17,20 +17,25 @@ IRREGULAR_CHARACTERS = re.compile(
 
 class SoMaJoTokenizer:
 
-    def __init__(self, vocab: Vocab, normalize=True, check_characters=True, paragraph_separator=None, section_pattern=None):
+    def __init__(self, vocab: Vocab, normalize=True, check_characters=True, paragraph_separator=None,
+                 section_pattern=None, is_pretokenized=False, is_presentencized=False):
         self.vocab = vocab
         self.normalize = normalize
         self.check_characters = check_characters
         self.paragraph_separator = paragraph_separator
         self.section_pattern = section_pattern
+        self.is_pretokenized = is_pretokenized
+        self.is_presentencized = is_presentencized
         from somajo import SoMaJo
 
-        self.tokenizer = SoMaJo("de_CMC", split_camel_case=True)
+        self.tokenizer = SoMaJo("de_CMC", split_camel_case=True, split_sentences=not self.is_presentencized)
         Token.set_extension('is_para_start', default=None)
         Token.set_extension('is_section_start', default=None)
 
     def __call__(self, text: str) -> Doc:
+        from somajo.utils import Token
         if self.normalize:
+            text = re.sub(r'([AOUaou])\N{Combining Latin Small Letter E}', r'\1\N{Combining Diaeresis}', text)
             text = unicodedata.normalize('NFKC', text)
 
         if self.check_characters:
@@ -50,13 +55,36 @@ class SoMaJoTokenizer:
             if is_section_start:
                 section_starts.add(len(words))
 
-            sentences = list(self.tokenizer.tokenize_text(paragraphs=[str(para)]))
+            if self.is_presentencized:
+                sentence_strs = text.split('\n')
+                if self.is_pretokenized:
+                    sentences = [s.split(' ') for s in sentence_strs]
+                else:
+                    sentences = [self.tokenizer.tokenize_text([s]) for s in sentence_strs]
+            else:
+                if self.is_pretokenized:
+                    tokens = text.split(' ')
+                    sentences = self.tokenizer._sentence_splitter.split(tokens)
+                else:
+                    sentences = self.tokenizer.tokenize_text([para])
+
             for sent in sentences:
-                words.extend([tok.text for tok in sent])
-                spaces.extend([tok.space_after for tok in sent])
+                if not sent:
+                    continue
                 sent_starts.extend([True] + [False] * (len(sent) - 1))
 
-        doc = Doc(self.vocab, words=words, spaces=spaces, sent_starts=copy.copy(sent_starts))
+                if type(sent[0]) is str:
+                    words.extend(sent)
+                elif type(sent[0]) is Token:
+                    words.extend([tok.text for tok in sent])
+                    spaces.extend([tok.space_after for tok in sent])
+
+        if spaces:
+            doc = Doc(self.vocab, words=words, spaces=spaces, sent_starts=copy.copy(sent_starts))
+        else:
+            doc = Doc(self.vocab, words=words, sent_starts=copy.copy(sent_starts))
+
+        # TODO add original form to tok._.orig?
 
         if self.paragraph_separator:
             for tok in doc:
@@ -70,7 +98,10 @@ class SoMaJoTokenizer:
 
     def to_paragraphs(self, text: str) -> Iterable[Tuple[bool, str]]:
         if self.paragraph_separator is None:
-            yield True, text
+            if self.section_pattern is None:
+                yield None, text
+            else:
+                yield True, text
         elif self.section_pattern is None:
             for para in re.split(self.paragraph_separator, text, flags=re.UNICODE | re.MULTILINE):
                 yield None, para

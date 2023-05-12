@@ -84,12 +84,19 @@ def create_pipe():
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='NLP Pipeline for literary texts written in German.')
     parser.add_argument('-v', '--verbose', action="store_const", dest="loglevel", const=logging.INFO)
+    parser.add_argument('--no-normalize-tokens', action='store_false', dest='normalize_tokens',
+                        help='Do not normalize tokens.')
+    parser.add_argument('--tokenized', action='store_true',
+                        help='Skip tokenization, and assume that tokens are separated by whitespace.')
+    parser.add_argument('--sentencized', action='store_true',
+                        help='Skip sentence splitting, and assume that sentences are separated by newline characters.')
     parser.add_argument('--paragraph-pattern', metavar='PAT', type=str, default=None,
                         help='Optional paragraph separator pattern. Paragraph separators are removed, and sentences '
-                             'always terminate on paragraph boundaries.')
+                             'always terminate on paragraph boundaries. Performed before tokenization/sentence '
+                             'splitting.')
     parser.add_argument('--section-pattern', metavar='PAT', type=str, default=None,
                         help='Optional sectioning paragraph pattern. Paragraphs fully matching the pattern are '
-                             'removed, and increment the section id counter for tokens in intermediate paragraphs.')
+                             'removed. Performed before tokenization/sentence splitting.')
     group = parser.add_mutually_exclusive_group()
     group.add_argument('--stdout', default=True, help='Write all processed tokens to stdout.',
                        action='store_const', dest='outtype', const='stdout')
@@ -137,9 +144,10 @@ if __name__ == "__main__":
 
     logger.info('Loading pipeline')
     nlp = create_pipe()
-    # nlp.analyze_pipes(pretty=True)
 
-    tokenizer = SoMaJoTokenizer(nlp.vocab, paragraph_separator=args.paragraph_pattern, section_pattern=args.section_pattern)
+    tokenizer = SoMaJoTokenizer(nlp.vocab, normalize=args.normalize_tokens, is_pretokenized=args.tokenized,
+                                is_presentencized=args.sentencized, paragraph_separator=args.paragraph_pattern,
+                                section_pattern=args.section_pattern)
     for filename, tagged_doc in run_pipeline_on_files(filenames, nlp, tokenizer):
         if args.writefiles:
             with open(os.path.join(args.writefiles, os.path.basename(filename) + '.tsv'), 'w') as output_file:

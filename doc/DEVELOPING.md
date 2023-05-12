@@ -62,12 +62,14 @@ Additionally, the constructor takes the following optional keyword arguments:
 
 | Name                  | Description                                                                                                                                                                                                                                                                                  |
 |-----------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `normalize`           | Before tokenization, normalizes the input text to NFKC normal form. Default: `True`                                                                                                                                                                                                          |
+| `normalize`           | Before tokenization, normalizes the input text by replacing U+0364 Combining Latin Small Letter E with U+0308 Combining Diaeresis, followed by conversion into NFKC normal form. Default: `True`                                                                                             |
 | `check_characters`    | Warn to stderr if the tokenizer encounters “unusual” characters (mostly non-Latin, non-punctuation characters). Default: `True`                                                                                                                                                              |
 | `paragraph_separator` | If not `None`, the value is interpreted as regular expression and the text is split at every match. The matching spans are discarded. Paragraphs starts are stored at the custom attribute `token._.is_para_start`. Default: `None`                                                          |
 | `section_pattern`     | If not `None`, the value is interpreted as regular expression. If a paragraph fully matches the pattern, the paragraph is interpreted as section start. The matching paragraphs are discarded. Section starts are stored at the custom attribute `token._.is_section_start`. Default: `None` |
+| `is_pretokenized`     | If `True`, skip tokenization, and assume that tokens are separated by whitespace. Default: `False`                                                                                                                                                                                           |
+| `is_presentencized`   | If `True`, skip sentence splitting, and assume that sentences are separated by newline characters. Default: `False`                                                                                                                                                                          |
 
-In the default implementation `main.py`, arguments `paragraph_separator` and `section_pattern` are supplied by the command-line arguments.
+In the default implementation `main.py`, arguments `normalize`, `paragraph_separator`, `section_pattern` `is_pretokenized`, `is_presentencized` are supplied by the command-line arguments.
 
 ### POS Tagging
 
