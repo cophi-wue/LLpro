@@ -150,7 +150,7 @@ Options:
 
 The ParzuParallelized component uses the dependency parser [ParZu](https://github.com/rsennrich/ParZu) proposed by Sennrich, Schneider, Volk, and Warin [(2009)](#ref-sennrich_new_2009), Sennrich, Volk, and Schneider [(2013)](#ref-sennrich_exploiting_2013), and Sennrich and Kunz [(2014)](#ref-sennrich_zmorge_2014)
 to predict for each (non-punctuation) token a head token and a dependency relation.
-In particular, it follows the grammar “Eine umfassende Constraint-Dependenz-Grammatik des Deutschen” ([Forth, 2005](#ref-forth_umfassende_2014); [Overview](https://github.com/rsennrich/ParZu/blob/master/doc/LABELS.md)).
+In particular, it follows the grammar “Eine umfassende Constraint-Dependenz-Grammatik des Deutschen” ([Foth, 2005](#ref-foth_umfassende_2014); [Overview](https://github.com/rsennrich/ParZu/blob/master/doc/LABELS.md)).
 
 Like Spacy's [default dependency parser](https://spacy.io/usage/linguistic-features#dependency-parse), it assigns to each token a pointer `tok.head` to its head token, and the dependency relation label to `tok.dep_`.
 As usual, you can use Spacy's API to navigate the resulting parse tree, e.g. enumerate noun chunks with `doc.noun_chunks`.
@@ -296,9 +296,9 @@ The value `event.attrs["event_type"]` holds the annotated event type, i.e. one o
 
 </div>
 
-<div id="ref-forth_umfassende_2014">
+<div id="ref-foth_umfassende_2014">
 
-<p>Forth, Kilian A. 2014. <em>Eine Umfassende Constraint-Dependenz-Grammatik Des Deutschen</em>. Universität Hamburg. <a href="https://edoc.sub.uni-hamburg.de/informatik/volltexte/2014/204/">https://edoc.sub.uni-hamburg.de/informatik/volltexte/2014/204/</a>.</p>
+<p>Foth, Kilian A. 2014. <em>Eine Umfassende Constraint-Dependenz-Grammatik Des Deutschen</em>. Universität Hamburg. <a href="https://edoc.sub.uni-hamburg.de/informatik/volltexte/2014/204/">https://edoc.sub.uni-hamburg.de/informatik/volltexte/2014/204/</a>.</p>
 
 </div>
 

@@ -83,7 +83,7 @@ Fields
 * `lemma`: Lemma of the word form, cf. component [lemma_rnntagger](./DEVELOPING.md#lemmatization).
 * `morph`: Morphological features in [CONNL-U format](https://universaldependencies.org/format.html#morphological-annotation), with features from the [Universal features inventory](https://universaldependencies.org/u/feat/index.html). Cf. component [lemma_rnntagger](./DEVELOPING.md#morphological-analysis).
 * `head`: Head of the current word, encoded by the head's value `i`. For roots, this is identical to the token's `i`.
-* `dep`: Dependency relation of the token's head to this token. Labels are from “Eine umfassende Constraint-Dependenz-Grammatik des Deutschen” ([Forth, 2005](#ref-forth_umfassende_2014)) as labels, used in, e.g., the Hamburg Dependency Treebank ([Overview](https://github.com/rsennrich/ParZu/blob/master/doc/LABELS.md)). Cf. component [parser_parzu](./DEVELOPING.md#dependency-parsing).
+* `dep`: Dependency relation of the token's head to this token. Labels are from “Eine umfassende Constraint-Dependenz-Grammatik des Deutschen” ([Foth, 2005](#ref-foth_umfassende_2014)) as labels, used in, e.g., the Hamburg Dependency Treebank ([Overview](https://github.com/rsennrich/ParZu/blob/master/doc/LABELS.md)). Cf. component [parser_parzu](./DEVELOPING.md#dependency-parsing).
 * `entity`: NER tag of this token, in [IOB encoding](https://en.wikipedia.org/wiki/Inside%E2%80%93outside%E2%80%93beginning_(tagging)). Uses the usual four classes `PER, LOC, ORG, MISC` as employed by the respective CoNLL-2003 shared task on named entity recognition. ([Sang and De Meulder, 2003](#ref-tjong_kim_sang_introduction_2003)). Cf. component [ner_flair](./DEVELOPING.md#named-entity-recognition).
 * `speech`: Comma-separated list of speech types annotated on this token, or `_` if none. A subset of `direct`, `indirect`, `freeIndirect` and `reported`, as defined by [Brunner et al. (2021)](#ref-brunner_bert_2021). Cf. component [speech_redewiedergabe](./DEVELOPING.md#recognition-of-speech-thought-and-writing-representation).
 * `coref_clusters`: Comma-separated list of coreference clusters (represented by integer IDs) annotated on this token, or `_` if none. Cf. component [coref_uhhlt](./DEVELOPING.md#coreference-resolution).
@@ -100,9 +100,9 @@ Fields
 
 </div>
 
-<div id="ref-forth_umfassende_2014" class="csl-entry" role="doc-biblioentry">
+<div id="ref-foth_umfassende_2014" class="csl-entry" role="doc-biblioentry">
 
-Forth, Kilian A. 2014. <em>Eine Umfassende Constraint-Dependenz-Grammatik Des Deutschen</em>. Universität Hamburg. <a href="https://edoc.sub.uni-hamburg.de/informatik/volltexte/2014/204/">https://edoc.sub.uni-hamburg.de/informatik/volltexte/2014/204/</a>.
+Foth, Kilian A. 2014. <em>Eine Umfassende Constraint-Dependenz-Grammatik Des Deutschen</em>. Universität Hamburg. <a href="https://edoc.sub.uni-hamburg.de/informatik/volltexte/2014/204/">https://edoc.sub.uni-hamburg.de/informatik/volltexte/2014/204/</a>.
 
 </div>
 
