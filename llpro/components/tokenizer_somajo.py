@@ -31,22 +31,21 @@ class SoMaJoTokenizer:
         self.tokenizer = SoMaJo("de_CMC", split_camel_case=True, split_sentences=not self.is_presentencized)
         Token.set_extension('is_para_start', default=None)
         Token.set_extension('is_section_start', default=None)
+        Token.set_extension('orig', default=None)
+
+    def normalize_text(self, text):
+        text = re.sub(r'([AOUaou])\N{Combining Latin Small Letter E}', r'\1\N{Combining Diaeresis}', text)
+        text = unicodedata.normalize('NFKC', text)
+        return text
 
     def __call__(self, text: str) -> Doc:
         from somajo.utils import Token
-        if self.normalize:
-            text = re.sub(r'([AOUaou])\N{Combining Latin Small Letter E}', r'\1\N{Combining Diaeresis}', text)
-            text = unicodedata.normalize('NFKC', text)
-
-        if self.check_characters:
-            irr = [unicodedata.name(x) for x in set(IRREGULAR_CHARACTERS.findall(text))]
-            if len(irr) > 0:
-                logger.warning(f'Found irregular characters: {", ".join(irr)}')
 
         words = []
         spaces = []
         sent_starts = []
 
+        orig_words = []
         section_starts = set()
         para_starts = set()
 
@@ -74,9 +73,18 @@ class SoMaJoTokenizer:
                 sent_starts.extend([True] + [False] * (len(sent) - 1))
 
                 if type(sent[0]) is str:
-                    words.extend(sent)
+                    if self.normalize:
+                        words.extend([self.normalize_text(t) for t in sent])
+                        orig_words.extend([t for t in sent])
+                    else:
+                        words.extend([t for t in sent])
                 elif type(sent[0]) is Token:
-                    words.extend([tok.text for tok in sent])
+                    if self.normalize:
+                        words.extend([self.normalize_text(tok.text) for tok in sent])
+                        orig_words.extend([tok.text for tok in sent])
+                    else:
+                        words.extend([tok.text for tok in sent])
+
                     spaces.extend([tok.space_after for tok in sent])
 
         if spaces:
@@ -84,7 +92,14 @@ class SoMaJoTokenizer:
         else:
             doc = Doc(self.vocab, words=words, sent_starts=copy.copy(sent_starts))
 
-        # TODO add original form to tok._.orig?
+        if self.normalize:
+            for tok, orig_word in zip(doc, orig_words):
+                tok._.orig = orig_word
+
+        if self.check_characters:
+            irr = [unicodedata.name(x) for x in set(IRREGULAR_CHARACTERS.findall(str(doc)))]
+            if len(irr) > 0:
+                logger.warning(f'Found irregular characters: {", ".join(irr)}')
 
         if self.paragraph_separator:
             for tok in doc:
