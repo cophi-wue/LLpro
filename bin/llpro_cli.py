@@ -67,7 +67,6 @@ def run_pipeline_on_files(filenames, nlp, tokenizer=None):
 
 def create_pipe():
     nlp = spacy.blank("de")
-    # nlp = spacy.load('de_dep_news_trf', exclude=['ner', 'lemmatizer', 'textcat', 'morphologizer', 'attribute_ruler'])
     nlp.add_pipe('tagger_someweta')
     nlp.add_pipe('tagger_rnntagger')
     nlp.add_pipe('lemma_rnntagger')
@@ -77,6 +76,7 @@ def create_pipe():
     nlp.add_pipe('coref_uhhlt')
     nlp.add_pipe('ner_flair')
     nlp.add_pipe('events_uhhlt')
+    nlp.add_pipe('character_recognizer')
 
     return nlp
 
