@@ -1,8 +1,9 @@
 import itertools
 import logging
-from typing import Callable, List
+from typing import Callable, List, Iterable
 
 import more_itertools
+import spacy
 import torch
 from spacy import Language
 from spacy.tokens import Doc, Span, Token
@@ -50,59 +51,114 @@ def character_recognizer(nlp, name, batch_size, use_cuda, device_on_run, pbar_op
 
 class CharacterRecognizer(Module):
 
+
     def __init__(self, name, batch_size=8, use_cuda=True, device_on_run=True, pbar_opts=None):
         super().__init__(name, pbar_opts=pbar_opts)
         self.device_on_run = device_on_run
         self.batch_size = batch_size
         self.device = torch.device('cuda' if torch.cuda.is_available() and use_cuda else "cpu")
 
-        self.tokenizer = AutoTokenizer.from_pretrained('severinsimmler/literary-german-bert')
-        self.model = AutoModelForTokenClassification.from_pretrained('severinsimmler/literary-german-bert')
-        # self.pipeline = pipeline('ner', model='severinsimmler/literary-german-bert', aggregation_strategy='first')
+        import flair
+        from flair.models import SequenceTagger
+        from flair.data import Sentence
+        from flair.datasets import DataLoader
+        from flair.datasets import FlairDatapointDataset
+        # see https://github.com/flairNLP/flair/issues/2650#issuecomment-1063785119
+        flair.device = 'cpu'
+        self.tagger = SequenceTagger.load("/mnt/data/users/ehrmanntraut/LLpro/train_output/character_recognizer/2023-05-14T12:30:23/best-model.pt")
+
+        def process_batch(sentence_batch: Iterable[spacy.tokens.Span]) -> List[flair.data.Span]:
+            flair_sentences = [Sentence([tok.text for tok in s]) for s in sentence_batch]
+            dataloader = DataLoader(
+                dataset=FlairDatapointDataset(flair_sentences),
+                batch_size=len(flair_sentences),
+            )
+
+            output = []
+            with torch.no_grad():
+                for batch in dataloader:
+                    self._annotate_batch(batch)
+                    for s in batch:
+                        s.clear_embeddings()
+                        output.append(s)
+            torch.cuda.empty_cache()
+            return output
+
+        self.batch_processor = process_batch
+
+        if not self.device_on_run:
+            self.tagger.to(self.device)
+            logger.info(f"{self.name} using device {str(next(self.tagger.parameters()).device)}")
 
     def before_run(self):
-        self.model.to(self.device)
-        logger.info(f"{self.name} using device {str(next(self.model.parameters()).device)}")
+        import flair
+        flair.device = self.device
+        self.tagger.to(self.device)
+        logger.info(f"{self.name} using device {str(next(self.tagger.parameters()).device)}")
 
     def after_run(self):
+        import flair
         if self.device_on_run:
-            self.model.to('cpu')
+            self.tagger.to('cpu')
+            flair.device = 'cpu'
             torch.cuda.empty_cache()
 
+    def _annotate_batch(self, batch):
+        from flair.data import get_spans_from_bio
+        import torch
+
+        # cf. flair/models/sequence_tagger_model.py
+        # get features from forward propagation
+        sentence_tensor, lengths = self.tagger._prepare_tensors(batch)
+        features = self.tagger.forward(sentence_tensor, lengths)
+
+        # make predictions
+        if self.tagger.use_crf:
+            predictions, all_tags = self.tagger.viterbi_decoder.decode(features, False)
+        else:
+            predictions, all_tags = self.tagger._standard_inference(features, batch, False)
+
+        for sentence, sentence_predictions in zip(batch, predictions):
+            if self.tagger.predict_spans:
+                sentence_tags = [label[0] for label in sentence_predictions]
+                sentence_scores = [label[1] for label in sentence_predictions]
+                predicted_spans = get_spans_from_bio(sentence_tags, sentence_scores)
+                for predicted_span in predicted_spans:
+                    span = sentence[predicted_span[0][0]:predicted_span[0][-1] + 1]
+                    span.add_label(self.tagger.tag_type, value=predicted_span[2], score=predicted_span[1])
+
+            # token-labels can be added directly ("O" and legacy "_" predictions are skipped)
+            else:
+                for token, label in zip(sentence.tokens, sentence_predictions):
+                    if label[0] in ["O", "_"]:
+                        continue
+                    token.add_label(typename=self.tagger.tag_type, value=label[0], score=label[1])
+
     def process(self, doc: Doc, progress_fn: Callable[[int], None]) -> Doc:
-        max_seq_length = self.model.config.max_position_embeddings - 2
+        sentences = list(doc.sents)
+        mentions = []
+        tagged_sentences = itertools.chain.from_iterable(
+            self.batch_processor(batch) for batch in more_itertools.chunked(sentences, n=self.batch_size))
+        for sentence, tagged_sentence in zip(sentences, tagged_sentences):
+            if self.tagger.predict_spans:
+                for span in tagged_sentence.get_spans('character'):
+                    new_span = sentence[span[0].idx - 1:span[-1].idx]
+                    new_span = Span(doc, new_span.start, new_span.end, label=span.tag)
+                    mentions.append(new_span)
+            else:
+                for tok, tagged_tok in zip(sentence, tagged_sentence):
+                    value = tagged_tok.get_label('character').value
+                    if value in {'O', '_'}: continue
+                    new_span = Span(doc, tok.i, tok.i + 1, label=value)
+                    mentions.append(new_span)
+            progress_fn(len(sentence))
 
-        it = iter(doc)
-
-        def gen_sentences():
-            tokenized_sentences = ([x.text for x in sentence] for sentence in doc.sents)
-            for list_of_sentences in more_itertools.constrained_batches(tokenized_sentences, max_size=max_seq_length, get_len=lambda x: self.bert_sequence_length(x)):
-                yield itertools.chain(*list_of_sentences)
-
-        for chunk in more_itertools.chunked(gen_sentences(), n=self.batch_size):
-            chunk = [list(sent) for sent in chunk]
-
-            inputs = self.tokenizer(chunk, is_split_into_words=True, return_tensors='pt', padding=True, truncation=False)
-            with torch.no_grad():
-                logits = self.model(**inputs.to(self.device)).logits
-                predictions = logits.argmax(axis=-1).tolist()
-
-            for i in range(len(chunk)):
-                input_seq = inputs[i]
-                pred = predictions[i]
-                labels = [self.model.config.id2label[j] for j in pred]
-                for word_id in itertools.count(start=0,step=1):
-                    word_slice = input_seq.word_to_tokens(word_id)
-                    if word_slice is None:
-                        break
-                    spacy_word = next(it)
-                    assert self.tokenizer.convert_tokens_to_string(input_seq.tokens[slice(*word_slice)]).replace(' ', '') == spacy_word.text
-                    spacy_word._.character_iob = labels[word_slice[0]].replace('-PER', '')  # take label from first subword token
-                    progress_fn(1)
-
+        # doc.set_ents(entities)
+        for mention in mentions:
+            for i in range(mention.start, mention.end):
+                if i == mention.start:
+                    doc[i]._.character_iob = 'B'
+                else:
+                    doc[i]._.character_iob = 'I'
         return doc
 
-
-
-    def bert_sequence_length(self, seq):
-        return sum(len(self.tokenizer.tokenize(x)) for x in seq)
