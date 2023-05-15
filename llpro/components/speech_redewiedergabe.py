@@ -36,6 +36,7 @@ class RedewiedergabeTagger(Module):
         from flair.models import SequenceTagger
         flair.device = 'cpu'
 
+        # TODO upload custom models
         self.model_paths = model_paths if model_paths is not None else \
             {'direct': LLPRO_RESOURCES_ROOT + '/rwtagger_models/models/direct/final-model.pt',
              'indirect': LLPRO_RESOURCES_ROOT + '/rwtagger_models/models/indirect/final-model.pt',

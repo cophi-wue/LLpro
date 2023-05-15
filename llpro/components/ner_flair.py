@@ -1,4 +1,3 @@
-import gc
 import itertools
 import logging
 

@@ -97,7 +97,7 @@ def spacy_doc_to_dataframe(doc):
                 val = str(val)
             token_attribute_dictionary[column].append(val)
 
-    if hasattr(doc._, 'speech'):
+    if Token.has_extension('speech'):
         for tok in doc:
             if len(tok._.speech) > 0:
                 token_attribute_dictionary['speech'].append(','.join(tok._.speech))

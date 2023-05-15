@@ -65,6 +65,7 @@ class CharacterRecognizer(Module):
         from flair.datasets import FlairDatapointDataset
         # see https://github.com/flairNLP/flair/issues/2650#issuecomment-1063785119
         flair.device = 'cpu'
+        # TODO upload models
         self.tagger = SequenceTagger.load("/mnt/data/users/ehrmanntraut/LLpro/train_output/character_recognizer/2023-05-14T12:30:23/best-model.pt")
 
         def process_batch(sentence_batch: Iterable[spacy.tokens.Span]) -> List[flair.data.Span]:
