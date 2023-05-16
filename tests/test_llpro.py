@@ -406,8 +406,9 @@ class TestParZuComponent(LLproReproduction):
                 for token_line in sentence_lines:
                     fields = token_line.strip().split('\t')
                     head_id = int(fields[6])
+                    tok_id = int(fields[0])
                     if head_id == 0:
-                        output.append((fields[1], fields[7], 0))
+                        output.append((fields[1], fields[7], tok_id - 1 + sent_start_idx))
                     else:
                         output.append((fields[1], fields[7], head_id - 1 + sent_start_idx))
 
