@@ -124,7 +124,7 @@ class TestEventClassificationComponent(LLproReproduction):
 class TestSceneSegmenterComponent(LLproReproduction):
 
     def get_input(self, doc_key: str) -> Doc:
-        tokenizer = BertTokenizer.from_pretrained('deepset/gbert-large')
+        tokenizer = BertTokenizer.from_pretrained('lkonle/fiction-gbert-large')
         with open(Path('tests') / Path('inputs') / Path(doc_key + '.json')) as f:
             input_doc = json.load(f)
             words = []
@@ -141,21 +141,15 @@ class TestSceneSegmenterComponent(LLproReproduction):
         return Doc(Vocab(), words=words, sent_starts=copy.copy(sent_starts))
 
     def get_expected_output(self, doc_key: str) -> List[Tuple[str, int, str]]:
-        tokenizer = BertTokenizer.from_pretrained('deepset/gbert-large')
         with open(Path('tests') / Path('expected_outputs') / Path('scenesegmenter_' + doc_key)) as f:
-            input_doc = json.load(f)
+            for line in f:
+                line = line.strip().split('\t')
+                yield line[0], int(line[1]), line[2]
 
-            for i, s in enumerate(input_doc['scenes']):
-                scene_str = input_doc['text'][s['begin']:s['end']]
-
-                # reproduce tokenization of the reference implementation
-                tokenized_sentence = tokenizer.basic_tokenizer.tokenize(scene_str)
-                for tok in tokenized_sentence:
-                    yield tok, i, s['type']
 
     def run_pipeline(self, doc: Doc) -> List[Tuple[str, int, str]]:
         nlp = spacy.blank("de")
-        nlp.add_pipe('su_scene_segmenter')
+        nlp.add_pipe('scene_segmenter')
         nlp(doc)
 
         for tok in doc:

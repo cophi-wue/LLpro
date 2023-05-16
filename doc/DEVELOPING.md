@@ -250,7 +250,7 @@ Options:
 | `device_on_run` | as specified above                                                                                                                       |
 | `pbar_opts`     | as specified above                                                                                                                       |
 
-The SceneSegmenter uses a neural classifier proposed by Kurfalı and Wirén [(2021)](#ref-kurfali_breaking_2021) to predict after each sentence if a new scene/non-scene begins.
+The SceneSegmenter uses a neural classifier insipred by Kurfalı and Wirén [(2021)](#ref-kurfali_breaking_2021) to predict after each sentence if a new scene/non-scene begins.
 
 This component assigns to the document a list of [`Span`](https://spacy.io/api/span) objects to the custom attribute `doc._.scenes`, where each span represents one scene/non-scene.
 For each span `scene` in `doc._.scenes`, the attribute `scene.label_` is one of `'Scene'` or `'Nonscene'`.

@@ -10,7 +10,7 @@ This pipeline implements several custom pipeline components using the Spacy API.
 * Named Entity Recognition via [FLERT](https://github.com/flairNLP/flair) [(Schweter, Akbik 2021)](#ref-schweter_flert_2021). Commit 2f017e.
 * Coreference Resolution via BERT Embeddings [(Schröder, Hatzel, Biemann 2021)](#ref-schroder_neural_2021). Commit f34a99e.
 * Tagging of German speech, thought and writing representation (STWR) via Flair/BERT embeddings [(Brunner, Tu, Weimer, Jannidis 2020)](#ref-brunner_bert_2021). Version 1.0.0.
-* Segmentation into Scenes via BERT Embeddings [(Kurfalı and Wirén 2021)](#ref-kurfali_breaking_2021) Commit 656c37b.
+* Segmentation into Scenes via BERT Embeddings via a custom re-implementation of a model by [Kurfalı and Wirén (2021)](#ref-kurfali_breaking_2021).
 * Annotating Event Types to verbal phrases via BERT Embeddings [(Vauth, Hatzel, Gius, Biemann 2021)](#ref-vauth_automated_2021) Version 0.2, Commit 25fdf7e.
 
 See [Model Selection](./doc/MODEL_SELECTION.md) for a discussion on this choice of language models.
@@ -149,7 +149,6 @@ LLpro pipeline have additional license terms:
 * SoMeWeTa model `german_web_social_media_2020-05-28.model`: derived from the
   TIGER corpus; see
 <https://www.ims.uni-stuttgart.de/documents/ressourcen/korpora/tiger-corpus/license/htmlicense.html>
-* Scene Segmenter by Kurfalı and Wirén: Model provided as is by the author, but no license terms provided. (Code licenses under Apache v2.0.)
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

@@ -12,7 +12,7 @@ from .components.tagger_rnntagger import tagger_rnntagger
 from .components.lemma_rnntagger import lemma_rnntagger
 from .components.parser_parzu import parser_parzu_parallelized
 from .components.speech_redewiedergabe import speech_redewiedergabe
-from .components.su_scene_segmenter import su_scene_segmenter
+from .components.scene_segmenter import scene_segmenter
 from .components.coref_uhhlt import coref_uhhlt
 from .components.ner_flair import ner_flair
 from .components.events_uhhlt import events_uhhlt
