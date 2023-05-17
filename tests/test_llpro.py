@@ -244,7 +244,7 @@ class TestRedewiedergabeComponent(LLproReproduction):
         df = pandas.read_csv(str(Path('tests') / Path('expected_outputs') / Path('redewiedergabe_' + doc_key)),
                              sep='\t')
         for _, row in df.iterrows():
-            yield (row['tok'],) + tuple(row[f + '_pred'] != 'x' for f in self.fields)
+            yield (row['tok'],) + tuple(row[f + '_pred'] != 'O' for f in self.fields)
 
     def run_pipeline(self, doc: Doc) -> Iterable[Tuple[str, bool, bool, bool, bool]]:
         nlp = spacy.blank("de")

@@ -76,7 +76,7 @@ class RedewiedergabeTagger(Module):
 
     def process(self, doc: Doc, progress_fn: Callable[[int], None]) -> Doc:
         from flair.data import Sentence
-        max_seq_length = 100  # inc. [CLS] and [SEP]
+        max_seq_length = 300  # this a constant in the model
         it = iter(doc)
 
         def gen_sentences():
@@ -84,21 +84,23 @@ class RedewiedergabeTagger(Module):
             for list_of_sentences in more_itertools.constrained_batches(tokenized_sentences, max_size=max_seq_length):# get_len=lambda x: self.bert_sequence_length(x)):
                 yield itertools.chain(*list_of_sentences)
 
-        for chunk in more_itertools.chunked(gen_sentences(), n=10):
+        for chunk in more_itertools.chunked(gen_sentences(), n=self.batch_size):
             chunk = [list(sent) for sent in chunk]
-            tokens = list(itertools.islice(it, sum(len(x) for x in chunk)))
+            chunk_tokens = list(itertools.islice(it, sum(len(x) for x in chunk)))
 
             for rw_type, model in self.models.items():
+                chunk_token_it = iter(chunk_tokens)
                 sent_objs = [Sentence(sent) for sent in chunk]
                 with torch.no_grad():
                     model.predict(sent_objs)
 
-                labels = itertools.chain.from_iterable(sent.to_dict('cat')['cat'] for sent in sent_objs)
-                for tok, label in zip(tokens, labels):
-                    # label = label[0].to_dict()
-                    if label['value'] != 'x':
-                        tok._.speech.append(rw_type)
-                    tok._.speech_prob[rw_type] = label['confidence']
+                for sent in sent_objs:
+                    for tok_flair in sent:
+                        tok = next(chunk_token_it)
+                        assert tok_flair.text == tok.text
+                        if tok_flair.get_label('cat').to_dict()['value'] != 'O':
+                            tok._.speech.append(rw_type)
+                        tok._.speech_prob[rw_type] = tok_flair.get_label('cat').to_dict()['confidence']
 
             progress_fn(sum(len(sent) for sent in chunk))
         return doc
