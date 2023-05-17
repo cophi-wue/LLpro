@@ -299,6 +299,45 @@ class TestFLERTComponent(LLproReproduction):
     def get_test_docnames(self) -> Sequence[str]:
         return ['novelette']
 
+class TestCharacterRecognizer(LLproReproduction):
+
+    def get_input(self, doc_key: str) -> Doc:
+        with open(Path('tests') / Path('inputs') / Path(doc_key + '.conll'), 'r') as f:
+            return LLproReproduction.read_conll(f)
+
+    def get_expected_output(self, doc_key: str) -> Iterable[dict]:
+        with open(Path('tests') / Path('expected_outputs') / Path('characterrecognizer_' + doc_key), 'r') as f:
+            for line in f:
+                ent = {}
+                sent, start, end, type = re.match(r'^(\d+) Span\[(\d+):(\d+)]:.*→ ([A-Z]+)', line).groups()
+                ent['sentence'] = int(sent)
+                ent['token_start'] = int(start)
+                ent['token_end'] = int(end)
+                yield ent
+
+    def run_pipeline(self, doc: Doc) -> List[dict]:
+        nlp = spacy.blank("de")
+        nlp.add_pipe('character_recognizer')
+        nlp(doc)
+
+        sentence_starts = []
+        for sent in doc.sents:
+            sentence_starts.append(sent.start)
+
+        sentence_starts = sorted(sentence_starts)
+
+        characters = []
+        for ent in doc._.characters:
+            ent_dict = {}
+            ent_dict['sentence'] = sentence_starts.index(doc[ent.start].sent.start)
+            ent_dict['token_start'] = ent.start - doc[ent.start].sent.start
+            ent_dict['token_end'] = ent.end - doc[ent.start].sent.start
+            characters.append(ent_dict)
+
+        return list(sorted(characters, key=lambda x: (x['sentence'], x['token_start'])))
+
+    def get_test_docnames(self) -> Sequence[str]:
+        return ['novelette']
 
 class TestSoMeWeTaComponent(LLproReproduction):
 
