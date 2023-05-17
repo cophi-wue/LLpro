@@ -167,6 +167,7 @@ Options:
 
 | Name            | Description                                                                |
 |:----------------|:---------------------------------------------------------------------------|
+| `model`         | Flair NER model to use. Default: `flair/ner-german-large`                  |
 | `batch_size`    | Number of sentences concurrently processed by one prediction. Default: `8` |
 | `use_cuda`      | as specified above                                                         |
 | `device_on_run` | as specified above                                                         |
@@ -188,6 +189,7 @@ Options:
 
 | Name            | Description                                                                |
 |:----------------|:---------------------------------------------------------------------------|
+| `model`         | Flair NER model to use. Default: `aehrm/droc-character-recognizer`         |
 | `batch_size`    | Number of sentences concurrently processed by one prediction. Default: `8` |
 | `use_cuda`      | as specified above                                                         |
 | `device_on_run` | as specified above                                                         |
@@ -243,12 +245,12 @@ Additionally, `span_group.attrs["id"]` holds a unique ID of that cluster.
 
 Options:
 
-| Name            | Description                                                                                                                                                                                                                                                                                                                                                                                                       |
-|:----------------|:------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `model_paths`   | A dict with keys corresponding to the STWR type and values corresponding to the respective model. Default: `{'direct': 'resources/rwtagger_models/models/direct/final-model.pt', 'indirect': 'resources/rwtagger_models/models/indirect/final-model.pt', 'reported': 'resources/rwtagger_models/models/reported/final-model.pt', 'freeIndirect': 'resources/rwtagger_models/models/freeIndirect/final-model.pt'}` |
-| `use_cuda`      | as specified above                                                                                                                                                                                                                                                                                                                                                                                                |
-| `device_on_run` | as specified above                                                                                                                                                                                                                                                                                                                                                                                                |
-| `pbar_opts`     | as specified above                                                                                                                                                                                                                                                                                                                                                                                                |
+| Name            | Description                                                                                                                                                                                                                                                                                            |
+|:----------------|:-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `models`        | A dict with keys corresponding to the STWR type, and values corresponding to the respective model. Default: `{'direct': 'aehrm/redewiedergabe-direct', 'indirect': 'aehrm/redewiedergabe-indirect', 'reported': 'aehrm/redewiedergabe-reported', 'freeIndirect': 'aehrm/redewiedergabe-freeindirect'}` |
+| `use_cuda`      | as specified above                                                                                                                                                                                                                                                                                     |
+| `device_on_run` | as specified above                                                                                                                                                                                                                                                                                     |
+| `pbar_opts`     | as specified above                                                                                                                                                                                                                                                                                     |
 
 The RedewiedergabeTagger uses neural taggers proposed by Brunner, Tu, Weimer, and Jannidis [(2020)](#ref-brunner_bert_2021) to predict for each token four different types of speech, thought and writing representation (STWR).
 
@@ -256,21 +258,20 @@ This component assigns to each token a subset of the four speech types `direct`,
 
 ### Scene Segmentation
 
-* Component name: `su_scene_segmenter`
-* Implementing class: `llpro.components.su_scene_segmenter.SceneSegmenter`
+* Component name: `scene_segmenter`
+* Implementing class: `llpro.components.scene_segmenter.SceneSegmenter`
 * Assigns: `doc._.scenes`, `token._.scene`
 
 Options:
 
-| Name            | Description                                                                                                                              |
-|:----------------|:-----------------------------------------------------------------------------------------------------------------------------------------|
-| `stss_se_home`  | Root directory of the `scene_segmentation` repository *adapted for use with the LLpro pipeline*. Default: `resources/su-scene-segmenter` |
-| `model_path`    | The scene segmenter model to use. Default: `resources/extracted-scene-segmenter-model`                                                   |
-| `use_cuda`      | as specified above                                                                                                                       |
-| `device_on_run` | as specified above                                                                                                                       |
-| `pbar_opts`     | as specified above                                                                                                                       |
+| Name            | Description                                                             |
+|:----------------|:------------------------------------------------------------------------|
+| `model`         | The scene segmenter model to use. Default: `aehrm/stss-scene-segmenter` |
+| `use_cuda`      | as specified above                                                      |
+| `device_on_run` | as specified above                                                      |
+| `pbar_opts`     | as specified above                                                      |
 
-The SceneSegmenter uses a neural classifier insipred by Kurfalı and Wirén [(2021)](#ref-kurfali_breaking_2021) to predict after each sentence if a new scene/non-scene begins.
+The SceneSegmenter uses a neural classifier inspired by Kurfalı and Wirén [(2021)](#ref-kurfali_breaking_2021) to predict after each sentence if a new scene/non-scene begins.
 
 This component assigns to the document a list of [`Span`](https://spacy.io/api/span) objects to the custom attribute `doc._.scenes`, where each span represents one scene/non-scene.
 For each span `scene` in `doc._.scenes`, the attribute `scene.label_` is one of `'Scene'` or `'Nonscene'`.

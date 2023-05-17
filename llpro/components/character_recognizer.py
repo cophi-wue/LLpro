@@ -39,20 +39,19 @@ def calc_character_spans(doc: Doc) -> List[Span]:
     return output
 
 @Language.factory("character_recognizer", assigns=['doc._.characters', 'token._.character_iob'], default_config={
-    'batch_size': 8, 'use_cuda': True, 'device_on_run': True, 'pbar_opts': None
+    'model': 'aehrm/droc-character-recognizer', 'batch_size': 8, 'use_cuda': True, 'device_on_run': True, 'pbar_opts': None
 })
-def character_recognizer(nlp, name, batch_size, use_cuda, device_on_run, pbar_opts):
+def character_recognizer(nlp, name, model, batch_size, use_cuda, device_on_run, pbar_opts):
     if not Token.has_extension('character_iob'):
         Token.set_extension('character_iob', default='O')
     if not Doc.has_extension('characters'):
         Doc.set_extension('characters', getter=calc_character_spans)
-    return CharacterRecognizer(name, batch_size, use_cuda, device_on_run, pbar_opts)
+    return CharacterRecognizer(name, model, batch_size, use_cuda, device_on_run, pbar_opts)
 
 
 class CharacterRecognizer(Module):
 
-
-    def __init__(self, name, batch_size=8, use_cuda=True, device_on_run=True, pbar_opts=None):
+    def __init__(self, name, model='aehrm/droc-character-recognizer', batch_size=8, use_cuda=True, device_on_run=True, pbar_opts=None):
         super().__init__(name, pbar_opts=pbar_opts)
         self.device_on_run = device_on_run
         self.batch_size = batch_size
@@ -65,8 +64,7 @@ class CharacterRecognizer(Module):
         from flair.datasets import FlairDatapointDataset
         # see https://github.com/flairNLP/flair/issues/2650#issuecomment-1063785119
         flair.device = 'cpu'
-        # TODO upload models
-        self.tagger = SequenceTagger.load("/mnt/data/users/ehrmanntraut/LLpro/train_output/character_recognizer/2023-05-14T12:30:23/best-model.pt")
+        self.tagger = SequenceTagger.load(model)
 
         def process_batch(sentence_batch: Iterable[spacy.tokens.Span]) -> List[flair.data.Span]:
             flair_sentences = [Sentence([tok.text for tok in s]) for s in sentence_batch]
@@ -154,7 +152,6 @@ class CharacterRecognizer(Module):
                     mentions.append(new_span)
             progress_fn(len(sentence))
 
-        # doc.set_ents(entities)
         for mention in mentions:
             for i in range(mention.start, mention.end):
                 if i == mention.start:

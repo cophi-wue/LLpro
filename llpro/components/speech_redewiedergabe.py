@@ -16,38 +16,38 @@ logger = logging.getLogger(__name__)
 
 
 @Language.factory("speech_redewiedergabe", assigns=['token._.speech', 'token._.speech_prob'], default_config={
-    'model_paths': None, 'use_cuda': True, 'device_on_run': True, 'pbar_opts': None
+    'models': None, 'batch_size': 8, 'use_cuda': True, 'device_on_run': True, 'pbar_opts': None
 })
-def speech_redewiedergabe(nlp, name, model_paths, use_cuda, device_on_run, pbar_opts):
+def speech_redewiedergabe(nlp, name, models, batch_size, use_cuda, device_on_run, pbar_opts):
     if not Token.has_extension('speech'):
         Token.set_extension('speech', default=list())
     if not Token.has_extension('speech_prob'):
         Token.set_extension('speech_prob', default=dict())
-    return RedewiedergabeTagger(name=name, model_paths=model_paths, use_cuda=use_cuda, device_on_run=device_on_run,
+    return RedewiedergabeTagger(name=name, models=models, batch_size=batch_size, use_cuda=use_cuda, device_on_run=device_on_run,
                                 pbar_opts=pbar_opts)
 
 
 class RedewiedergabeTagger(Module):
 
-    def __init__(self, name, model_paths=None, use_cuda=True, device_on_run=True, pbar_opts=None):
+    def __init__(self, name, models=None, batch_size=8, use_cuda=True, device_on_run=True, pbar_opts=None):
         super().__init__(name, pbar_opts=pbar_opts)
         import torch
         import flair
         from flair.models import SequenceTagger
         flair.device = 'cpu'
 
-        # TODO upload custom models
-        self.model_paths = model_paths if model_paths is not None else \
-            {'direct': LLPRO_RESOURCES_ROOT + '/rwtagger_models/models/direct/final-model.pt',
-             'indirect': LLPRO_RESOURCES_ROOT + '/rwtagger_models/models/indirect/final-model.pt',
-             'reported': LLPRO_RESOURCES_ROOT + '/rwtagger_models/models/reported/final-model.pt',
-             'freeIndirect': LLPRO_RESOURCES_ROOT + '/rwtagger_models/models/freeIndirect/final-model.pt'}
+        self.model_paths = models if models is not None else \
+            {'direct': 'aehrm/redewiedergabe-direct',
+             'indirect': 'aehrm/redewiedergabe-indirect',
+             'reported': 'aehrm/redewiedergabe-reported',
+             'freeIndirect': 'aehrm/redewiedergabe-freeindirect'}
         self.device_on_run = device_on_run
         self.device = torch.device('cuda' if torch.cuda.is_available() and use_cuda else "cpu")
+        self.batch_size = batch_size
 
         self.models: Dict[str, SequenceTagger] = {}
         for rw_type, model_path in self.model_paths.items():
-            model = SequenceTagger.load(str(Path(model_path)))
+            model = SequenceTagger.load(model_path)
             model = model.eval()
             self.models[rw_type] = model
 

@@ -15,15 +15,15 @@ logger = logging.getLogger(__name__)
 
 
 @Language.factory("ner_flair", assigns=['doc.ents', 'token.ent_iob', 'token.ent_type'], default_config={
-    'batch_size': 8, 'use_cuda': True, 'device_on_run': True, 'pbar_opts': None
+    'model': 'flair/ner-german-large', 'batch_size': 8, 'use_cuda': True, 'device_on_run': True, 'pbar_opts': None
 })
-def ner_flair(nlp, name, batch_size, use_cuda, device_on_run, pbar_opts):
-    return FLERTNERTagger(name, batch_size, use_cuda, device_on_run, pbar_opts)
+def ner_flair(nlp, name, model, batch_size, use_cuda, device_on_run, pbar_opts):
+    return FLERTNERTagger(name, model, batch_size, use_cuda, device_on_run, pbar_opts)
 
 
 class FLERTNERTagger(Module):
 
-    def __init__(self, name, batch_size=8, use_cuda=True, device_on_run=True, pbar_opts=None):
+    def __init__(self, name, model='flair/ner-german-large', batch_size=8, use_cuda=True, device_on_run=True, pbar_opts=None):
         super().__init__(name, pbar_opts=pbar_opts)
         self.device_on_run = device_on_run
         self.batch_size = batch_size
@@ -36,7 +36,7 @@ class FLERTNERTagger(Module):
         from flair.datasets import FlairDatapointDataset
         # see https://github.com/flairNLP/flair/issues/2650#issuecomment-1063785119
         flair.device = 'cpu'
-        self.tagger = SequenceTagger.load("flair/ner-german-large")
+        self.tagger = SequenceTagger.load(model)
 
         def process_batch(sentence_batch: Iterable[spacy.tokens.Span]) -> List[flair.data.Span]:
             flair_sentences = [Sentence([tok.text for tok in s]) for s in sentence_batch]
