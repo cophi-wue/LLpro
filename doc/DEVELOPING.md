@@ -174,9 +174,29 @@ Options:
 
 The FLERTNERTagger component uses the NER recognizer [FLERT](https://github.com/flairNLP/flair) (part of the Flair NLP system) proposed by Schweter and Akbik [(2021)](#ref-schweter_flert_2021),
 to predict named entities in the document.
-It uses the usual four classes `PER, LOC, ORG, MISC` as employed by the respective CoNLL-2003 shared task on named entity recognition ([Sang and De Meulder, 2003](#ref-tjong_kim_sang_introduction_2003)).
+It uses the usual four classes `PER, LOC, ORG, MISC` (in IOB encoding) as employed by the respective CoNLL-2003 shared task on named entity recognition ([Sang and De Meulder, 2003](#ref-tjong_kim_sang_introduction_2003)).
 
 Like Spacy's [default entity recognizer](https://spacy.io/usage/linguistic-features#named-entities), it assigns to the document to the attribute `doc.ents` a list of named entities, and to each token also assigns the IOB code to the attribute `tok.ent_iob_` and the entity type label to the attribute `tok.ent_type_`.
+
+### Character Recognizer
+
+* Component name: `character_recognizer`
+* Implementing class: `llpro.components.character_recognizer.CharacterRecognizer`
+* Assigns: `doc._.characters`, `token._.character_iob`
+
+Options:
+
+| Name            | Description                                                                |
+|:----------------|:---------------------------------------------------------------------------|
+| `batch_size`    | Number of sentences concurrently processed by one prediction. Default: `8` |
+| `use_cuda`      | as specified above                                                         |
+| `device_on_run` | as specified above                                                         |
+| `pbar_opts`     | as specified above                                                         |
+
+The CharacterRecognizer component uses a custom Flair model as proposed Schweter and Akbik [(2021)](#ref-schweter_flert_2021), fine-tuned for the DROC dataset, to recognize references to literary characters.
+It uses the only the single class `PER` (in IOB encoding) as employed by the respective CoNLL-2003 shared task on named entity recognition ([Sang and De Meulder, 2003](#ref-tjong_kim_sang_introduction_2003)).
+
+Similar to Spacy's [default entity recognizer](https://spacy.io/usage/linguistic-features#named-entities), it assigns to the document to the attribute `doc._.characters` a list of named entities, and to each token also assigns the IOB code to the attribute `tok._.character_iob` (one of `I`, `O`, `B`).
 
 ### Coreference Resolution
 
