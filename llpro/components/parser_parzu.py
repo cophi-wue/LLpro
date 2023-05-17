@@ -8,13 +8,37 @@ import more_itertools
 import multiprocessing_on_dill as multiprocessing
 from spacy import Language
 from spacy.tokens import Span, Doc
-from typing import List, Iterable, Callable, Tuple, Sequence
+from typing import List, Iterable, Callable, Tuple, Sequence, Union, Iterator
 
 from ..spacy_cython_utils import apply_dependency_to_doc
 from ..common import Module
 from .. import LLPRO_RESOURCES_ROOT, LLPRO_TEMPDIR
 
 logger = logging.getLogger(__name__)
+
+
+def get_noun_chunks_parzu(doclike: Union[Doc,Span]) -> Iterator[Tuple[int, int, int]]:
+    # TODO Very tentative placeholder. I am not a linguist :(
+    # cf. https://github.com/explosion/spaCy/blob/master/spacy/lang/de/syntax_iterators.py
+    doc = doclike.doc  # Ensure works on both Doc and Span.
+    np_label = doc.vocab.strings.add("NP")
+    rbracket = 0
+    prev_end = -1
+    for i, word in enumerate(doclike):
+        if i < rbracket:
+            continue
+        if word.left_edge.i <= prev_end:
+            continue
+        if word.pos_ in ["NN", "NE", "PPER"]:
+            rbracket = word.i + 1
+            # try to extend the span to the right
+            # to capture close apposition/measurement constructions
+            for rdep in doc[word.i].rights:
+                if rdep.pos_ in ["NN", "NE"] and rdep.dep_ == 'app':
+                    rbracket = rdep.i + 1
+            prev_end = rbracket - 1
+            yield word.left_edge.i, rbracket, np_label
+
 
 
 @Language.factory("parser_parzu_parallelized", requires=['token.tag'], assigns=['token.dep', 'token.head'],
@@ -25,6 +49,7 @@ logger = logging.getLogger(__name__)
                       'num_processes': 1, 'tokens_per_process': 1000, 'pbar_opts': None
                   })
 def parser_parzu_parallelized(nlp, name, parzu_home, parzu_tmpdir, zmorge_transducer, num_processes, tokens_per_process, pbar_opts):
+    nlp.vocab.get_noun_chunks = get_noun_chunks_parzu
     return ParzuParallelized(name=name, parzu_home=parzu_home, parzu_tmpdir=parzu_tmpdir,
                              zmorge_transducer=zmorge_transducer, num_processes=num_processes,
                              tokens_per_process=tokens_per_process, pbar_opts=pbar_opts)
