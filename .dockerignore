@@ -8,9 +8,8 @@ tests
 *.cpp
 *.so
 .git
-resources/zmorge-20150315-smor_newlemma.ca
-resources/RNNTagger
-resources/rwtagger_models
-resources/model_droc_incremental_no_segment_distance_May02_17-32-58_1800.bin
-resources/stss-se-scene-segmenter/extracted_model
-resources/eventclassifier_model
+train_output
+resources
+!resources/uhh-lt-event-classify/
+!resources/uhh-lt-neural-coref/
+!resources/ParZu/

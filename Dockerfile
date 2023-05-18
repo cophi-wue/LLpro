@@ -54,14 +54,8 @@ RUN poetry install
 COPY --chown=${USER} bin/ bin/
 RUN poetry run python -c 'from bin.llpro_cli import create_pipe; create_pipe();'
 
-ARG INSTALL_APEX=0
-WORKDIR /tmp
-RUN if [ "$INSTALL_APEX" = "1" ] ; then echo 'Building Apex' \
-    && git clone https://github.com/NVIDIA/apex.git \
-    && cd apex && pip install -v --no-cache-dir --global-option="--cpp_ext" --global-option="--cuda_ext" .; fi
-
 WORKDIR /LLpro
-RUN rm -f resources/RNNTagger-1.3.zip resources/eventclassifier.zip  resources/stss-se-scene-segmenter/model.tar.gz
+RUN rm -f resources/*.zip
 
 ENV TRANSFORMERS_OFFLINE=1
 ENTRYPOINT ["poetry", "run", "python", "bin/llpro_cli.py"]
