@@ -10,7 +10,7 @@ This pipeline implements several custom pipeline components using the Spacy API.
 * Named Entity Recognition via [FLERT](https://github.com/flairNLP/flair) [(Schweter, Akbik 2021)](#ref-schweter_flert_2021). Version 0.12.2.
 * Recognition of References to literary Characters (proper nouns and common nouns, i.e. “Appelative”) via a custom fine-tuned [FLERT](https://github.com/flairNLP/flair) model [`aehrm/droc-character-recognizer`](https://huggingface.co/aehrm/droc-character-recognizer).
 * Tagging of German speech, thought and writing representation (STWR) via custom fine-tuned BERT embeddings, inspired by [Brunner, Tu, Weimer, Jannidis (2020)](#ref-brunner_bert_2021); models [`aehrm/redewiedergabe-direct`](https://huggingface.co/aehrm/redewiedergabe-direct), ....
-* Segmentation into Scenes via BERT Embeddings via a custom re-implementation of a model by [Kurfalı and Wirén (2021)](#ref-kurfali_breaking_2021); model [`aehrm/stss-scene-segmenter`](https://huggingface.co/aehrm/stss-scene-segmenter).
+* Segmentation into Scenes via BERT Embeddings via a custom fine-tuned re-implementation of a model by [Kurfalı and Wirén (2021)](#ref-kurfali_breaking_2021); model [`aehrm/stss-scene-segmenter`](https://huggingface.co/aehrm/stss-scene-segmenter).
 * Coreference Resolution via BERT Embeddings [(Schröder, Hatzel, Biemann 2021)](#ref-schroder_neural_2021). Commit f34a99e.
 * Annotating Event Types to verbal phrases via BERT Embeddings [(Vauth, Hatzel, Gius, Biemann 2021)](#ref-vauth_automated_2021) Version 0.2, Commit 25fdf7e.
 
@@ -119,6 +119,8 @@ poetry run pytest -vv
 See the separate [Developer Guide](./doc/DEVELOPING.md) about the implemented Spacy components and how to access the assigned attributes.
 
 See also the separate document about the tabular [Output Format](./doc/OUTPUT_FORMAT.md) for a description of the output format and a reference of the used tagsets.
+
+See the folder [`./contrib`](./contrib) for scripts to reproduce the fine-tuning of the custom models.
 
 ## Citing
 
