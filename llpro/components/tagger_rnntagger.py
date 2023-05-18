@@ -33,7 +33,7 @@ class RNNTagger(Module):
         self.device_on_run = device_on_run
         self.rnntagger_home = Path(rnntagger_home)
         sys.path.insert(0, str(self.rnntagger_home))
-        sys.path.insert(0, str(self.rnntagger_home / "PyNMT"))
+        sys.path.insert(0, str(self.rnntagger_home / "PyRNN"))
         from PyRNN.Data import Data
         import PyRNN.RNNTagger
         import PyRNN.CRFTagger
@@ -43,7 +43,7 @@ class RNNTagger(Module):
         self.vector_mappings = Data(str(self.rnntagger_home / "lib/PyRNN/german.io"))
         self.model = PyRNN.CRFTagger.CRFTagger(*hyper_params) if len(hyper_params) == 10 \
             else PyRNN.RNNTagger.RNNTagger(*hyper_params)
-        self.model.load_state_dict(torch.load(str(self.rnntagger_home / "lib/PyRNN/german.rnn")))
+        self.model.load_state_dict(torch.load(str(self.rnntagger_home / "lib/PyRNN/german.rnn"), map_location=self.device))
         self.model.eval()
 
         if not self.device_on_run:
@@ -54,21 +54,19 @@ class RNNTagger(Module):
             data = self.vector_mappings
             # cf. RNNTagger/PyRNN/rnn-annotate.py
             fwd_charIDs, bwd_charIDs = data.words2charIDvec(words)
-            fwd_charIDs = self.model.long_tensor(fwd_charIDs)
-            bwd_charIDs = self.model.long_tensor(bwd_charIDs)
-
-            word_embs = None if data.word_emb_size <= 0 else self.model.float_tensor(data.words2vecs(words))
+            fwd_charIDs = torch.LongTensor(fwd_charIDs).to(self.device)
+            bwd_charIDs = torch.LongTensor(bwd_charIDs).to(self.device)
 
             with torch.no_grad():
                 if type(self.model) is PyRNN.RNNTagger.RNNTagger:
-                    tagscores = self.model(fwd_charIDs, bwd_charIDs, word_embs)
+                    tagscores = self.model(fwd_charIDs, bwd_charIDs)
                     softmax_probs = torch.nn.functional.softmax(tagscores,
                                                                 dim=-1)  # ae: added softmax transform to get meaningful probabilities
                     best_prob, tagIDs = softmax_probs.max(dim=-1)
                     tags = data.IDs2tags(tagIDs)
                     return [{'tag': t, 'prob': p.item()} for t, p in zip(tags, best_prob.cpu())]
                 elif type(self.model) is PyRNN.CRFTagger.CRFTagger:
-                    tagIDs = self.model(fwd_charIDs, bwd_charIDs, word_embs)
+                    tagIDs = self.model(fwd_charIDs, bwd_charIDs)
                     return [{'tag': t} for t in data.IDs2tags(tagIDs)]
                 else:
                     raise RuntimeError("Error in function annotate_sentence")

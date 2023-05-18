@@ -36,6 +36,7 @@ class RNNLemmatizer(Module):
         sys.path.insert(0, str(self.rnntagger_home / "PyNMT"))
         from PyNMT.Data import Data, rstrip_zeros
         from PyNMT.NMT import NMTDecoder
+        import PyNMT.NMT
 
         beam_size = 0
         batch_size = 32
@@ -44,7 +45,7 @@ class RNNLemmatizer(Module):
         with open(str(self.rnntagger_home / "lib/PyNMT/german.hyper"), "rb") as file:
             hyper_params = pickle.load(file)
         self.model = NMTDecoder(*hyper_params)
-        self.model.load_state_dict(torch.load(str(self.rnntagger_home / "lib/PyNMT/german.nmt")))
+        self.model.load_state_dict(torch.load(str(self.rnntagger_home / "lib/PyNMT/german.nmt"), map_location=self.device))
         if torch.cuda.is_available() and use_cuda:
             self.model = self.model.cuda()
         self.model.eval()
@@ -54,7 +55,13 @@ class RNNLemmatizer(Module):
             # see RNNTagger/PyNMT/nmt-translate.py
             src_words, sent_idx, (src_wordIDs, src_len) = batch
             with torch.no_grad():
-                tgt_wordIDs, tgt_logprobs = self.model.translate(src_wordIDs, src_len, beam_size)
+                if hasattr(self.vector_mappings, 'max_tgt_len_factor'):
+                    # TODO we tentatively hack in support for RNNTagger v1.4
+                    PyNMT.NMT.device = self.device
+                    tgt_wordIDs, tgt_logprobs = self.model.translate(src_wordIDs, src_len, self.vector_mappings.max_tgt_len_factor, beam_size=beam_size)
+                else:
+                    tgt_wordIDs, tgt_logprobs = self.model.translate(src_wordIDs, src_len, beam_size=beam_size)
+
             # undo the sorting of sentences by length
             tgt_wordIDs = [tgt_wordIDs[i] for i in sent_idx]
 
@@ -119,10 +126,10 @@ class RNNLemmatizer(Module):
                 cache_key = (tok.text, tok._.rnntagger_tag)
                 if is_cached:
                     lemma, prob = cached[cache_key]
-                    tok.lemma_ = lemma if lemma != '<unk>' else tok.text
+                    tok.lemma_ = lemma if lemma != '<unk>' and not tok._.rnntagger_tag.startswith('$') else tok.text
                 else:
                     lemma, prob = next(processed)
                     cached[cache_key] = (lemma, prob)
-                    tok.lemma_ = lemma if lemma != '<unk>' else tok.text
+                    tok.lemma_ = lemma if lemma != '<unk>' and not tok._.rnntagger_tag.startswith('$') else tok.text
                 progress_fn(1)
         return doc
