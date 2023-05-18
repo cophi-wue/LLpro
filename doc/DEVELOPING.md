@@ -196,7 +196,7 @@ Options:
 | `pbar_opts`     | as specified above                                                         |
 
 The CharacterRecognizer component uses a custom Flair model as proposed Schweter and Akbik [(2021)](#ref-schweter_flert_2021), fine-tuned for the DROC dataset, to recognize references to literary characters.
-It uses the only the single class `PER` (in IOB encoding) as employed by the respective CoNLL-2003 shared task on named entity recognition ([Sang and De Meulder, 2003](#ref-tjong_kim_sang_introduction_2003)).
+It uses only the single class `PER` (in IOB encoding) to denote mentions of literary characters [(Krug et al., 2017)](#ref-krug_description_2017).
 
 Similar to Spacy's [default entity recognizer](https://spacy.io/usage/linguistic-features#named-entities), it assigns to the document to the attribute `doc._.characters` a list of named entities, and to each token also assigns the IOB code to the attribute `tok._.character_iob` (one of `I`, `O`, `B`).
 
@@ -320,6 +320,12 @@ The value `event.attrs["event_type"]` holds the annotated event type, i.e. one o
 <div id="ref-foth_umfassende_2014">
 
 <p>Foth, Kilian A. 2014. <em>Eine Umfassende Constraint-Dependenz-Grammatik Des Deutschen</em>. Universität Hamburg. <a href="https://edoc.sub.uni-hamburg.de/informatik/volltexte/2014/204/">https://edoc.sub.uni-hamburg.de/informatik/volltexte/2014/204/</a>.</p>
+
+</div>
+
+<div id="ref-krug_description_2017">
+
+<p>Krug, Markus, Lukas Weimer, Isabella Reger, Luisa Macharowsky, Stephan Feldhaus, Frank Puppe, and Fotis Jannidis. 2017. “Description of a Corpus of Character References in German Novels - DROC [Deutsches ROman Corpus].” <a href="https://resolver.sub.uni-goettingen.de/purl?gro-2/108301">https://resolver.sub.uni-goettingen.de/purl?gro-2/108301</a>.</p>
 
 </div>
 

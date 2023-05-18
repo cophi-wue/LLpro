@@ -8,7 +8,7 @@ This pipeline implements several custom pipeline components using the Spacy API.
 * Lemmatization and Morphological Analysis via [RNNTagger](https://www.cis.uni-muenchen.de/~schmid/tools/RNNTagger/) [(Schmid 2019)](#ref-schmid_deep_2019). Version 1.4.1.
 * Dependency Parsing via [ParZu](https://github.com/rsennrich/ParZu) ([Sennrich, Schneider, Volk, Warin 2009](#ref-sennrich_new_2009); [Sennrich, Volk, Schneider 2013](#ref-sennrich_exploiting_2013); [Sennrich, Kunz 2014](#ref-sennrich_zmorge_2014)). Commit a15ae7f.
 * Named Entity Recognition via [FLERT](https://github.com/flairNLP/flair) [(Schweter, Akbik 2021)](#ref-schweter_flert_2021). Version 0.12.2.
-* Recognition of References to literary Characters (proper nouns and common nouns, i.e. “Appelative”) via a custom fine-tuned [FLERT](https://github.com/flairNLP/flair) model [`aehrm/droc-character-recognizer`](https://huggingface.co/aehrm/droc-character-recognizer).
+* Recognition of References to literary Characters (proper nouns and common nouns, i.e. “Appelative”, cf. [Krug et al., 2017](#ref-krug_description_2017)) via a custom fine-tuned [FLERT](https://github.com/flairNLP/flair) model [`aehrm/droc-character-recognizer`](https://huggingface.co/aehrm/droc-character-recognizer).
 * Tagging of German speech, thought and writing representation (STWR) via custom fine-tuned BERT embeddings, inspired by [Brunner, Tu, Weimer, Jannidis (2020)](#ref-brunner_bert_2021); models [`aehrm/redewiedergabe-direct`](https://huggingface.co/aehrm/redewiedergabe-direct), ....
 * Segmentation into Scenes via BERT Embeddings via a custom fine-tuned re-implementation of a model by [Kurfalı and Wirén (2021)](#ref-kurfali_breaking_2021); model [`aehrm/stss-scene-segmenter`](https://huggingface.co/aehrm/stss-scene-segmenter).
 * Coreference Resolution via BERT Embeddings [(Schröder, Hatzel, Biemann 2021)](#ref-schroder_neural_2021). Commit f34a99e.
@@ -168,6 +168,12 @@ GNU General Public License for more details.
 <div id="ref-brunner_bert_2021">
 
 <p>Brunner, Annelen, Ngoc Duyen Tanja Tu, Lukas Weimer, and Fotis Jannidis. 2021. “To BERT or Not to BERT – Comparing Contextual Embeddings in a Deep Learning Architecture for the Automatic Recognition of Four Types of Speech, Thought and Writing Representation.” In <em>Proceedings of the 5th Swiss Text Analytics Conference (SwissText) &amp; 16th Conference on Natural Language Processing (KONVENS)</em>, 2624:11. CEUR Workshop Proceedings. Zurich, Switzerland. <a href="http://ceur-ws.org/Vol-2624/paper5.pdf">http://ceur-ws.org/Vol-2624/paper5.pdf</a>.</p>
+
+</div>
+
+<div id="ref-krug_description_2017">
+
+<p>Krug, Markus, Lukas Weimer, Isabella Reger, Luisa Macharowsky, Stephan Feldhaus, Frank Puppe, and Fotis Jannidis. 2017. “Description of a Corpus of Character References in German Novels - DROC [Deutsches ROman Corpus].” <a href="https://resolver.sub.uni-goettingen.de/purl?gro-2/108301">https://resolver.sub.uni-goettingen.de/purl?gro-2/108301</a>.</p>
 
 </div>
 
