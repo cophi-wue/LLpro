@@ -107,8 +107,11 @@ def spacy_doc_to_dataframe(doc):
     for tok in doc:
         ent_str = 'O' if tok.ent_iob_ == 'O' else tok.ent_iob_ + '-' + tok.ent_type_
         token_attribute_dictionary['entity'].append(ent_str)
-        char_str = 'O' if tok._.character_iob == 'O' else tok._.character_iob + '-PER'
-        token_attribute_dictionary['character'].append(char_str)
+
+    if hasattr(doc._, 'characters'):
+        for tok in doc:
+            char_str = 'O' if tok._.character_iob == 'O' else tok._.character_iob + '-PER'
+            token_attribute_dictionary['character'].append(char_str)
 
     if hasattr(doc._, 'coref_clusters'):
         for tok in doc:
