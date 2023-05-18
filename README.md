@@ -19,31 +19,37 @@ See also the section about the [Output Format](./doc/OUTPUT_FORMAT.md) for a des
 ## Usage
 
 ```text
-usage: bin/llpro_cli.py [-h] [-v] [--paragraph-pattern PAT] [--section-pattern PAT]
-                        [--stdout | --writefiles DIR]
-                        FILE [FILE ...]
+usage: bin/llpro_cli.py [-h] [-v] [--no-normalize-tokens] [--tokenized]
+                        [--sentencized] [--paragraph-pattern PAT]
+                        [--section-pattern PAT] [--stdout | --writefiles DIR]
+                        --infiles FILE [FILE ...]
 
 NLP Pipeline for literary texts written in German.
-
-required arguments:
-  --infiles FILE [FILE ...]
-                        Input files, or directories.
 
 optional arguments:
   -h, --help            show this help message and exit
   -v, --verbose
+  --no-normalize-tokens
+                        Do not normalize tokens.
+  --tokenized           Skip tokenization, and assume that tokens are
+                        separated by whitespace.
+  --sentencized         Skip sentence splitting, and assume that sentences are
+                        separated by newline characters.
   --paragraph-pattern PAT
                         Optional paragraph separator pattern. Paragraph
                         separators are removed, and sentences always terminate
-                        on paragraph boundaries.
+                        on paragraph boundaries. Performed before
+                        tokenization/sentence splitting.
   --section-pattern PAT
                         Optional sectioning paragraph pattern. Paragraphs
-                        fully matching the pattern are removed, and increment
-                        the section id counter for tokens in intermediate
-                        paragraphs.
+                        fully matching the pattern are removed. Performed
+                        before tokenization/sentence splitting.
   --stdout              Write all processed tokens to stdout.
   --writefiles DIR      For each input file, write processed tokens to a
                         separate file in DIR.
+  --infiles FILE [FILE ...]
+                        Input files, or directories.
+
 ```
 
 Note: you can specify the resources directory (containing `ParZu` etc.) with the environment
