@@ -81,6 +81,7 @@ After building, the Docker image can be run like this:
 
 ```shell
 mkdir -p files/in files/out
+chmod a+w files/out  # make directory writeable from the Docker container
 # copy files into ./files/in to be processed
 docker run \
     --rm \
