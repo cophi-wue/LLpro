@@ -130,10 +130,9 @@ See the folder [`./contrib`](./contrib) for scripts to reproduce the fine-tuning
 
 ## Citing
 
-If you use the LLpro software for academic research, please consider citing the project:
+If you use the LLpro software for academic research, please consider citing the accompanying publication:
 
-Ehrmanntraut, Anton, Leonard Konle, and Fotis Jannidis: *LLpro*, A Literary Language Processing Pipeline for German
-Narrative Texts. 2022. <https://github.com/aehrm/LLpro>
+Ehrmanntraut, Anton, Leonard Konle, and Fotis Jannidis. 2023. „LLpro: A Literary Language Processing Pipeline for German Narrative Text.“ In *Proceedings of the 19th Conference on Natural Language Processing (KONVENS 2023)*. Ingolstadt, Germany: KONVENS 2023 Organizers. To be published.
 
 ## License
 
