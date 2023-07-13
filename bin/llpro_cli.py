@@ -84,6 +84,7 @@ def create_pipe():
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='NLP Pipeline for literary texts written in German.')
     parser.add_argument('-v', '--verbose', action="store_const", dest="loglevel", const=logging.INFO)
+    parser.add_argument('--version', action='version', version=llpro.__version__)
     parser.add_argument('--no-normalize-tokens', action='store_false', dest='normalize_tokens',
                         help='Do not normalize tokens.')
     parser.add_argument('--tokenized', action='store_true',
