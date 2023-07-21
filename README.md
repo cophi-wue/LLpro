@@ -6,13 +6,13 @@ This pipeline implements several custom pipeline components using the Spacy API.
 * Tokenization and Sentence Splitting via [SoMaJo](https://github.com/tsproisl/SoMaJo)  [(Proisl, Uhrig 2016)](#ref-proisl_somajo_2016). Version 2.2.
 * POS tagging via [SoMeWeTa](https://github.com/tsproisl/SoMeWeTa) [(Proisl 2018)](#ref-proisl_someweta_2018). Version 1.8.1.
 * Lemmatization and Morphological Analysis via [RNNTagger](https://www.cis.uni-muenchen.de/~schmid/tools/RNNTagger/) [(Schmid 2019)](#ref-schmid_deep_2019). Version 1.4.1.
-* Dependency Parsing via [ParZu](https://github.com/rsennrich/ParZu) ([Sennrich, Schneider, Volk, Warin 2009](#ref-sennrich_new_2009); [Sennrich, Volk, Schneider 2013](#ref-sennrich_exploiting_2013); [Sennrich, Kunz 2014](#ref-sennrich_zmorge_2014)). Commit a15ae7f.
+* Dependency Parsing via [ParZu](https://github.com/rsennrich/ParZu) ([Sennrich, Schneider, Volk, Warin 2009](#ref-sennrich_new_2009); [Sennrich, Volk, Schneider 2013](#ref-sennrich_exploiting_2013); [Sennrich, Kunz 2014](#ref-sennrich_zmorge_2014)). Commit [a15ae7f](https://github.com/rsennrich/ParZu/tree/a15ae7f).
 * Named Entity Recognition via [FLERT](https://github.com/flairNLP/flair) [(Schweter, Akbik 2021)](#ref-schweter_flert_2021). Version 0.12.2.
 * Recognition of References to literary Characters (proper nouns and common nouns, i.e. “Appelative”, cf. [Krug et al., 2017](#ref-krug_description_2017)) via a custom fine-tuned [FLERT](https://github.com/flairNLP/flair) model [`aehrm/droc-character-recognizer`](https://huggingface.co/aehrm/droc-character-recognizer).
 * Tagging of German speech, thought and writing representation (STWR) via custom fine-tuned BERT embeddings, inspired by [Brunner, Tu, Weimer, Jannidis (2020)](#ref-brunner_bert_2021); models [`aehrm/redewiedergabe-direct`](https://huggingface.co/aehrm/redewiedergabe-direct), ....
 * Segmentation into Scenes via BERT Embeddings via a custom fine-tuned re-implementation of a model by [Kurfalı and Wirén (2021)](#ref-kurfali_breaking_2021); model [`aehrm/stss-scene-segmenter`](https://huggingface.co/aehrm/stss-scene-segmenter).
-* Coreference Resolution via BERT Embeddings [(Schröder, Hatzel, Biemann 2021)](#ref-schroder_neural_2021). Commit f34a99e.
-* Annotating Event Types to verbal phrases via BERT Embeddings [(Vauth, Hatzel, Gius, Biemann 2021)](#ref-vauth_automated_2021) Version 0.2, Commit 25fdf7e.
+* Coreference Resolution via BERT Embeddings [(Schröder, Hatzel, Biemann 2021)](#ref-schroder_neural_2021). Commit [f34a99e](https://github.com/uhh-lt/neural-coref/tree/f34a99e).
+* Annotating Event Types to verbal phrases via BERT Embeddings [(Vauth, Hatzel, Gius, Biemann 2021)](#ref-vauth_automated_2021) Version 0.2, Commit [25fdf7e](https://github.com/uhh-lt/event-classification/tree/25fdf7e).
 
 See also the section about the [Output Format](./doc/OUTPUT_FORMAT.md) for a description of the tabular output format.
 
