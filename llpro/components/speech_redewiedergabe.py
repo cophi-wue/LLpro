@@ -80,11 +80,15 @@ class RedewiedergabeTagger(Module):
         it = iter(doc)
 
         def gen_sentences():
-            tokenized_sentences = ([x.text for x in sentence] for sentence in doc.sents)
-            for list_of_sentences in more_itertools.constrained_batches(tokenized_sentences, max_size=max_seq_length):# get_len=lambda x: self.bert_sequence_length(x)):
+            for sent  in doc.sents:
+                tokenized = [x.text for x in sent]
+                yield from more_itertools.chunked(tokenized, n=max_seq_length)
+
+        def gen_inputseq():
+            for list_of_sentences in more_itertools.constrained_batches(gen_sentences(), max_size=max_seq_length):# get_len=lambda x: self.bert_sequence_length(x)):
                 yield itertools.chain(*list_of_sentences)
 
-        for chunk in more_itertools.chunked(gen_sentences(), n=self.batch_size):
+        for chunk in more_itertools.chunked(gen_inputseq(), n=self.batch_size):
             chunk = [list(sent) for sent in chunk]
             chunk_tokens = list(itertools.islice(it, sum(len(x) for x in chunk)))
 
