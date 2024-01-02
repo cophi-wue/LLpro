@@ -17,3 +17,4 @@ from .components.coref_uhhlt import coref_uhhlt
 from .components.ner_flair import ner_flair
 from .components.events_uhhlt import events_uhhlt
 from .components.character_recognizer import character_recognizer
+from .components.emotion_classifier import emotion_classifier

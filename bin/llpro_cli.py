@@ -77,6 +77,7 @@ def create_pipe():
     nlp.add_pipe('ner_flair')
     nlp.add_pipe('events_uhhlt')
     nlp.add_pipe('character_recognizer')
+    nlp.add_pipe('emotion_classifier')
 
     return nlp
 

@@ -121,6 +121,13 @@ def spacy_doc_to_dataframe(doc):
             else:
                 token_attribute_dictionary['coref_clusters'].append('_')
 
+    if Token.has_extension('emotions'):
+        for tok in doc:
+            if len(tok._.emotions) > 0:
+                token_attribute_dictionary['emotions'].append(','.join(f'{span.label_}-{span.id}' for span in tok._.emotions))
+            else:
+                token_attribute_dictionary['emotions'].append('_')
+
     df = pandas.DataFrame(token_attribute_dictionary).set_index('i')
 
     if hasattr(doc._, 'scenes'):
