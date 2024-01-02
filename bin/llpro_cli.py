@@ -123,10 +123,6 @@ if __name__ == "__main__":
     logger.info('LLpro resources root: ' + llpro.LLPRO_RESOURCES_ROOT)
     logger.info('LLpro temporary directory: ' + llpro.LLPRO_TEMPDIR)
 
-    if args.version:
-        print(llpro.__version__)
-        sys.exit(0)
-
     if 'OMP_NUM_THREADS' not in os.environ:
         torch.set_num_threads(get_cpu_limit())
 
