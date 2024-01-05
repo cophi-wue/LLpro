@@ -17,8 +17,11 @@ $WGET 'https://github.com/uhh-lt/neural-coref/releases/download/konvens/droc_inc
 unzip -u droc_incremental_no_segment_distance.mar model_droc_incremental_no_segment_distance_May02_17-32-58_1800.bin
 test -f "eventclassifier.zip" || $WGET 'https://github.com/uhh-lt/event-classification/releases/download/v0.2/demo_model.zip' -O 'eventclassifier.zip'
 unzip -u eventclassifier.zip -d eventclassifier_model
-test -f "emotions_models.zip" || $WGET 'https://owncloud.gwdg.de/index.php/s/g2PjWWcknSRlMSd/download' -O emotions_models.zip
-mkdir -p konle_emotion_weights
-unzip -u emotions_models.zip -d konle_emotion_weights
-mv --verbose konle_emotion_weights/models/* konle_emotion_weights
-rmdir konle_emotion_weights/models
+
+if [[ "$LLPRO_EXPERIMENTAL" -eq 1 ]]; then
+    test -f "emotions_models.zip" || $WGET 'https://owncloud.gwdg.de/index.php/s/g2PjWWcknSRlMSd/download' -O emotions_models.zip
+    mkdir -p konle_emotion_weights
+    unzip -u emotions_models.zip -d konle_emotion_weights
+    mv --verbose konle_emotion_weights/models/* konle_emotion_weights
+    rmdir konle_emotion_weights/models
+fi

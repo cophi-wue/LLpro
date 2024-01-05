@@ -77,7 +77,10 @@ def create_pipe():
     nlp.add_pipe('ner_flair')
     nlp.add_pipe('events_uhhlt')
     nlp.add_pipe('character_recognizer')
-    nlp.add_pipe('emotion_classifier')
+
+    # experimental stuff
+    if nlp.has_factory('emotion_classifier'):
+        nlp.add_pipe('emotion_classifier')
 
     return nlp
 
@@ -124,7 +127,10 @@ if __name__ == "__main__":
     logger.info('LLpro temporary directory: ' + llpro.LLPRO_TEMPDIR)
 
     if 'OMP_NUM_THREADS' not in os.environ:
-        torch.set_num_threads(get_cpu_limit())
+        try:
+            torch.set_num_threads(get_cpu_limit())
+        except FileNotFoundError:
+            logger.warning(f'cgroup: could not retrieve cpu limit')
 
     if torch.cuda.is_available():
         logger.info(f'torch: CUDA available, version {torch.version.cuda}, architectures {torch.cuda.get_arch_list()}')

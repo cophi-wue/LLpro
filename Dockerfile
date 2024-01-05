@@ -25,6 +25,8 @@ ENV PYTHONFAULTHANDLER=1 \
 # adjust if needed, e.g. via --build-arg=USER=anton
 ARG USER=llprouser
 ARG UID=""
+ARG LLPRO_EXPERIMENTAL=0
+ENV LLPRO_EXPERIMENTAL=${LLPRO_EXPERIMENTAL}
 
 RUN if [ -z "${UID}" ]; then adduser ${USER} --home /docker_home --disabled-password --gecos ""; \
         else adduser ${USER} --uid ${UID} --home /docker_home --disabled-password --gecos ""; fi
@@ -45,7 +47,7 @@ RUN poetry install --no-root
 
 COPY --chown=${USER} resources/ resources/
 COPY --chown=${USER} prepare.sh prepare.sh
-RUN sh prepare.sh
+RUN bash prepare.sh
 
 COPY --chown=${USER} llpro llpro
 COPY --chown=${USER} build.py build.py
