@@ -400,8 +400,8 @@ class TestRNNTaggerComponent(LLproReproduction):
                 from spacy.tokens import MorphAnalysis
                 morph = from_tigertag(fields[1])
                 morph = MorphAnalysis(Vocab(), morph)
-                # lemma = fields[2] if fields[2] != '<unk>' else fields[0]
-                yield fields[0], fields[1], str(morph), fields[2]
+                lemma = fields[2] if fields[2] != '<unknown>' and not fields[1].startswith('$') else fields[0]
+                yield fields[0], fields[1], str(morph), lemma
 
     def run_pipeline(self, doc: Doc) -> Iterable[Tuple[str, str, str, str]]:
         nlp = spacy.blank("de")
