@@ -128,24 +128,21 @@ def spacy_doc_to_dataframe(doc):
             else:
                 token_attribute_dictionary['emotions'].append('_')
 
-    df = pandas.DataFrame(token_attribute_dictionary).set_index('i')
+    if Token.has_extension('scene'):
+        for tok in doc:
+            token_attribute_dictionary['scene_id'] = int(tok._.scene.id)
+            token_attribute_dictionary['scene_label'] = tok._.scene.label_
 
-    if hasattr(doc._, 'scenes'):
-        df['scene_id'] = '_'
-        df['scene_label'] = '_'
-        for scene in doc._.scenes:
-            for tok in scene:
-                df.loc[tok.i, 'scene_id'] = int(scene.id)
-                df.loc[tok.i, 'scene_label'] = scene.label_
+    df = pandas.DataFrame(token_attribute_dictionary).set_index('i')
 
     if hasattr(doc._, 'events'):
         df['event_id'] = '_'
         df['event_label'] = '_'
         for i, event in enumerate(doc._.events):
             for span in event:
-                for tok in span:
-                    df.loc[tok.i, 'event_id'] = int(i)
-                    df.loc[tok.i, 'event_label'] = event.attrs['event_type']
+                token_ids = list(sorted(tok.i for tok in span))
+                df.loc[token_ids, 'event_id'] = int(i)
+                df.loc[token_ids, 'event_label'] = event.attrs['event_type']
 
     df = df.rename(columns=lambda x: re.sub(r'(_$|^_\.)', '', x))
     df = df.fillna(value='_').replace('', '_')
