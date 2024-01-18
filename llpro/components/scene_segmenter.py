@@ -7,6 +7,7 @@ import torch
 from spacy import Language
 from spacy.tokens import Doc, Token, Span
 from torch.nn import CrossEntropyLoss
+from tqdm import tqdm
 from transformers import BertModel, BertPreTrainedModel, BertTokenizer, DataCollatorForTokenClassification, \
     BertTokenizerFast
 from transformers.modeling_outputs import TokenClassifierOutput
@@ -71,7 +72,7 @@ class SceneSegmenter(Module):
             out = self.tokenizer(self.tokenizer.decode(in_seq), add_special_tokens=False)
             yield out
 
-    def process(self, doc: Doc, progress_fn: Callable[[int], None]) -> Doc:
+    def process(self, doc: Doc, pbar: tqdm) -> Doc:
         inputs = self.input_gen(doc)
         data_collator = DataCollatorForTokenClassification(tokenizer=self.tokenizer)
 
@@ -84,7 +85,7 @@ class SceneSegmenter(Module):
                 pred = np.argmax(out.logits.cpu().numpy(), axis=1)
                 for p in pred:
                     predictions.append(p)
-                    progress_fn(len(sentences[sentence_counter]))
+                    pbar.update(len(sentences[sentence_counter]))
                     sentence_counter = sentence_counter + 1
 
         assert len(predictions) == len(sentences)
@@ -99,6 +100,8 @@ class SceneSegmenter(Module):
 
             for tok in scene_obj:
                 tok._.scene = scene_obj
+
+        return doc
 
 
 

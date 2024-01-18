@@ -8,6 +8,7 @@ import more_itertools
 import torch
 from spacy import Language
 from spacy.tokens import Doc, Token
+from tqdm import tqdm
 
 from ..common import Module
 from .. import LLPRO_RESOURCES_ROOT
@@ -52,32 +53,26 @@ class RedewiedergabeTagger(Module):
             self.models[rw_type] = model
 
         if not self.device_on_run:
-            for model in self.models.values():
-                model.to(self.device)
-            flair.device = self.device
-            logger.info(
-                f"{name} using devices {','.join(str(next(m.parameters()).device) for m in self.models.values())}")
+            for rw_type, model in self.models.items():
+                self.set_model_device(model, rw_type)
 
-    def before_run(self):
+    def set_model_device(self, model, rw_type):
         import flair
         flair.device = self.device
-        for model in self.models.values():
-            model.to(self.device)
+        model.to(self.device)
         logger.info(
-            f"{self.name} using devices {','.join(str(next(m.parameters()).device) for m in self.models.values())}")
+            f"{self.name}/{rw_type} using device {str(next(model.parameters()).device)}")
 
-    def after_run(self):
-        if self.device_on_run:
-            import flair
-            flair.device = 'cpu'
-            for model in self.models.values():
-                model.to('cpu')
-            torch.cuda.empty_cache()
+    def reset_model_device(self):
+        import flair
+        flair.device = 'cpu'
+        for model in self.models.values():
+            model.to('cpu')
+        torch.cuda.empty_cache()
 
-    def process(self, doc: Doc, progress_fn: Callable[[int], None]) -> Doc:
+    def process(self, doc: Doc, pbar: tqdm) -> Doc:
         from flair.data import Sentence
         max_seq_length = 300  # this a constant in the model
-        it = iter(doc)
 
         def gen_sentences():
             for sent  in doc.sents:
@@ -88,13 +83,22 @@ class RedewiedergabeTagger(Module):
             for list_of_sentences in more_itertools.constrained_batches(gen_sentences(), max_size=max_seq_length):# get_len=lambda x: self.bert_sequence_length(x)):
                 yield itertools.chain(*list_of_sentences)
 
-        for chunk in more_itertools.chunked(gen_inputseq(), n=self.batch_size):
-            chunk = [list(sent) for sent in chunk]
-            chunk_tokens = list(itertools.islice(it, sum(len(x) for x in chunk)))
+        for rw_type, model in self.models.items():
+            pbar.reset()
+            pbar.total = len(doc)
+            pbar.set_description(rw_type)
 
-            for rw_type, model in self.models.items():
+            if self.device_on_run:
+                self.set_model_device(model, rw_type)
+
+            it = iter(doc)
+            for chunk in more_itertools.chunked(gen_inputseq(), n=self.batch_size):
+                chunk = [list(sent) for sent in chunk]
+                chunk_tokens = list(itertools.islice(it, sum(len(x) for x in chunk)))
+
                 chunk_token_it = iter(chunk_tokens)
                 sent_objs = [Sentence(sent) for sent in chunk]
+
                 with torch.no_grad():
                     model.predict(sent_objs)
 
@@ -106,7 +110,12 @@ class RedewiedergabeTagger(Module):
                             tok._.speech.append(rw_type)
                         tok._.speech_prob[rw_type] = tok_flair.get_label('cat').to_dict()['confidence']
 
-            progress_fn(sum(len(sent) for sent in chunk))
+
+                pbar.update(sum(len(sent) for sent in chunk))
+
+            if self.device_on_run:
+                self.reset_model_device()
+
         return doc
 
     def bert_sequence_length(self, seq):

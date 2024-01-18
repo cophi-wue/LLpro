@@ -7,6 +7,7 @@ from typing import Iterable, Callable
 
 from spacy import Language
 from spacy.tokens import Span, Doc, Token, SpanGroup
+from tqdm import tqdm
 
 from ..common import Module
 from .. import LLPRO_RESOURCES_ROOT
@@ -168,11 +169,11 @@ class CorefTagger(Module):
         tensorized = [torch.tensor(e) for e in example[:7]]
         return tensorized, token_map
 
-    def process(self, doc: Doc, progress_fn: Callable[[int], None]) -> Doc:
+    def process(self, doc: Doc, pbar: tqdm) -> Doc:
         tensorized, subtoken_map = self._tensorize(doc.sents)
 
         def my_update_fn(start, end):
-            progress_fn(subtoken_map[end - 1] - 1 - subtoken_map[start])
+            pbar.update(subtoken_map[end - 1] - 1 - subtoken_map[start])
 
         with torch.no_grad():
             if self.config['incremental']:

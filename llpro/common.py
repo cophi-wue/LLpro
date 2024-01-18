@@ -24,45 +24,28 @@ class Module:
         self.pbar_opts = pbar_opts
 
     @abstractmethod
-    def process(self, doc: Doc, progress_fn: Callable[[int], None]) -> Doc:
-        raise NotImplementedError()
+    def process(self, doc: Doc, pbar: tqdm) -> Doc:
+            raise NotImplementedError()
 
-    def __call__(self, doc: Doc, disable_pbar: bool = False, before_run_hook: Optional[Callable[[Module, Doc], None]] = None,
-                 after_run_hook: Optional[Callable[[Module, Doc], None]] = None,
-                 update_hook: Optional[Callable[[Module, Doc, int], None]] = None) -> Doc:
+    def __call__(self, doc: Doc, silent: bool = False) -> Doc:
         pbar_opts = dict(self.pbar_opts)
-        if disable_pbar:
+        if silent:
             pbar_opts['disable'] = True
-
-        pbar_opts.update({'total': len(doc)})
+        else:
+            pbar_opts.update({'total': len(doc)})
         pbar = tqdm(**pbar_opts)
-        state_obj = {}
 
-        def my_update_fn(x: int):
-            pbar.update(x)
-            if update_hook is not None:
-                update_hook(self, doc, x)
+        start_time = time.monotonic()
+        self.before_run()
+        self.process(doc, pbar)
+        self.after_run()
+        end_time = time.monotonic()
 
-        def my_before_run_hook(module, doc):
-            state_obj['start_time'] = time.monotonic()
-
-        def my_after_run_hook(module, doc):
-            start_time = state_obj['start_time']
-            end_time = time.monotonic()
-
+        if not silent:
             filename = getattr(doc._, 'filename', 'stdin')
             logger.info(f'Finished module {self.name} for {filename} in {end_time-start_time:.0f}s '
-                         f'({len(doc) / (end_time-start_time):.0f}tok/s)')
+                        f'({len(doc) / (end_time-start_time):.0f}tok/s)')
 
-        if before_run_hook is None and after_run_hook is None:
-            before_run_hook = my_before_run_hook
-            after_run_hook = my_after_run_hook
-
-        before_run_hook(self, doc)
-        self.before_run()
-        self.process(doc, my_update_fn)
-        self.after_run()
-        after_run_hook(self, doc)
         pbar.close()
 
         return doc

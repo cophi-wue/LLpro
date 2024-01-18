@@ -10,6 +10,8 @@ from spacy import Language
 from spacy.tokens import Span, Doc
 from typing import List, Iterable, Callable, Tuple, Sequence, Union, Iterator
 
+from tqdm import tqdm
+
 from ..spacy_cython_utils import apply_dependency_to_doc
 from ..common import Module
 from .. import LLPRO_RESOURCES_ROOT, LLPRO_TEMPDIR
@@ -85,7 +87,7 @@ class ParzuParallelized(Module):
                                                             get_len=sentlist_len, strict=False):
             yield list(sentences)
 
-    def process(self, doc: Doc, progress_fn: Callable[[int], None]) -> Doc:
+    def process(self, doc: Doc, pbar: tqdm) -> Doc:
         m = multiprocessing.Manager()
         q = m.Queue()
         process_chunks = self.split_doc_into_chunks(doc)
@@ -98,7 +100,7 @@ class ParzuParallelized(Module):
             try:
                 kind, i, value = q.get(timeout=1)
                 if kind == 'update':
-                    progress_fn(value)
+                    pbar.update(value)
             except queue.Empty:
                 pass
 

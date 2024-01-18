@@ -7,6 +7,7 @@ import spacy
 import torch
 from spacy import Language
 from spacy.tokens import Doc, Span, Token
+from tqdm import tqdm
 from transformers import AutoModelForTokenClassification, AutoTokenizer, pipeline
 
 from ..common import Module
@@ -133,7 +134,7 @@ class CharacterRecognizer(Module):
                         continue
                     token.add_label(typename=self.tagger.tag_type, value=label[0], score=label[1])
 
-    def process(self, doc: Doc, progress_fn: Callable[[int], None]) -> Doc:
+    def process(self, doc: Doc, pbar: tqdm) -> Doc:
         sentences = list(doc.sents)
         mentions = []
         tagged_sentences = itertools.chain.from_iterable(
@@ -150,7 +151,7 @@ class CharacterRecognizer(Module):
                     if value in {'O', '_'}: continue
                     new_span = Span(doc, tok.i, tok.i + 1, label=value)
                     mentions.append(new_span)
-            progress_fn(len(sentence))
+            pbar.update(len(sentence))
 
         for mention in mentions:
             for i in range(mention.start, mention.end):

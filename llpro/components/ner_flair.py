@@ -8,6 +8,7 @@ from typing import Iterable, List, Callable
 
 from spacy import Language
 from spacy.tokens import Doc, Span
+from tqdm import tqdm
 
 from ..common import Module
 
@@ -105,7 +106,7 @@ class FLERTNERTagger(Module):
                         continue
                     token.add_label(typename=self.tagger.tag_type, value=label[0], score=label[1])
 
-    def process(self, doc: Doc, progress_fn: Callable[[int], None]) -> Doc:
+    def process(self, doc: Doc, pbar: tqdm) -> Doc:
         sentences = list(doc.sents)
         entities = []
         tagged_sentences = itertools.chain.from_iterable(
@@ -122,7 +123,7 @@ class FLERTNERTagger(Module):
                     if value in {'O', '_'}: continue
                     new_span = Span(doc, tok.i, tok.i + 1, label=value)
                     entities.append(new_span)
-            progress_fn(len(sentence))
+            pbar.update(len(sentence))
 
         doc.set_ents(entities)
         return doc

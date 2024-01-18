@@ -37,7 +37,7 @@ def is_english_verb(tag):
 
 
 # @Language.component("event_segmentation")
-def event_segmentation(doc):
+def event_segmentation(doc, pbar=None):
     processed = set()
     for token in doc:
         out_ranges = []
@@ -75,6 +75,8 @@ def event_segmentation(doc):
             # if token.text == "flimmerten":
             #     breakpoint()
             doc._.events.append(out_ranges)
+        if pbar is not None:
+            pbar.update(1)
     return doc
 
 

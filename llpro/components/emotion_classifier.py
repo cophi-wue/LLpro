@@ -7,6 +7,7 @@ import more_itertools
 import torch
 from spacy import Language
 from spacy.tokens import Doc, Span, Token
+from tqdm import tqdm
 from transformers import BertForSequenceClassification, BertTokenizer
 
 from ..common import Module
@@ -69,18 +70,15 @@ class EmotionClassifier(Module):
             self.models[emo_type] = load_checkpoint_cls(self.base_model, str(self.weights_dir / (emo_type + '.pt')))
 
         if not self.device_on_run:
-            for model in self.models.values():
-                model.to(self.device)
-            logger.info(
-                f"{name} using devices {','.join(str(next(m.parameters()).device) for m in self.models.values())}")
+            for emo_type, model in self.models.items():
+                self.set_model_device(model, emo_type)
 
-    def before_run(self):
-        for model in self.models.values():
-            model.to(self.device)
+    def set_model_device(self, model, emo_type):
+        model.to(self.device)
         logger.info(
-            f"{self.name} using devices {','.join(str(next(m.parameters()).device) for m in self.models.values())}")
+            f"{self.name}/{emo_type} using device {str(next(model.parameters()).device)}")
 
-    def after_run(self):
+    def reset_model_device(self):
         for model in self.models.values():
             model.to('cpu')
         torch.cuda.empty_cache()
@@ -96,17 +94,30 @@ class EmotionClassifier(Module):
                 yield sent[subword_ctr:subword_ctr+span_len], self.tokenizer.decode(in_seq)
                 subword_ctr = subword_ctr + span_len
 
-
-    def process(self, doc: Doc, progress_fn: Callable[[int], None]) -> Doc:
-        span_id_ctr = 0
+    def generate_chunks(self, doc: Doc) -> Sequence[Tuple[List[Span], torch.tensor]]:
         for chunk in more_itertools.chunked(self.input_gen(doc), n=self.batch_size):
             spans, inputs = zip(*chunk)
 
-            prepared_inputs = self.tokenizer(inputs, padding=True, return_tensors='pt').to(self.device)
-            for emo_type, model in self.models.items():
+            prepared_inputs = self.tokenizer(inputs, padding=True, return_tensors='pt')
+            yield spans, prepared_inputs
+
+    def process(self, doc: Doc, pbar: tqdm) -> Doc:
+        chunks = list(self.generate_chunks(doc))
+
+        span_id_ctr = 0
+        for emo_type, model in self.models.items():
+            pbar.reset()
+            pbar.total = len(doc)
+            pbar.set_description(emo_type)
+
+            if self.device_on_run:
+                self.set_model_device(model, emo_type)
+
+            for spans, prepared_inputs in chunks:
+                prepared_inputs = prepared_inputs.to(self.device)
                 with torch.no_grad():
                     out = model(**prepared_inputs)
-                    label = out['logits'].argmax(axis=1).detach().cpu().numpy()
+                label = out['logits'].argmax(axis=1).detach().cpu().numpy()
 
                 for i, span in enumerate(spans):
                     if label[i] == 1:
@@ -116,5 +127,8 @@ class EmotionClassifier(Module):
                         for tok in span:
                             tok._.emotions.append(emotion_span_obj)
 
-            progress_fn(sum(len(span) for span in spans))
+                pbar.update(sum(len(span) for span in spans))
+
+            if self.device_on_run:
+                self.reset_model_device()
         return doc

@@ -9,6 +9,8 @@ from spacy import Language, Vocab
 from spacy.tokens import Doc, Token, MorphAnalysis
 from typing import Callable
 
+from tqdm import tqdm
+
 from ..common import Module
 from ..stts2upos import conv_table
 from .. import LLPRO_RESOURCES_ROOT
@@ -82,7 +84,7 @@ class RNNTagger(Module):
             self.model.to('cpu')
             torch.cuda.empty_cache()
 
-    def process(self, doc: Doc, progress_fn: Callable[[int], None]) -> Doc:
+    def process(self, doc: Doc, pbar: tqdm) -> Doc:
         for sent in doc.sents:
             sent = list(sent)
             for token, out in zip(sent, self.annotate_sentence([t.text for t in sent])):
@@ -97,7 +99,7 @@ class RNNTagger(Module):
                 morph = token.morph.to_dict()
                 morph.update(from_tigertag(tigertag))
                 token.set_morph(MorphAnalysis(token.vocab, morph))
-                progress_fn(1)
+                pbar.update(1)
 
         return doc
 

@@ -8,6 +8,7 @@ import torch
 from spacy import Language
 from spacy.tokens import Doc, SpanGroup, Span
 from torch.utils.data import DataLoader
+from tqdm import tqdm
 
 from ..common import Module
 from .. import LLPRO_RESOURCES_ROOT
@@ -57,20 +58,21 @@ class EventClassifier(Module):
         if self.device_on_run:
             self.model.to('cpu')
 
-    def prepare_data(self, doc):
+    def prepare_data(self, doc, pbar):
+        # TODO integrate with the progress bar!
         from event_classify.segmentations import event_segmentation
         from event_classify.preprocessing import get_annotation_dicts
         from event_classify.datasets import JSONDataset, SpanAnnotation
         if len(doc._.events) == 0:
             # NOTE: this populates the doc._.events attribute with (unlabeled) verbal phrases. Type: list of list of
-            # Span's
-            segmented_doc = event_segmentation(doc)
+            # Span
+            event_segmentation(doc, pbar)
         else:
             # NOTE: this case only exists to facilitate testing. We are unable to reproduce the segmentation of the
             # reference implementation by parsing alone, since the reference runs on Spacy's v3.3 parser, but we use
             # Spacy v3.5.
-            segmented_doc = doc
-        annotations = get_annotation_dicts(segmented_doc)
+            pass
+        annotations = get_annotation_dicts(doc)
         data = {"text": doc.text, "title": None, "annotations": annotations}
 
         dataset = JSONDataset(dataset_file=None, data=[data], include_special_tokens=True)
@@ -107,9 +109,13 @@ class EventClassifier(Module):
             "mental": mental,
         }
 
-    def process(self, doc: Doc, progress_fn: Callable[[int], None]) -> Doc:
-        dataset, dataloader = self.prepare_data(doc)
+    def process(self, doc: Doc, pbar: tqdm) -> Doc:
+        pbar.set_description('extracting phrases')
+        dataset, dataloader = self.prepare_data(doc, pbar)
 
+        pbar.reset(0)
+        pbar.total = len(doc)
+        pbar.set_description('predicting')
         progress_counter = 0
         # cf. resources/uhh-lt-event-classify/event_classify/eval.py
         self.model.eval()
@@ -133,7 +139,7 @@ class EventClassifier(Module):
                 # set new_progress_counter to token index of the last processed span
                 new_progress_counter = doc.char_span(annotations[0].start, annotations[-1].end,
                                                      alignment_mode='expand').end
-                progress_fn(new_progress_counter - progress_counter)
+                pbar.update(new_progress_counter - progress_counter)
                 progress_counter = new_progress_counter
 
         all_predictions = {

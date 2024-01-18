@@ -6,6 +6,8 @@ from spacy.morphology import Morphology
 from spacy.tokens import Doc, MorphAnalysis
 from typing import Callable
 
+from tqdm import tqdm
+
 from ..stts2upos import conv_table
 from ..common import Module
 from .. import LLPRO_RESOURCES_ROOT
@@ -24,7 +26,7 @@ class SoMeWeTaTagger(Module):
         self.tagger = ASPTagger()
         self.tagger.load(str(Path(model)))
 
-    def process(self, doc: Doc, progress_fn: Callable[[int], None]) -> Doc:
+    def process(self, doc: Doc, pbar: tqdm) -> Doc:
         for sentence in doc.sents:
             tagged = self.tagger.tag_sentence([tok.text for tok in sentence])
             assert len(sentence) == len(tagged)
@@ -37,6 +39,6 @@ class SoMeWeTaTagger(Module):
                 morph = token.morph.to_dict()
                 morph.update(Morphology.feats_to_dict(tagged_morph))
                 token.set_morph(MorphAnalysis(token.vocab, morph))
-                progress_fn(1)
+                pbar.update(1)
 
         return doc

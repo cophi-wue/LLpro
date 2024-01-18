@@ -9,6 +9,7 @@ from spacy.tokens import Token, Doc
 from typing import Callable
 
 import torch
+from tqdm import tqdm
 
 from ..common import Module
 from .. import LLPRO_RESOURCES_ROOT
@@ -99,7 +100,7 @@ class RNNLemmatizer(Module):
             self.model.to('cpu')
             torch.cuda.empty_cache()
 
-    def process(self, doc: Doc, progress_fn: Callable[[int], None]) -> Doc:
+    def process(self, doc: Doc, pbar: tqdm) -> Doc:
         cached = {}
         it = iter(doc)
         done = False
@@ -131,5 +132,5 @@ class RNNLemmatizer(Module):
                     lemma, prob = next(processed)
                     cached[cache_key] = (lemma, prob)
                     tok.lemma_ = lemma if lemma != '<unk>' and not tok._.rnntagger_tag.startswith('$') else tok.text
-                progress_fn(1)
+                pbar.update(1)
         return doc
