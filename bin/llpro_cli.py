@@ -43,6 +43,7 @@ def run_pipeline_on_files(filenames, nlp, tokenizer=None):
         file_pbar.set_description_str(f'0/{len(filenames)}')
         for i, (filename, size) in enumerate(zip(filenames, file_sizes)):
             start_time = time.monotonic()
+            logger.info(f'Start processing {filename}')
             with open(filename) as f:
                 content = f.read()
                 # tokenize outside of pipeline to set filename on resulting tokenized Doc

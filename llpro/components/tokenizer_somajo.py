@@ -4,6 +4,7 @@ import unicodedata
 
 import more_itertools
 import regex as re
+import pyuegc
 from spacy import Vocab
 from spacy.tokens import Doc, Token, Span
 from typing import Iterable, Tuple
@@ -33,9 +34,18 @@ class SoMaJoTokenizer:
         Token.set_extension('is_section_start', default=None)
         Token.set_extension('orig', default=None)
 
-    def normalize_text(self, text):
-        text = re.sub(r'([AOUaou])\N{Combining Latin Small Letter E}', r'\1\N{Combining Diaeresis}', text)
+    def normalize_text(self, original, remove_whitespace=True):
+        text = re.sub(r'([AOUaou])\N{Combining Latin Small Letter E}', r'\1\N{Combining Diaeresis}', original)
         text = unicodedata.normalize('NFKC', text)
+
+        if remove_whitespace and re.search('\p{Whitespace}', text):
+            # remove any extended grapheme cluster that contains a whitespace
+            oldtext = text
+            egcs = pyuegc.EGC(text)
+            text = ''.join(egc for egc in egcs if re.search('\p{Whitespace}', egc) is None)
+            logger.warning(f'Token "{original}" has been normalized to "{oldtext}" but contains whitespace! Replacing with "{text}".')
+        
+        assert re.search('\p{Whitespace}', text) is None
         return text
 
     def __call__(self, text: str) -> Doc:
