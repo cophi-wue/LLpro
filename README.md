@@ -75,6 +75,8 @@ automatically.
 
 ```shell
 docker build --tag cophiwue/llpro .
+# or, if you want experimental features enabled
+# docker build --build-arg LLPRO_EXPERIMENTAL=1 --tag cophiwue/llpro-experimental .
 ```
 
 After building, the Docker image can be run like this:
@@ -86,7 +88,7 @@ chmod a+w files/out  # make directory writeable from the Docker container
 docker run \
     --rm \
     --cpus 4 \ 
-    --gpus all \    # alternatively, e.g., --gpus '"device=0"'
+    --gpus all \    # alternatively, e.g., --gpus "device=0"
     --interactive \
     --tty \
     -a stdout \
