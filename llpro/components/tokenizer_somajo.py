@@ -11,6 +11,8 @@ from spacy import Vocab
 from spacy.tokens import Doc, Token, Span
 from typing import Iterable, Tuple
 
+from tqdm import tqdm
+
 logger = logging.getLogger(__name__)
 
 IRREGULAR_CHARACTERS = re.compile(
@@ -21,7 +23,7 @@ IRREGULAR_CHARACTERS = re.compile(
 class SoMaJoTokenizer:
 
     def __init__(self, vocab: Vocab, normalize=True, check_characters=True, paragraph_separator=None,
-                 section_pattern=None, is_pretokenized=False, is_presentencized=False):
+                 section_pattern=None, is_pretokenized=False, is_presentencized=False, pbar=False):
         if not normalize and not is_pretokenized:
             raise ValueError(""" cannot instantiate SoMaJoTokenizer with normalize=False and is_pretokenized=False,
             since full tokenization implies NFKC normalization!""")
@@ -93,6 +95,10 @@ class SoMaJoTokenizer:
         section_starts = set()
         para_starts = set()
 
+        if self.pbar:
+            pbar = tqdm(total=len(text), leave=False, unit='B', unit_scale=True, ncols=80, postfix='somajo_tokenizer')
+        else:
+            pbar = None
 
         for is_section_start, para_offset, para in self.to_paragraphs(text):
             para_starts.add(len(words))
@@ -120,6 +126,8 @@ class SoMaJoTokenizer:
                 if offset is not None:
                     offsets.append(para_offset + offset)
 
+            if pbar:
+                pbar.update(len(para))
 
 
         if spaces:
