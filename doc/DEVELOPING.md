@@ -57,6 +57,7 @@ The following options can be passed to many of the custom components below, and 
 
 The SoMaJoTokenizer uses the tokenizer [SoMaJo](https://github.com/tsproisl/SoMaJo) proposed by Proisl and Uhrig [(2016)](#ref-proisl_somajo_2016)
 to perform tokenization and sentence splitting. Additionally, like Spacy's [sentence segmenters](https://spacy.io/usage/linguistic-features#sbd), it assigns the attribute `token.is_sent_start` and, after tokenization, `doc.sents` enumerates all sentences of the document.
+Additionally, it assigns the original unnormalized token to the attribute `token._.orig`, and the character offset of its occurrence in the original input text to the attribute `token._.orig_offset`.
 
 Additionally, the constructor takes the following optional keyword arguments:
 

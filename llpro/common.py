@@ -70,7 +70,7 @@ def spacy_doc_to_dataframe(doc):
         return getattr(tok, attr)
 
     for tok in doc:
-        for column in ["i", "text", "_.orig", "is_sent_start", "_.is_para_start", "_.is_section_start", "pos_", "tag_", "lemma_", "morph", "dep_", "head"]:
+        for column in ["i", "text", "_.orig", "_.orig_offset", "is_sent_start", "_.is_para_start", "_.is_section_start", "pos_", "tag_", "lemma_", "morph", "dep_", "head"]:
             val = get_value(tok, column)
             if val is None:
                 val = '_'

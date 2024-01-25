@@ -3,7 +3,7 @@
 An NLP Pipeline for German literary texts implemented in Python and Spacy (v3.5.2). Work in progress.
 
 This pipeline implements several custom pipeline components using the Spacy API. Currently the components perform
-* Tokenization and Sentence Splitting via [SoMaJo](https://github.com/tsproisl/SoMaJo)  [(Proisl, Uhrig 2016)](#ref-proisl_somajo_2016). Version 2.2.
+* Tokenization and Sentence Splitting via [SoMaJo](https://github.com/tsproisl/SoMaJo)  [(Proisl, Uhrig 2016)](#ref-proisl_somajo_2016). Version 2.4.
 * POS tagging via [SoMeWeTa](https://github.com/tsproisl/SoMeWeTa) [(Proisl 2018)](#ref-proisl_someweta_2018). Version 1.8.1.
 * Lemmatization and Morphological Analysis via [RNNTagger](https://www.cis.uni-muenchen.de/~schmid/tools/RNNTagger/) [(Schmid 2019)](#ref-schmid_deep_2019). Version 1.4.1.
 * Dependency Parsing via [ParZu](https://github.com/rsennrich/ParZu) ([Sennrich, Schneider, Volk, Warin 2009](#ref-sennrich_new_2009); [Sennrich, Volk, Schneider 2013](#ref-sennrich_exploiting_2013); [Sennrich, Kunz 2014](#ref-sennrich_zmorge_2014)). Commit [a15ae7f](https://github.com/rsennrich/ParZu/tree/a15ae7f).

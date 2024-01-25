@@ -1,10 +1,12 @@
 import copy
+import itertools
 import logging
 import unicodedata
 
 import more_itertools
 import regex as re
 import pyuegc
+from more_itertools import mark_ends
 from spacy import Vocab
 from spacy.tokens import Doc, Token, Span
 from typing import Iterable, Tuple
@@ -20,6 +22,10 @@ class SoMaJoTokenizer:
 
     def __init__(self, vocab: Vocab, normalize=True, check_characters=True, paragraph_separator=None,
                  section_pattern=None, is_pretokenized=False, is_presentencized=False):
+        if not normalize and not is_pretokenized:
+            raise ValueError(""" cannot instantiate SoMaJoTokenizer with normalize=False and is_pretokenized=False,
+            since full tokenization implies NFKC normalization!""")
+
         self.vocab = vocab
         self.normalize = normalize
         self.check_characters = check_characters
@@ -27,12 +33,15 @@ class SoMaJoTokenizer:
         self.section_pattern = section_pattern
         self.is_pretokenized = is_pretokenized
         self.is_presentencized = is_presentencized
+        self.pbar = pbar
         from somajo import SoMaJo
 
-        self.tokenizer = SoMaJo("de_CMC", split_camel_case=True, split_sentences=not self.is_presentencized)
-        Token.set_extension('is_para_start', default=None)
-        Token.set_extension('is_section_start', default=None)
-        Token.set_extension('orig', default=None)
+        self.tokenizer = SoMaJo("de_CMC", split_camel_case=True, split_sentences=not self.is_presentencized,
+                                character_offsets=True)
+        Token.set_extension('is_para_start', default=None, force=True)
+        Token.set_extension('is_section_start', default=None, force=True)
+        Token.set_extension('orig', default=None, force=True)
+        Token.set_extension('orig_offset', default=None, force=True)
 
     def normalize_text(self, original, remove_whitespace=True):
         text = re.sub(r'([AOUaou])\N{Combining Latin Small Letter E}', r'\1\N{Combining Diaeresis}', original)
@@ -48,54 +57,70 @@ class SoMaJoTokenizer:
         assert re.search('\p{Whitespace}', text) is None
         return text
 
-    def __call__(self, text: str) -> Doc:
-        from somajo.utils import Token
+    def handle_pretokenized_paragraph(self, para) -> Iterable[Tuple[bool, str, bool, int]]:
+        if self.is_presentencized:
+            for sentence_str in para.split('\n'):
+                for is_first, _, tok in mark_ends(sentence_str.split(' ')):
+                    yield is_first, tok, None, None
+        else:
+            tokens = para.split(' ')
+            for sentence in self.tokenizer._sentence_splitter.split(tokens):
+                for is_first, _, tok in mark_ends(sentence):
+                    yield is_first, tok, None, None
 
+    def tokenize_paragraph(self, para: str) -> Iterable[Tuple[bool, str, bool, int]]:
+        if self.is_presentencized:
+            for sentence_match in re.finditer(r'[^\n]+', para, flags=re.UNICODE | re.MULTILINE):
+                sent = sentence_match.group()
+                sent_offset = sentence_match.start()
+                for is_first, _, token in mark_ends(itertools.chain.from_iterable(self.tokenizer.tokenize_text([sent]))):
+                    text = sent[token.character_offset[0]:token.character_offset[1]]
+                    yield is_first, text, token.space_after, sent_offset + token.character_offset[0]
+        else:
+            for sentence in self.tokenizer.tokenize_text([para]):
+                for is_first, _, token in mark_ends(sentence):
+                    text = para[token.character_offset[0]:token.character_offset[1]]
+                    yield is_first, text, token.space_after, token.character_offset[0]
+
+
+    def __call__(self, text: str) -> Doc:
         words = []
         spaces = []
         sent_starts = []
+        offsets = []
 
         orig_words = []
         section_starts = set()
         para_starts = set()
 
-        for is_section_start, para in self.to_paragraphs(text):
+
+        for is_section_start, para_offset, para in self.to_paragraphs(text):
             para_starts.add(len(words))
             if is_section_start:
                 section_starts.add(len(words))
 
-            if self.is_presentencized:
-                sentence_strs = text.split('\n')
-                if self.is_pretokenized:
-                    sentences = [s.split(' ') for s in sentence_strs]
-                else:
-                    sentences = [self.tokenizer.tokenize_text([s]) for s in sentence_strs]
+            if self.is_pretokenized:
+                tokens = self.handle_pretokenized_paragraph(para)
             else:
-                if self.is_pretokenized:
-                    tokens = text.split(' ')
-                    sentences = self.tokenizer._sentence_splitter.split(tokens)
+                tokens = self.tokenize_paragraph(para)
+
+            for is_sentence_start, word, space, offset in tokens:
+                if self.normalize:
+                    normalized = self.normalize_text(word)
+                    if normalized == '':
+                        continue
+                    words.append(normalized)
+                    orig_words.append(word)
                 else:
-                    sentences = self.tokenizer.tokenize_text([para])
+                    words.append(word)
 
-            for sent in sentences:
-                if not sent:
-                    continue
-                sent_starts.extend([True] + [False] * (len(sent) - 1))
+                sent_starts.append(is_sentence_start)
+                if space is not None:
+                    spaces.append(space)
+                if offset is not None:
+                    offsets.append(para_offset + offset)
 
-                if type(sent[0]) is str:
-                    if self.normalize:
-                        words.extend([self.normalize_text(t) for t in sent])
-                        orig_words.extend([t for t in sent])
-                    else:
-                        words.extend([t for t in sent])
-                elif type(sent[0]) is Token:
-                    if self.normalize:
-                        words.extend([self.normalize_text(tok.text) for tok in sent])
-                        orig_words.extend([tok.text for tok in sent])
-                    else:
-                        words.extend([tok.text for tok in sent])
 
-                    spaces.extend([tok.space_after for tok in sent])
 
         if spaces:
             doc = Doc(self.vocab, words=words, spaces=spaces, sent_starts=copy.copy(sent_starts))
@@ -105,6 +130,10 @@ class SoMaJoTokenizer:
         if self.normalize:
             for tok, orig_word in zip(doc, orig_words):
                 tok._.orig = orig_word
+
+        if offsets:
+            for tok, offset in zip(doc, offsets):
+                tok._.orig_offset = offset
 
         if self.check_characters:
             irr = [unicodedata.name(x) for x in set(IRREGULAR_CHARACTERS.findall(str(doc)))]
@@ -121,20 +150,43 @@ class SoMaJoTokenizer:
 
         return doc
 
-    def to_paragraphs(self, text: str) -> Iterable[Tuple[bool, str]]:
+    def to_paragraphs(self, text: str) -> Iterable[Tuple[bool, int, str]]:
         if self.paragraph_separator is None:
             if self.section_pattern is None:
-                yield None, text
+                yield None, 0, text
             else:
-                yield True, text
-        elif self.section_pattern is None:
-            for para in re.split(self.paragraph_separator, text, flags=re.UNICODE | re.MULTILINE):
-                yield None, para
+                yield True, 0, text
         else:
             is_section_start = True
-            for para in re.split(self.paragraph_separator, text, flags=re.UNICODE | re.MULTILINE):
-                if re.fullmatch(self.section_pattern, para, flags=re.UNICODE | re.MULTILINE):
-                    is_section_start = True
+            offset = 0
+            for separator_match in re.finditer(self.paragraph_separator, text, flags=re.UNICODE | re.MULTILINE):
+                para = text[offset:separator_match.start()]
+
+                if len(para) == 0:
+                    offset = separator_match.end()
                     continue
-                yield is_section_start, para
+
+                if self.section_pattern and re.fullmatch(self.section_pattern, para, flags=re.UNICODE | re.MULTILINE):
+                    is_section_start = True
+                    offset = separator_match.end()
+                    continue
+
+                if self.section_pattern:
+                    yield is_section_start, offset, para
+                else:
+                    yield None, offset, para
+
+                offset = separator_match.end()
                 is_section_start = False
+
+            # handle final paragraph
+            para = text[offset:]
+            if len(para) == 0:
+                return
+            if self.section_pattern and re.fullmatch(self.section_pattern, para, flags=re.UNICODE | re.MULTILINE):
+                return
+
+            if self.section_pattern:
+                yield is_section_start, offset, para
+            else:
+                yield None, offset, para

@@ -87,6 +87,8 @@ Fields
 * `is_sent_start`: takes on value `1` if this token starts a new sentence, cf. [SoMaJoTokenizer](./DEVELOPING.md#tokenization).
 * `is_para_start`: takes on value `1` if this token starts a new paragraph, cf. [SoMaJoTokenizer](./DEVELOPING.md#tokenization).
 * `is_section_start`: takes on value `1` if this token starts a new paragraph, cf. [SoMaJoTokenizer](./DEVELOPING.md#tokenization).
+* `orig`: original spelling before normalization, cf. [SoMaJoTokenizer](./DEVELOPING.md#tokenization).
+* `orig_offset`: character (not byte!) offset of the occurrence of the token in the original input, cf. [SoMaJoTokenizer](./DEVELOPING.md#tokenization).
 * `tag`: POS tag of the token from the [TIGER variant of the STTS tagset](https://www.ims.uni-stuttgart.de/documents/ressourcen/korpora/tiger-corpus/annotation/tiger_scheme-syntax.pdf) ([Overview](https://www.linguistik.hu-berlin.de/de/institut/professuren/korpuslinguistik/mitarbeiter-innen/hagen/STTS_Tagset_Tiger)), cf. component [tagger_someweta](./DEVELOPING.md#pos-tagging)
 * `pos`: Part-of-Speech tag of the token from the [Universal Dependencies v2 POS tagset](https://universaldependencies.org/u/pos/all.html), automatically converted using table [*de::stts*](https://universaldependencies.org/tagset-conversion/de-stts-uposf.html)
 * `lemma`: Lemma of the word form, cf. component [lemma_rnntagger](./DEVELOPING.md#lemmatization).

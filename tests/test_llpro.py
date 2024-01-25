@@ -15,6 +15,7 @@ from spacy.tokens import Doc
 from transformers import BertTokenizer
 
 import llpro
+from llpro import SoMaJoTokenizer
 
 
 class LLproReproduction:
@@ -461,3 +462,62 @@ class TestParZuComponent(LLproReproduction):
         nlp.add_pipe('parser_parzu_parallelized', config={'num_processes': 1, 'tokens_per_process': 100000})
         nlp(doc)
         return [(tok.text, tok.dep_, tok.head.i) for tok in doc]
+
+
+class TestSoMaJoTokenizer():
+
+    def test_no_sentencized_no_pretokenized(self):
+        # letzter Umlaut via Combining Diacritic!
+        input = "Das iſt ein Teſt. Zweiter Satz muͤde. \"Falsche Anführungszeichen.´"
+        nlp = spacy.blank("de")
+        tokenizer = SoMaJoTokenizer(nlp.vocab)
+
+        tokenized = tokenizer(input)
+        for tok in tokenized:
+            assert tok._.orig == input[tok._.orig_offset:tok._.orig_offset + len(tok._.orig)]
+
+        assert [(tok.is_sent_start, tok.text) for tok in tokenized] == [(True, 'Das'), (False, 'ist'), (False, 'ein'),
+                (False, 'Test'), (False, '.'), (True, 'Zweiter'), (False, 'Satz'), (False, 'müde'), (False, '.'),
+                (True, '"'), (False, 'Falsche'), (False, 'Anführungszeichen'), (False, '.')]
+
+
+    def test_sentencized_pretokenized(self):
+        input = "Erster Satz\n\" Zweiter Satz . \""
+        nlp = spacy.blank("de")
+        tokenizer = SoMaJoTokenizer(nlp.vocab, normalize=False, is_pretokenized=True, is_presentencized=True)
+
+        tokenized = tokenizer(input)
+        assert [(tok.is_sent_start, tok.text) for tok in tokenized] == [(True, 'Erster'), (False, 'Satz'),
+                (True, '"'), (False, 'Zweiter'), (False, 'Satz'), (False, '.'), (False, '"')]
+
+    def test_paragraphs_and_sections(self):
+        input = """KAPITEL EINS
+        
+        Erster Absatz.
+        Zweiter Satz.
+        
+        Zweiter Absatz.
+        
+        KAPITEL ZWEI
+        
+        Dritter Absatz.
+        """
+
+        nlp = spacy.blank("de")
+        tokenizer = SoMaJoTokenizer(nlp.vocab, paragraph_separator=r'(\n\p{Whitespace}*){2,}', section_pattern='KAPITEL.*')
+        tokenized = tokenizer(input)
+        assert ([(tok.is_sent_start, tok._.is_para_start, tok._.is_section_start, tok._.orig_offset, tok.text)
+                for tok in tokenized] ==
+                [(True, True, True, 30, 'Erster'),
+                 (False, False, False, 37, 'Absatz'),
+                 (False, False, False, 43, '.'),
+                 (True, False, False, 53, 'Zweiter'),
+                 (False, False, False, 61, 'Satz'),
+                 (False, False, False, 65, '.'),
+                 (True, True, False, 84, 'Zweiter'),
+                 (False, False, False, 92, 'Absatz'),
+                 (False, False, False, 98, '.'),
+                 (True, True, True, 147, 'Dritter'),
+                 (False, False, False, 155, 'Absatz'),
+                 (False, False, False, 161, '.')])
+
