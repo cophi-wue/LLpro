@@ -80,7 +80,7 @@ def create_pipe():
     nlp.add_pipe('character_recognizer')
 
     # experimental stuff
-    if nlp.has_factory('emotion_classifier'):
+    if os.getenv('LLPRO_EXPERIMENTAL', 'no').lower() in {'true', '1', 'y', 'yes'}:
         nlp.add_pipe('emotion_classifier')
 
     return nlp
