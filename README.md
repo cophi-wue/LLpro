@@ -74,6 +74,7 @@ Dockerfile, all  dependencies and prerequisites are downloaded
 automatically.
 
 ```shell
+cd LLpro
 docker build --tag cophiwue/llpro .
 # or, if you want experimental features enabled
 # docker build --build-arg LLPRO_EXPERIMENTAL=1 --tag cophiwue/llpro-experimental .
@@ -87,7 +88,7 @@ chmod a+w files/out  # make directory writeable from the Docker container
 # copy files into ./files/in to be processed
 docker run \
     --rm \
-    --cpus 4 \ 
+    -e OMP_NUM_THREADS=4 \
     --gpus all \    # alternatively, e.g., --gpus "device=0"
     --interactive \
     --tty \
