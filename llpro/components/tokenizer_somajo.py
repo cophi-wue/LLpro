@@ -170,12 +170,12 @@ class SoMaJoTokenizer:
             for separator_match in re.finditer(self.paragraph_separator, text, flags=re.UNICODE | re.MULTILINE):
                 para = text[offset:separator_match.start()]
 
-                if len(para) == 0:
+                if self.section_pattern and re.fullmatch(self.section_pattern, para, flags=re.UNICODE | re.MULTILINE):
+                    is_section_start = True
                     offset = separator_match.end()
                     continue
 
-                if self.section_pattern and re.fullmatch(self.section_pattern, para, flags=re.UNICODE | re.MULTILINE):
-                    is_section_start = True
+                if len(para) == 0:
                     offset = separator_match.end()
                     continue
 
