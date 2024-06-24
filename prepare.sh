@@ -9,9 +9,10 @@ $WGET 'https://pub.cl.uzh.ch/users/sennrich/zmorge/transducers/zmorge-20150315-s
 unzip -u zmorge-20150315-smor_newlemma.ca.zip
 #$WGET 'https://www.cis.uni-muenchen.de/~schmid/tools/RNNTagger/data/RNNTagger-1.3.zip'
 #unzip -uo RNNTagger-1.3.zip
-# NOTE: the original RNNTagger v1.3 seems to be unavailaible. As replacement, use v1.4.2
-$WGET 'https://www.cis.uni-muenchen.de/~schmid/tools/RNNTagger/data/RNNTagger-1.4.2.zip'
-unzip -uo RNNTagger-1.4.2.zip
+# NOTE: the original RNNTagger v1.3 seems to be unavailaible. As replacement, use v1.4.7
+# (I really should think about a different solution...)
+$WGET 'https://www.cis.uni-muenchen.de/~schmid/tools/RNNTagger/data/RNNTagger-1.4.7.zip'
+unzip -uo RNNTagger-1.4.7.zip
 find ./RNNTagger/lib/ -type f ! -name '*german*' -delete # remove unncessesary models
 $WGET 'https://github.com/uhh-lt/neural-coref/releases/download/konvens/droc_incremental_no_segment_distance.mar'
 unzip -u droc_incremental_no_segment_distance.mar model_droc_incremental_no_segment_distance_May02_17-32-58_1800.bin
