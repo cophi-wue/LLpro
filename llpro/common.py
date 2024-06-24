@@ -113,8 +113,8 @@ def spacy_doc_to_dataframe(doc):
 
     if Token.has_extension('scene'):
         for tok in doc:
-            token_attribute_dictionary['scene_id'] = int(tok._.scene.id)
-            token_attribute_dictionary['scene_label'] = tok._.scene.label_
+            token_attribute_dictionary['scene_id'].append(int(tok._.scene.id))
+            token_attribute_dictionary['scene_label'].append(tok._.scene.label_)
 
     df = pandas.DataFrame(token_attribute_dictionary).set_index('i')
 
