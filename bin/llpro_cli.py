@@ -71,7 +71,7 @@ def create_pipe():
     nlp.add_pipe('tagger_someweta')
     nlp.add_pipe('tagger_rnntagger')
     nlp.add_pipe('lemma_rnntagger')
-    nlp.add_pipe('parser_parzu_parallelized', config={'num_processes': torch.get_num_threads()})
+    nlp.add_pipe('parser_parzu')
     nlp.add_pipe('speech_redewiedergabe')
     nlp.add_pipe('scene_segmenter')
     nlp.add_pipe('coref_uhhlt')

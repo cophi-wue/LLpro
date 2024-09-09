@@ -459,7 +459,7 @@ class TestParZuComponent(LLproReproduction):
 
     def run_pipeline(self, doc: Doc) -> List[Tuple[str, str, int]]:
         nlp = spacy.blank("de")
-        nlp.add_pipe('parser_parzu_parallelized', config={'num_processes': 1, 'tokens_per_process': 100000})
+        nlp.add_pipe('parser_parzu')
         nlp(doc)
         return [(tok.text, tok.dep_, tok.head.i) for tok in doc]
 

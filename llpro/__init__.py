@@ -10,7 +10,7 @@ from .components.tokenizer_somajo import SoMaJoTokenizer
 from .components.tagger_someweta import tagger_someweta
 from .components.tagger_rnntagger import tagger_rnntagger
 from .components.lemma_rnntagger import lemma_rnntagger
-from .components.parser_parzu import parser_parzu_parallelized
+from .components.parser_parzu import parser_parzu
 from .components.speech_redewiedergabe import speech_redewiedergabe
 from .components.scene_segmenter import scene_segmenter
 from .components.coref_uhhlt import coref_uhhlt
