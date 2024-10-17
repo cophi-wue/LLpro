@@ -62,10 +62,10 @@ class SoMaJoTokenizer:
     def handle_pretokenized_paragraph(self, para) -> Iterable[Tuple[bool, str, bool, int]]:
         if self.is_presentencized:
             for sentence_str in para.split('\n'):
-                for is_first, _, tok in mark_ends(sentence_str.split(' ')):
+                for is_first, _, tok in mark_ends(sentence_str.split()):
                     yield is_first, tok, None, None
         else:
-            tokens = para.split(' ')
+            tokens = para.split()
             for sentence in self.tokenizer._sentence_splitter.split(tokens):
                 for is_first, _, tok in mark_ends(sentence):
                     yield is_first, tok, None, None
