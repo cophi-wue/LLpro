@@ -3,7 +3,8 @@ import sys
 from pathlib import Path
 
 import torch
-from typing import Iterable, Callable
+import more_itertools
+from typing import Iterable, Callable, Sequence
 
 from spacy import Language
 from spacy.tokens import Span, Doc, Token, SpanGroup
@@ -156,6 +157,8 @@ class CorefTagger(Module):
             antecedent_idx.cpu().numpy(),
             antecedent_scores.detach().cpu().numpy()
         )
+        if update_fn is not None:
+            update_fn(0, torch.sum(input_mask))
         return predicted_clusters
 
     def _tensorize(self, sentences: Iterable[Span]):
@@ -169,8 +172,8 @@ class CorefTagger(Module):
         tensorized = [torch.tensor(e) for e in example[:7]]
         return tensorized, token_map
 
-    def process(self, doc: Doc, pbar: tqdm) -> Doc:
-        tensorized, subtoken_map = self._tensorize(doc.sents)
+    def process_batch(self, sentences: Sequence[Span], pbar: tqdm) -> Doc:
+        tensorized, subtoken_map = self._tensorize(sentences)
 
         def my_update_fn(start, end):
             pbar.update(subtoken_map[end - 1] - 1 - subtoken_map[start])
@@ -182,27 +185,45 @@ class CorefTagger(Module):
                 predicted_clusters = self.get_predictions_c2f(*tensorized, update_fn=my_update_fn)
 
             clusters = []
-            for i, cluster in enumerate(predicted_clusters):
+            for cluster in predicted_clusters:
                 spans = []
                 for mention_start, mention_end in cluster:
                     tok_start_idx = subtoken_map[mention_start]
                     tok_end_idx = subtoken_map[mention_end + 1]
-                    spans.append(doc[tok_start_idx:tok_end_idx])
-                clusters.append(SpanGroup(doc, spans=spans, attrs={'id': i}))
+                    spans.append((tok_start_idx, tok_end_idx))
+                    #spans.append(doc[tok_start_idx:tok_end_idx])
+                #clusters.append(SpanGroup(doc, spans=spans, attrs={'id': i}))
+                clusters.append(spans)
+            return clusters
 
-            for token in doc:
-                token._.coref_clusters = []
+    def process(self, doc: Doc, pbar: tqdm):
+        sentences = doc.sents
+        clusters = []
 
-            doc._.has_coref = True
-            doc._.coref_clusters = clusters
-            for cluster in clusters:
-                for mention in cluster:
-                    mention._.is_coref = True
-                    mention._.coref_cluster = cluster
-                    # mention._.coref_scores = None  # not used
-                    for token in mention:
-                        token._.in_coref = True
-                        if cluster not in token._.coref_clusters:
-                            token._.coref_clusters.append(cluster)
+        i = 0
+        for batch in more_itertools.split_before(sentences, lambda x: x[0]._.is_section_start):
+            batch_offset = batch[0][0].i
+            predicted_batch_clusters  = self.process_batch(batch, pbar)
+            for predicted_batch_cluster in predicted_batch_clusters:
+                cluster = []
+                for tok_start_id, tok_end_id in predicted_batch_cluster:
+                    cluster.append(doc[batch_offset + tok_start_id:batch_offset + tok_end_id])
+                clusters.append(SpanGroup(doc, spans=cluster, attrs={'id': i}))
+                i = i + 1
+
+        for token in doc:
+            token._.coref_clusters = []
+
+        doc._.has_coref = True
+        doc._.coref_clusters = clusters
+        for cluster in clusters:
+            for mention in cluster:
+                mention._.is_coref = True
+                mention._.coref_cluster = cluster
+                # mention._.coref_scores = None  # not used
+                for token in mention:
+                    token._.in_coref = True
+                    if cluster not in token._.coref_clusters:
+                        token._.coref_clusters.append(cluster)
 
         return doc
