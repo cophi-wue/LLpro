@@ -96,14 +96,6 @@ def spacy_doc_to_dataframe(doc):
             char_str = 'O' if tok._.character_iob == 'O' else tok._.character_iob + '-PER'
             token_attribute_dictionary['character'].append(char_str)
 
-    if hasattr(doc._, 'coref_clusters'):
-        for tok in doc:
-            if len(tok._.coref_clusters) > 0:
-                token_attribute_dictionary['coref_clusters'].append(
-                    ','.join([str(cluster.attrs['id']) for cluster in tok._.coref_clusters]))
-            else:
-                token_attribute_dictionary['coref_clusters'].append('_')
-
     if Token.has_extension('emotions'):
         for tok in doc:
             if len(tok._.emotions) > 0:
@@ -126,6 +118,18 @@ def spacy_doc_to_dataframe(doc):
                 token_ids = list(sorted(tok.i for tok in span))
                 df.loc[token_ids, 'event_id'] = int(i)
                 df.loc[token_ids, 'event_label'] = event.attrs['event_type']
+
+    if hasattr(doc._, 'coref_clusters'):
+        df['coref_clusters'] = '_'
+        for cluster in doc._.coref_clusters:
+            cluster_id = cluster.attrs['id']
+            for span_id, span in enumerate(cluster):
+                label = f'{cluster_id}-{span_id}'
+                for tok in span:
+                    if df.loc[tok.i, 'coref_clusters'] == '_':
+                        df.loc[tok.i, 'coref_clusters'] = label
+                    else:
+                        df.loc[tok.i, 'coref_clusters'] += ',' + label
 
     df = df.rename(columns=lambda x: re.sub(r'(_$|^_\.)', '', x))
     df = df.fillna(value='_').replace('', '_')
