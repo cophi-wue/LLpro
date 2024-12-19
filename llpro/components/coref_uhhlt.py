@@ -27,10 +27,11 @@ def add_extension(cls, ext, **kwargs):
                       'coref_home': LLPRO_RESOURCES_ROOT + '/uhh-lt-neural-coref',
                       'model': LLPRO_RESOURCES_ROOT + '/model_droc_incremental_no_segment_distance_May02_17-32-58_1800.bin',
                       'config_name': 'droc_incremental_no_segment_distance',
+                      'split_method': 'none',
                       'pbar_opts': None,
                       'use_cuda': True,
                       'device_on_run': True})
-def coref_uhhlt(nlp, name, coref_home, model, config_name, pbar_opts, use_cuda, device_on_run):
+def coref_uhhlt(nlp, name, coref_home, model, config_name, split_method, pbar_opts, use_cuda, device_on_run):
     add_extension(Doc, "has_coref", default=False)
     add_extension(Doc, "coref_clusters", default=list())
     # add_extension(Doc, "coref_resolved")
@@ -42,20 +43,23 @@ def coref_uhhlt(nlp, name, coref_home, model, config_name, pbar_opts, use_cuda, 
     add_extension(Token, "coref_clusters", default=list())
 
     return CorefTagger(name=name, coref_home=coref_home, model=model, config_name=config_name,
-                       pbar_opts=pbar_opts, use_cuda=use_cuda, device_on_run=device_on_run)
+                       split_method=split_method, pbar_opts=pbar_opts, use_cuda=use_cuda,
+                       device_on_run=device_on_run)
 
 
 class CorefTagger(Module):
 
     def __init__(self, name, coref_home=LLPRO_RESOURCES_ROOT + 'uhh-lt-neural-coref',
                  model=LLPRO_RESOURCES_ROOT + '/model_droc_incremental_no_segment_distance_May02_17-32-58_1800.bin',
-                 config_name='droc_incremental_no_segment_distance', use_cuda=True, device_on_run=True,
+                 config_name='droc_incremental_no_segment_distance', split_method='none', use_cuda=True, device_on_run=True,
                  pbar_opts=None):
         super().__init__(name, pbar_opts)
         self.device = torch.device('cuda' if torch.cuda.is_available() and use_cuda else "cpu")
         self.coref_home = Path(coref_home)
         self.model_path = Path(model)
         self.device_on_run = device_on_run
+        
+        self.split_method = split_method
         sys.path.insert(0, str(self.coref_home))
         from neural_coref.tensorize import Tensorizer
         from transformers import BertTokenizer, ElectraTokenizer
@@ -196,12 +200,20 @@ class CorefTagger(Module):
                 clusters.append(spans)
             return clusters
 
+    def split_fn(self, sent_a: Span, sent_b: Span):
+        if self.split_method == 'none':
+            return False
+        if self.split_method == 'section':
+            return b[0]._.is_section_start
+        if self.split_method == 'scene':
+            return sent_a[-1]._.scene.id != sent_b[0]._.scene.id
+
     def process(self, doc: Doc, pbar: tqdm):
         sentences = doc.sents
         clusters = []
 
         i = 0
-        for batch in more_itertools.split_before(sentences, lambda x: x[0]._.is_section_start):
+        for batch in more_itertools.split_when(sentences, lambda a,b: self.split_fn(a, b)):
             batch_offset = batch[0][0].i
             predicted_batch_clusters  = self.process_batch(batch, pbar)
             for predicted_batch_cluster in predicted_batch_clusters:
