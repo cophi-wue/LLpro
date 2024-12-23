@@ -43,7 +43,7 @@ script = "build.py"
 requires = [
     "poetry-core>=1.0.0",
     "cython~=0.29",
-    "spacy~=3.5",
+    "spacy~=3.5.0",
     "numpy==1.21.4"
 ]
 build-backend = "poetry.core.masonry.api"
