@@ -204,7 +204,7 @@ class CorefTagger(Module):
         if self.split_method == 'none':
             return False
         if self.split_method == 'section':
-            return b[0]._.is_section_start
+            return sent_b[0]._.is_section_start
         if self.split_method == 'scene':
             return sent_a[-1]._.scene.id != sent_b[0]._.scene.id
 
