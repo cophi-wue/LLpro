@@ -67,6 +67,7 @@ def run_pipeline_on_files(filenames, nlp, tokenizer=None):
             except Exception as e:
                 logger.exception('Failed to process %s: %s', filename, e)
                 file_pbar.update(size)
+                file_pbar.set_description_str(f'{i + 1}/{len(filenames)}')
     file_pbar.close()
 
 
