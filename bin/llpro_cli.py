@@ -44,25 +44,29 @@ def run_pipeline_on_files(filenames, nlp, tokenizer=None):
         for i, (filename, size) in enumerate(zip(filenames, file_sizes)):
             start_time = time.monotonic()
             logger.info(f'Start processing {filename}')
-            with open(filename) as f:
-                content = f.read()
-                # tokenize outside of pipeline to set filename on resulting tokenized Doc
-                tokenization_start_time = time.monotonic()
-                doc = tokenizer(content)
-                tokenization_end_time = time.monotonic()
-                logger.info(
-                    f'Finished tokenization for {filename} in {tokenization_end_time - tokenization_start_time:.0f}s '
-                    f'({len(doc) / (tokenization_end_time - tokenization_start_time):.0f}tok/s)')
+            try:
+                with open(filename) as f:
+                    content = f.read()
+                    # tokenize outside of pipeline to set filename on resulting tokenized Doc
+                    tokenization_start_time = time.monotonic()
+                    doc = tokenizer(content)
+                    tokenization_end_time = time.monotonic()
+                    logger.info(
+                        f'Finished tokenization for {filename} in {tokenization_end_time - tokenization_start_time:.0f}s '
+                        f'({len(doc) / (tokenization_end_time - tokenization_start_time):.0f}tok/s)')
 
-                doc._.filename = filename
-                nlp(doc)
+                    doc._.filename = filename
+                    nlp(doc)
 
-            end_time = time.monotonic()
-            logger.info(f'Finished processing {filename} in {(end_time - start_time):.0f}s')
+                end_time = time.monotonic()
+                logger.info(f'Finished processing {filename} in {(end_time - start_time):.0f}s')
 
-            file_pbar.update(size)
-            file_pbar.set_description_str(f'{i + 1}/{len(filenames)}')
-            yield filename, doc
+                file_pbar.update(size)
+                file_pbar.set_description_str(f'{i + 1}/{len(filenames)}')
+                yield filename, doc
+            except Exception as e:
+                logger.exception('Failed to process %s: %s', filename, e)
+                file_pbar.update(size)
     file_pbar.close()
 
 
