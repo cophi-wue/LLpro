@@ -27,6 +27,7 @@ ARG USER=llprouser
 ARG UID=""
 ARG LLPRO_EXPERIMENTAL=0
 ENV LLPRO_EXPERIMENTAL=${LLPRO_EXPERIMENTAL}
+ENV POETRY_VERSION=1.8.5
 
 RUN if [ -z "${UID}" ]; then adduser ${USER} --home /docker_home --disabled-password --gecos ""; \
         else adduser ${USER} --uid ${UID} --home /docker_home --disabled-password --gecos ""; fi
