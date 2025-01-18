@@ -136,7 +136,27 @@ See the folder [`./contrib`](./contrib) for scripts to reproduce the fine-tuning
 
 If you use the LLpro software for academic research, please consider citing the accompanying publication:
 
-Ehrmanntraut, Anton, Leonard Konle, and Fotis Jannidis. 2023. „LLpro: A Literary Language Processing Pipeline for German Narrative Text.“ In *Proceedings of the 19th Conference on Natural Language Processing (KONVENS 2023)*. Ingolstadt, Germany: KONVENS 2023 Organizers. To be published.
+
+> Ehrmanntraut, Anton, Leonard Konle, and Fotis Jannidis. 2023. „LLpro: A Literary Language Processing Pipeline for German Narrative Text.“ In *Proceedings of the 19th Conference on Natural Language Processing (KONVENS 2023)*, ed. Munir Georges, Aaricia Herygers, Annemarie Friedrich and Benjamin Roth, pp. 28–39. Ingolstadt, Germany: Association for Computational Linguistics. <https://aclanthology.org/2023.konvens-main.3/>
+
+```bibtex
+@inproceedings{ehrmanntraut-etal-2023-llpro,
+    title = "{LL}pro: A Literary Language Processing Pipeline for {G}erman Narrative Texts",
+    author = "Ehrmanntraut, Anton  and
+      Konle, Leonard  and
+      Jannidis, Fotis",
+    editor = "Georges, Munir  and
+      Herygers, Aaricia  and
+      Friedrich, Annemarie  and
+      Roth, Benjamin",
+    booktitle = "Proceedings of the 19th Conference on Natural Language Processing (KONVENS 2023)",
+    date = "2023-09-18",
+    address = "Ingolstadt, Germany",
+    publisher = "Association for Computational Lingustics",
+    url = "https://aclanthology.org/2023.konvens-main.3/",
+    pages = "28--39"
+}
+```
 
 ## License
 
