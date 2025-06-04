@@ -5,7 +5,7 @@ WGET="wget --no-clobber --show-progress --progress=bar:force:noscroll"
 cd resources
 mkdir -p tmp
 $WGET 'https://corpora.linguistik.uni-erlangen.de/someweta/german_newspaper_2020-05-28.model'
-$WGET 'https://pub.cl.uzh.ch/users/sennrich/zmorge/transducers/zmorge-20150315-smor_newlemma.ca.zip'
+$WGET --no-check-certificate 'https://pub.cl.uzh.ch/users/sennrich/zmorge/transducers/zmorge-20150315-smor_newlemma.ca.zip'
 unzip -u zmorge-20150315-smor_newlemma.ca.zip
 #$WGET 'https://www.cis.uni-muenchen.de/~schmid/tools/RNNTagger/data/RNNTagger-1.3.zip'
 #unzip -uo RNNTagger-1.3.zip
