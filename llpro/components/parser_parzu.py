@@ -45,9 +45,9 @@ def get_noun_chunks_parzu(doclike: Union[Doc,Span]) -> Iterator[Tuple[int, int, 
 
 @Language.factory("parser_parzu", requires=['token.tag'], assigns=['token.dep', 'token.head'],
                   default_config={
-                      'parzu_home': LLPRO_RESOURCES_ROOT + '/ParZu',
+                      'parzu_home': 'ParZu',
                       'parzu_tmpdir': LLPRO_TEMPDIR,
-                      'zmorge_transducer': LLPRO_RESOURCES_ROOT + '/zmorge-20150315-smor_newlemma.ca',
+                      'zmorge_transducer': 'zmorge-20150315-smor_newlemma.ca',
                       'pbar_opts': None
                   })
 def parser_parzu(nlp, name, parzu_home, parzu_tmpdir, zmorge_transducer, pbar_opts):
@@ -64,16 +64,16 @@ class ParzuParser(Module):
     hence we do not lose any information.
     """
 
-    def __init__(self, name, parzu_home=LLPRO_RESOURCES_ROOT + '/ParZu',
+    def __init__(self, name, parzu_home='ParZu',
                  parzu_tmpdir=LLPRO_TEMPDIR,
-                 zmorge_transducer=LLPRO_RESOURCES_ROOT + '/zmorge-20150315-smor_newlemma.ca',
+                 zmorge_transducer='zmorge-20150315-smor_newlemma.ca',
                  pbar_opts=None):
         super().__init__(name, pbar_opts=pbar_opts)
-        sys.path.insert(0, str(parzu_home))
+        sys.path.insert(0, str(Path(LLPRO_RESOURCES_ROOT) / parzu_home))
         from parzu_class import process_arguments, Parser
 
         self.opts = process_arguments(commandline=False)
-        self.opts['smor_model'] = zmorge_transducer
+        self.opts['smor_model'] = str(Path(LLPRO_RESOURCES_ROOT) / zmorge_transducer)
         self.opts['tempdir'] = parzu_tmpdir
         self.parser = Parser(self.opts, timeout=1000)
 

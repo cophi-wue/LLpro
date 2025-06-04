@@ -24,8 +24,8 @@ def add_extension(cls, ext, **kwargs):
 @Language.factory("coref_uhhlt",
                   assigns=['token._.in_coref', 'token._.coref_clusters', 'doc._.has_coref', 'doc._.coref_clusters'],
                   default_config={
-                      'coref_home': LLPRO_RESOURCES_ROOT + '/uhh-lt-neural-coref',
-                      'model': LLPRO_RESOURCES_ROOT + '/model_droc_incremental_no_segment_distance_May02_17-32-58_1800.bin',
+                      'coref_home': 'uhh-lt-neural-coref',
+                      'model': 'model_droc_incremental_no_segment_distance_May02_17-32-58_1800.bin',
                       'config_name': 'droc_incremental_no_segment_distance',
                       'split_method': 'none',
                       'pbar_opts': None,
@@ -49,14 +49,14 @@ def coref_uhhlt(nlp, name, coref_home, model, config_name, split_method, pbar_op
 
 class CorefTagger(Module):
 
-    def __init__(self, name, coref_home=LLPRO_RESOURCES_ROOT + 'uhh-lt-neural-coref',
-                 model=LLPRO_RESOURCES_ROOT + '/model_droc_incremental_no_segment_distance_May02_17-32-58_1800.bin',
+    def __init__(self, name, coref_home='uhh-lt-neural-coref',
+                 model='model_droc_incremental_no_segment_distance_May02_17-32-58_1800.bin',
                  config_name='droc_incremental_no_segment_distance', split_method='none', use_cuda=True, device_on_run=True,
                  pbar_opts=None):
         super().__init__(name, pbar_opts)
         self.device = torch.device('cuda' if torch.cuda.is_available() and use_cuda else "cpu")
-        self.coref_home = Path(coref_home)
-        self.model_path = Path(model)
+        self.coref_home = Path(LLPRO_RESOURCES_ROOT) / coref_home
+        self.model_path = Path(LLPRO_RESOURCES_ROOT) / model
         self.device_on_run = device_on_run
         
         self.split_method = split_method
@@ -74,7 +74,7 @@ class CorefTagger(Module):
         else:
             self.model = CorefModel(self.config, self.device)
         self.tensorizer = Tensorizer(self.config)
-        self.model.load_state_dict(torch.load(str(model), map_location='cpu'))
+        self.model.load_state_dict(torch.load(str(self.model_path), map_location='cpu'))
         self.model.eval()
         if not self.device_on_run:
             self.model.to(self.device)

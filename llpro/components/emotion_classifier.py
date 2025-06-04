@@ -43,7 +43,7 @@ def load_checkpoint_cls(model_name, path):
 
 @Language.factory("emotion_classifier", assigns=['doc._.emotions', 'token._.emotions'], default_config={
     'base_model': 'deepset/gbert-large', 'batch_size': 8, 'use_cuda': True, 'device_on_run': True, 'pbar_opts': None,
-    'weights_dir': LLPRO_RESOURCES_ROOT + '/konle_emotion_weights'
+    'weights_dir': 'konle_emotion_weights'
 })
 def emotion_classifier(nlp, name, base_model, weights_dir, batch_size, use_cuda, device_on_run, pbar_opts):
     if not Token.has_extension('emotions'):
@@ -54,13 +54,13 @@ def emotion_classifier(nlp, name, base_model, weights_dir, batch_size, use_cuda,
                                 pbar_opts=pbar_opts)
 
 class EmotionClassifier(Module):
-    def __init__(self, name, base_model='deepset/gbert-large', weights_dir=LLPRO_RESOURCES_ROOT + '/konle_emotion_weights', batch_size=8, use_cuda=True, device_on_run=True, pbar_opts=None):
+    def __init__(self, name, base_model='deepset/gbert-large', weights_dir='konle_emotion_weights', batch_size=8, use_cuda=True, device_on_run=True, pbar_opts=None):
         super().__init__(name, pbar_opts=pbar_opts)
         self.device_on_run = device_on_run
         self.batch_size = batch_size
         self.device = torch.device('cuda' if torch.cuda.is_available() and use_cuda else "cpu")
-        self.base_model = base_model
-        self.weights_dir = Path(weights_dir)
+        self.base_model = str(Path(LLPRO_RESOURCES_ROOT) / base_model)
+        self.weights_dir = Path(LLPRO_RESOURCES_ROOT) / weights_dir
 
         self.tokenizer = BertTokenizer.from_pretrained(base_model)
 

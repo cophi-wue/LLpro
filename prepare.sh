@@ -16,6 +16,8 @@ unzip -uo RNNTagger-1.4.7.zip
 find ./RNNTagger/lib/ -type f ! -name '*german*' -delete # remove unncessesary models
 $WGET 'https://github.com/uhh-lt/neural-coref/releases/download/konvens/droc_incremental_no_segment_distance.mar'
 unzip -u droc_incremental_no_segment_distance.mar model_droc_incremental_no_segment_distance_May02_17-32-58_1800.bin
+$WGET 'https://github.com/uhh-lt/neural-coref/releases/download/konvens/droc_c2f.mar'
+unzip -u droc_c2f.mar model_droc_c2f_May12_17-38-53_1800.bin
 test -f "eventclassifier.zip" || $WGET 'https://github.com/uhh-lt/event-classification/releases/download/v0.2/demo_model.zip' -O 'eventclassifier.zip'
 unzip -u eventclassifier.zip -d eventclassifier_model
 

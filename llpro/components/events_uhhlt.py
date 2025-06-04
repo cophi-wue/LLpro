@@ -18,8 +18,8 @@ logger = logging.getLogger(__name__)
 
 @Language.factory("events_uhhlt", requires=['token.tag', 'token.dep', 'token.head'], assigns=['doc._.events'],
                   default_config={
-                      'event_classify_home': LLPRO_RESOURCES_ROOT + '/uhh-lt-event-classify',
-                      'model_dir': LLPRO_RESOURCES_ROOT + '/eventclassifier_model/demo_model',
+                      'event_classify_home': 'uhh-lt-event-classify',
+                      'model_dir': 'eventclassifier_model/demo_model',
                       'batch_size': 8,
                       'pbar_opts': None,
                       'use_cuda': True,
@@ -37,13 +37,13 @@ class EventClassifier(Module):
                  pbar_opts=None):
         super().__init__(name, pbar_opts)
         self.device = torch.device('cuda' if torch.cuda.is_available() and use_cuda else "cpu")
-        self.event_classify_home = Path(event_classify_home)
+        self.event_classify_home = Path(LLPRO_RESOURCES_ROOT) / event_classify_home
         self.device_on_run = device_on_run
         self.batch_size = batch_size
         sys.path.insert(0, str(self.event_classify_home))
 
         from event_classify.util import get_model
-        self.model, self.tokenizer = get_model(model_dir)
+        self.model, self.tokenizer = get_model(str(Path(LLPRO_RESOURCES_ROOT) / model_dir))
 
         if not self.device_on_run:
             self.model.to(self.device)
