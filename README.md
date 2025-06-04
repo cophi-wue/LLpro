@@ -29,21 +29,8 @@ NLP Pipeline for literary texts written in German.
 optional arguments:
   -h, --help            show this help message and exit
   -v, --verbose
-  --no-normalize-tokens
-                        Do not normalize tokens.
-  --tokenized           Skip tokenization, and assume that tokens are
-                        separated by whitespace.
-  --sentencized         Skip sentence splitting, and assume that sentences are
-                        separated by newline characters.
-  --paragraph-pattern PAT
-                        Optional paragraph separator pattern. Paragraph
-                        separators are removed, and sentences always terminate
-                        on paragraph boundaries. Performed before
-                        tokenization/sentence splitting.
-  --section-pattern PAT
-                        Optional sectioning paragraph pattern. Paragraphs
-                        fully matching the pattern are removed. Performed
-                        before tokenization/sentence splitting.
+  -X [OPT [OPT ...]], --component-config [OPT [OPT ...]]
+                        Component parameters of the form component_name.opt=value
   --stdout              Write all processed tokens to stdout.
   --writefiles DIR      For each input file, write processed tokens to a
                         separate file in DIR.
@@ -54,6 +41,20 @@ optional arguments:
 
 Note: you can specify the resources directory (containing `ParZu` etc.) with the environment
 variable `LLPRO_RESOURCES_ROOT`, and the temporary workdir with the environment variable `LLPRO_TEMPDIR`.
+
+### Component options
+
+Several components can be configured with the `-X` key. Notably:
+
+* `-X somajo_tokenizer.is_pretokenized=True` skips tokenization, and assumes tokens separated by whitespace.
+* `-X somajo_tokenizer.is_sentencized=True` skips sentence splitting, and assumes sentences separated by newlines.
+* `-X somajo_tokenizer.normalize_tokens=False` does not normalize tokens.
+* `-X somajo_tokenizer.paragraph_pattern='PAT'` sets the paragraph separator pattern. Paragraph
+   separators are removed, and sentences always terminate on paragraph boundaries. 
+   Performed before tokenization/sentence splitting.
+* `-X somajo_tokenizer.section_pattern='PAT'` sets the sectioning paragraph pattern. Paragraphs
+  fully matching the pattern are removed. Performed before tokenization/sentence splitting.
+* `-X coref_uhhlt.split_method='section'` performs coreference only on section-level.
 
 ## Installation
 

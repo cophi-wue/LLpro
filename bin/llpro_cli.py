@@ -4,6 +4,7 @@ import multiprocessing
 import os
 import sys
 import time
+from omegaconf import OmegaConf
 
 import spacy
 import torch
@@ -71,22 +72,22 @@ def run_pipeline_on_files(filenames, nlp, tokenizer=None):
     file_pbar.close()
 
 
-def create_pipe():
+def create_pipe(component_config):
     nlp = spacy.blank("de")
-    nlp.add_pipe('tagger_someweta')
-    nlp.add_pipe('tagger_rnntagger')
-    nlp.add_pipe('lemma_rnntagger')
-    nlp.add_pipe('parser_parzu')
-    nlp.add_pipe('speech_redewiedergabe')
-    nlp.add_pipe('scene_segmenter')
-    nlp.add_pipe('coref_uhhlt')
-    nlp.add_pipe('ner_flair')
-    nlp.add_pipe('events_uhhlt')
-    nlp.add_pipe('character_recognizer')
+    nlp.add_pipe('tagger_someweta', config=dict(component_config.get('tagger_someweta', {})))
+    nlp.add_pipe('tagger_rnntagger', config=dict(component_config.get('tagger_rnntagger', {})))
+    nlp.add_pipe('lemma_rnntagger', config=dict(component_config.get('lemma_rnntagger', {})))
+    nlp.add_pipe('parser_parzu', config=dict(component_config.get('parser_parzu', {})))
+    nlp.add_pipe('speech_redewiedergabe', config=dict(component_config.get('speech_redewiedergabe', {})))
+    nlp.add_pipe('scene_segmenter', config=dict(component_config.get('scene_segmenter', {})))
+    nlp.add_pipe('coref_uhhlt', config=dict(component_config.get('coref_uhhlt', {})))
+    nlp.add_pipe('ner_flair', config=dict(component_config.get('ner_flair', {})))
+    nlp.add_pipe('events_uhhlt', config=dict(component_config.get('events_uhhlt', {})))
+    nlp.add_pipe('character_recognizer', config=dict(component_config.get('character_recognizer', {})))
 
     # experimental stuff
     if os.getenv('LLPRO_EXPERIMENTAL', 'no').lower() in {'true', '1', 'y', 'yes'}:
-        nlp.add_pipe('emotion_classifier')
+        nlp.add_pipe('emotion_classifier', config=dict(component_config.get('emotion_classifier', {})))
 
     return nlp
 
@@ -95,19 +96,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='NLP Pipeline for literary texts written in German.')
     parser.add_argument('-v', '--verbose', action="store_const", dest="loglevel", const=logging.INFO)
     parser.add_argument('--version', action='version', version=llpro.__version__)
-    parser.add_argument('--no-normalize-tokens', action='store_false', dest='normalize_tokens',
-                        help='Do not normalize tokens.')
-    parser.add_argument('--tokenized', action='store_true',
-                        help='Skip tokenization, and assume that tokens are separated by whitespace.')
-    parser.add_argument('--sentencized', action='store_true',
-                        help='Skip sentence splitting, and assume that sentences are separated by newline characters.')
-    parser.add_argument('--paragraph-pattern', metavar='PAT', type=str, default=None,
-                        help='Optional paragraph separator pattern. Paragraph separators are removed, and sentences '
-                             'always terminate on paragraph boundaries. Performed before tokenization/sentence '
-                             'splitting.')
-    parser.add_argument('--section-pattern', metavar='PAT', type=str, default=None,
-                        help='Optional sectioning paragraph pattern. Paragraphs fully matching the pattern are '
-                             'removed. Performed before tokenization/sentence splitting.')
+    parser.add_argument('-X', '--component-config', metavar='OPT', type=str, help='Component parameters of the form component_name.opt=value', 
+                        required=False, action='append')
     group = parser.add_mutually_exclusive_group()
     group.add_argument('--stdout', default=True, help='Write all processed tokens to stdout.',
                        action='store_const', dest='outtype', const='stdout')
@@ -118,6 +108,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
     if args.writefiles is not None:
         args.outtype = 'files'
+
     logging.basicConfig(level=args.loglevel)
     logging.captureWarnings(True)
     try:
@@ -131,6 +122,9 @@ if __name__ == "__main__":
     logger.info('LLpro version: ' + llpro.__version__)
     logger.info('LLpro resources root: ' + llpro.LLPRO_RESOURCES_ROOT)
     logger.info('LLpro temporary directory: ' + llpro.LLPRO_TEMPDIR)
+
+    component_config = OmegaConf.from_dotlist(args.component_config or [])
+    logger.info('Picked up following component config overwrites:\n\n' +  OmegaConf.to_yaml(component_config))
 
     if 'OMP_NUM_THREADS' not in os.environ:
         try:
@@ -158,11 +152,9 @@ if __name__ == "__main__":
                 filenames.extend([os.path.join(root, m) for m in members])
 
     logger.info('Loading pipeline')
-    nlp = create_pipe()
+    nlp = create_pipe(component_config)
 
-    tokenizer = SoMaJoTokenizer(nlp.vocab, normalize=args.normalize_tokens, is_pretokenized=args.tokenized,
-                                is_presentencized=args.sentencized, paragraph_separator=args.paragraph_pattern,
-                                section_pattern=args.section_pattern, pbar=True)
+    tokenizer = SoMaJoTokenizer(nlp.vocab, pbar=True, **component_config.get('somajo_tokenizer', {}))
     for filename, tagged_doc in run_pipeline_on_files(filenames, nlp, tokenizer):
         if args.writefiles:
             with open(os.path.join(args.writefiles, os.path.basename(filename) + '.tsv'), 'w') as output_file:

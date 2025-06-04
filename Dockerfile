@@ -55,7 +55,7 @@ COPY --chown=${USER} build.py build.py
 RUN poetry install
 
 COPY --chown=${USER} bin/ bin/
-RUN poetry run python -c 'from bin.llpro_cli import create_pipe; create_pipe();'
+RUN poetry run python -c 'from bin.llpro_cli import create_pipe; create_pipe(dict());'
 
 WORKDIR /LLpro
 RUN rm -f resources/*.zip
