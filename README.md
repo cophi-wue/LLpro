@@ -19,24 +19,24 @@ See also the section about the [Output Format](./doc/OUTPUT_FORMAT.md) for a des
 ## Usage
 
 ```text
-usage: bin/llpro_cli.py [-h] [-v] [--no-normalize-tokens] [--tokenized]
-                        [--sentencized] [--paragraph-pattern PAT]
-                        [--section-pattern PAT] [--stdout | --writefiles DIR]
-                        --infiles FILE [FILE ...]
+usage: llpro_cli.py [-h] [-v] [--version] [-X OPT]
+                    [--stdout | --writefiles DIR] 
+                    --infiles FILE [FILE ...]
 
 NLP Pipeline for literary texts written in German.
 
 optional arguments:
   -h, --help            show this help message and exit
   -v, --verbose
-  -X [OPT [OPT ...]], --component-config [OPT [OPT ...]]
-                        Component parameters of the form component_name.opt=value
+  --version             show program's version number and exit
+  -X OPT, --component-config OPT
+                        Component parameters of the form
+                        component_name.opt=value
   --stdout              Write all processed tokens to stdout.
   --writefiles DIR      For each input file, write processed tokens to a
                         separate file in DIR.
   --infiles FILE [FILE ...]
                         Input files, or directories.
-
 ```
 
 Note: you can specify the resources directory (containing `ParZu` etc.) with the environment
@@ -47,7 +47,7 @@ variable `LLPRO_RESOURCES_ROOT`, and the temporary workdir with the environment 
 Several components can be configured with the `-X` key. Notably:
 
 * `-X somajo_tokenizer.is_pretokenized=True` skips tokenization, and assumes tokens separated by whitespace.
-* `-X somajo_tokenizer.is_sentencized=True` skips sentence splitting, and assumes sentences separated by newlines.
+* `-X somajo_tokenizer.is_presentencized=True` skips sentence splitting, and assumes sentences separated by newlines.
 * `-X somajo_tokenizer.normalize_tokens=False` does not normalize tokens.
 * `-X somajo_tokenizer.paragraph_pattern='PAT'` sets the paragraph separator pattern. Paragraph
    separators are removed, and sentences always terminate on paragraph boundaries. 
