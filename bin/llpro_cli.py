@@ -74,20 +74,28 @@ def run_pipeline_on_files(filenames, nlp, tokenizer=None):
 
 def create_pipe(component_config):
     nlp = spacy.blank("de")
-    nlp.add_pipe('tagger_someweta', config=dict(component_config.get('tagger_someweta', {})))
-    nlp.add_pipe('tagger_rnntagger', config=dict(component_config.get('tagger_rnntagger', {})))
-    nlp.add_pipe('lemma_rnntagger', config=dict(component_config.get('lemma_rnntagger', {})))
-    nlp.add_pipe('parser_parzu', config=dict(component_config.get('parser_parzu', {})))
-    nlp.add_pipe('speech_redewiedergabe', config=dict(component_config.get('speech_redewiedergabe', {})))
-    nlp.add_pipe('scene_segmenter', config=dict(component_config.get('scene_segmenter', {})))
-    nlp.add_pipe('coref_uhhlt', config=dict(component_config.get('coref_uhhlt', {})))
-    nlp.add_pipe('ner_flair', config=dict(component_config.get('ner_flair', {})))
-    nlp.add_pipe('events_uhhlt', config=dict(component_config.get('events_uhhlt', {})))
-    nlp.add_pipe('character_recognizer', config=dict(component_config.get('character_recognizer', {})))
-
-    # experimental stuff
+    components = [
+        'tagger_someweta',
+        'tagger_rnntagger',
+        'lemma_rnntagger',
+        'parser_parzu',
+        'speech_redewiedergabe',
+        'scene_segmenter',
+        'coref_uhhlt',
+        'ner_flair',
+        'events_uhhlt',
+        'character_recognizer',
+    ]
     if os.getenv('LLPRO_EXPERIMENTAL', 'no').lower() in {'true', '1', 'y', 'yes'}:
-        nlp.add_pipe('emotion_classifier', config=dict(component_config.get('emotion_classifier', {})))
+        components.extend([
+            'emotion_classifier'
+        ])
+    
+    for component in components:
+        config = dict(component_config.get(component, {}))
+        if config.get('disable', False):
+            continue
+        nlp.add_pipe(component, config=config)
 
     return nlp
 

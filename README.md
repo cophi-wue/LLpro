@@ -55,6 +55,7 @@ Several components can be configured with the `-X` key. Notably:
 * `-X somajo_tokenizer.section_pattern='PAT'` sets the sectioning paragraph pattern. Paragraphs
   fully matching the pattern are removed. Performed before tokenization/sentence splitting.
 * `-X coref_uhhlt.split_method='section'` performs coreference only on section-level.
+* `-X <component_name>.disable=True` disables the specific component
 
 ## Installation
 
