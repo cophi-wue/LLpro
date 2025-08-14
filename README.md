@@ -48,12 +48,11 @@ Several components can be configured with the `-X` key. Notably:
 
 * `-X somajo_tokenizer.is_pretokenized=True` skips tokenization, and assumes tokens separated by whitespace.
 * `-X somajo_tokenizer.is_presentencized=True` skips sentence splitting, and assumes sentences separated by newlines.
-* `-X somajo_tokenizer.normalize_tokens=False` does not normalize tokens.
-* `-X somajo_tokenizer.paragraph_pattern='PAT'` sets the paragraph separator pattern. Paragraph
-   separators are removed, and sentences always terminate on paragraph boundaries. 
-   Performed before tokenization/sentence splitting.
+* `-X somajo_tokenizer.normalize_tokens=False` does not normalize tokens. Incompatible with `is_pretokenized=False`.
+* `-X somajo_tokenizer.paragraph_separator='PAT'` sets the paragraph separator pattern. Input text is split into paragraph at pattern occurences, and sentences always terminate on paragraph boundaries. Like Python's `re.split`, 
+   if capturing parentheses are used in PAT, then the text of each group in the pattern is also returned as paragraph. Performed before tokenization/sentence splitting.
 * `-X somajo_tokenizer.section_pattern='PAT'` sets the sectioning paragraph pattern. Paragraphs
-  fully matching the pattern are removed. Performed before tokenization/sentence splitting.
+  fully matching the pattern are removed, except any group captured by parentheses used in PAT. Performed before tokenization/sentence splitting.
 * `-X coref_uhhlt.split_method='section'` performs coreference only on section-level.
 * `-X <component_name>.disable=True` disables the specific component
 

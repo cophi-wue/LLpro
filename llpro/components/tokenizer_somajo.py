@@ -159,41 +159,39 @@ class SoMaJoTokenizer:
         return doc
 
     def to_paragraphs(self, text: str) -> Iterable[Tuple[bool, int, str]]:
-        if self.paragraph_separator is None:
+        def split_into_paragraphs(text: str) -> Iterable[Tuple[int, str]]:
             if self.section_pattern is None:
-                yield None, 0, text
-            else:
-                yield True, 0, text
-        else:
-            is_section_start = True
+                yield 0, text
+                return
+
             offset = 0
             for separator_match in re.finditer(self.paragraph_separator, text, flags=re.UNICODE | re.MULTILINE):
                 para = text[offset:separator_match.start()]
-                if self.section_pattern and re.fullmatch(self.section_pattern, para, flags=re.UNICODE | re.MULTILINE | re.DOTALL):
-                    is_section_start = True
-                    offset = separator_match.end()
-                    continue
-
-                if len(para) == 0:
-                    offset = separator_match.end()
-                    continue
-
-                if self.section_pattern:
-                    yield is_section_start, offset, para
-                else:
-                    yield None, offset, para
+                yield offset, para
+                for i, group in enumerate(separator_match.groups()):
+                    if group is None:
+                        continue
+                    yield offset + separator_match.start(i+1), group
 
                 offset = separator_match.end()
-                is_section_start = False
 
             # handle final paragraph
             para = text[offset:]
-            if len(para) == 0:
-                return
-            if self.section_pattern and re.fullmatch(self.section_pattern, para, flags=re.UNICODE | re.MULTILINE | re.DOTALL):
-                return
+            yield offset, para
 
-            if self.section_pattern:
-                yield is_section_start, offset, para
+        is_section_start = True if self.section_pattern is not None else None
+        for offset, para in split_into_paragraphs(text):
+            if len(para) == 0:
+                continue
+
+            section_match = None
+            if self.section_pattern is not None:
+                section_match = re.fullmatch(self.section_pattern, para, flags=re.UNICODE | re.MULTILINE | re.DOTALL)
+            if section_match is not None:
+                is_section_start = True
+                for i, group in enumerate(section_match.groups()):
+                    yield is_section_start, offset + section_match.start(i+1), group
+                    is_section_start = False
             else:
-                yield None, offset, para
+                yield is_section_start, offset, para
+                is_section_start = False if self.section_pattern is not None else None
