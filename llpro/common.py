@@ -80,12 +80,13 @@ def spacy_doc_to_dataframe(doc):
                 val = str(val)
             token_attribute_dictionary[column].append(val)
 
-    if Token.has_extension('speech'):
+    if Token.has_extension('speeches'):
         for tok in doc:
-            if len(tok._.speech) > 0:
-                token_attribute_dictionary['speech'].append(','.join(tok._.speech))
+            if len(tok._.speeches) > 0:
+                labels = [str(speech.id) + '.' + speech.label_ for speech in tok._.speeches]
+                token_attribute_dictionary['speeches'].append(','.join(labels))
             else:
-                token_attribute_dictionary['speech'].append('_')
+                token_attribute_dictionary['speeches'].append('_')
 
     for tok in doc:
         ent_str = 'O' if tok.ent_iob_ == 'O' else tok.ent_iob_ + '-' + tok.ent_type_

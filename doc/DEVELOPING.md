@@ -242,20 +242,24 @@ Additionally, `span_group.attrs["id"]` holds a unique ID of that cluster.
 
 * Component name: `speech_redewiedergabe`
 * Implementing class: `llpro.components.speech_redewiedergabe.RedewiedergabeTagger`
-* Assigns: `token._.speech`
+* Assigns: `token._.speeches`, `doc._.speeches`
 
 Options:
 
-| Name            | Description                                                                                                                                                                                                                                                                                            |
-|:----------------|:-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `models`        | A dict with keys corresponding to the STWR type, and values corresponding to the respective model. Default: `{'direct': 'aehrm/redewiedergabe-direct', 'indirect': 'aehrm/redewiedergabe-indirect', 'reported': 'aehrm/redewiedergabe-reported', 'freeIndirect': 'aehrm/redewiedergabe-freeindirect'}` |
-| `use_cuda`      | as specified above                                                                                                                                                                                                                                                                                     |
-| `device_on_run` | as specified above                                                                                                                                                                                                                                                                                     |
-| `pbar_opts`     | as specified above                                                                                                                                                                                                                                                                                     |
+| Name            | Description                                                                  |
+|:----------------|:-----------------------------------------------------------------------------|
+| `model`         | The scene segmenter model to use. Default: `aehrm/modernbert-redewiedergabe` |
+| `use_cuda`      | as specified above                                                           |
+| `device_on_run` | as specified above                                                           |
+| `pbar_opts`     | as specified above                                                           |
 
-The RedewiedergabeTagger uses neural taggers proposed by Brunner, Tu, Weimer, and Jannidis [(2020)](#ref-brunner_bert_2021) to predict for each token four different types of speech, thought and writing representation (STWR).
+The RedewiedergabeTagger uses a ModernGBERT tagger to predict for each token four different types of speech, thought and writing representation (STWR).
+See [Brunner, Engelbert, Jannidis, Tu, and Weimer (2020)](#ref-brunner_corpus_2020) for an overview of the annotation scheme.
 
-This component assigns to each token a subset of the four speech types `direct`, `indirect`, `reported`, `freeIndirect` to the custom attribute `token._.speech` for which the respective model labeled the token as part of the respective type of STWR.
+This component assigns to the document a list of [`Span`](https://spacy.io/api/span) objects to the custom attribute `doc._.speeches`, where each span represents one speech act.
+For each span `speech`, the attribute `speech.label_` contains the *type* and *medium*, like `direct.speech`.
+
+Additionally, this component also assigns to each token in the custom attribute `token._.speeches` the list speeches it is contained in.
 
 ### Scene Segmentation
 
@@ -309,6 +313,12 @@ The value `event.attrs["event_type"]` holds the annotated event type, i.e. one o
 <div id="ref-akbik_contextual_2018">
 
 <p>Akbik, Alan, Duncan Blythe, and Roland Vollgraf. 2018. “Contextual String Embeddings for Sequence Labeling.” In <em>COLING 2018, 27th International Conference on Computational Linguistics</em>, 1638–49.</p>
+
+</div>
+
+<div id="ref-brunner_corpus_2020" class="csl-entry" role="listitem">
+
+<p>Brunner, Annelen, Stefan Engelberg, Fotis Jannidis, Ngoc Duyen Tanja Tu, and Lukas Weimer. 2020. <span>“Corpus <span>REDEWIEDERGABE</span>.”</span> In <em>Proceedings of the Twelfth Language Resources and Evaluation Conference</em>, edited by Nicoletta Calzolari, Frédéric Béchet, Philippe Blache, Khalid Choukri, Christopher Cieri, Thierry Declerck, Sara Goggi, et al., 803–12. Marseille, France: European Language Resources Association. <a href="https://aclanthology.org/2020.lrec-1.100">https://aclanthology.org/2020.lrec-1.100</a>.</p>
 
 </div>
 
