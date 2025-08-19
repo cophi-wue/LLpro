@@ -10,6 +10,8 @@ tests
 .git
 train_output
 resources
+contrib
+__pycache__
 !resources/uhh-lt-event-classify/
 !resources/uhh-lt-neural-coref/
 !resources/ParZu/

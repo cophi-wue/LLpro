@@ -3,7 +3,8 @@ import torch.nn as nn
 from transformers import AutoModel
 from neural_coref import util
 import logging
-from collections import Iterable, defaultdict
+from collections.abc import Iterable
+from collections import defaultdict
 import numpy as np
 import torch.nn.init as init
 from neural_coref import higher_order as ho
@@ -88,6 +89,8 @@ class CorefModel(nn.Module):
                 state_dict[emb_segment_distance_weight],
                 new_shape[0],
             )
+
+        state_dict.pop('bert.embeddings.position_ids')
         return super().load_state_dict(state_dict, strict=strict)
 
     def initialize_differently_sized_embedding_layer(self, old_tensor, new_input_size, std=0.02):

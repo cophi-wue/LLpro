@@ -2,17 +2,23 @@ FROM nvidia/cuda:11.3.1-devel-ubuntu20.04
 
 ARG DEBIAN_FRONTEND=noninteractive
 ENV TZ=Europe/Berlin
+RUN apt-get update -y && apt-get -y install software-properties-common -y
+RUN add-apt-repository ppa:deadsnakes/ppa
+
 RUN apt-get update -y && apt-get -y install \
     curl \
-    python3 \
+    python3.12 \
+    python3.12-dev \
     python3-pip \
     python3-venv \
-    python3-distutils \
     swi-prolog \
     sfst \
     unzip \
     wget \
     git
+
+RUN update-alternatives --install /usr/bin/python python /usr/bin/python3.12 1
+RUN update-alternatives --install /usr/bin/python3 python /usr/bin/python3.12 1
 
 ENV PYTHONFAULTHANDLER=1 \
   PYTHONUNBUFFERED=1 \
@@ -36,6 +42,7 @@ RUN mkdir /LLpro
 RUN chown ${USER} /LLpro
 
 USER ${USER}
+WORKDIR /docker_home
 RUN curl -sSL https://install.python-poetry.org | python3 -
 ENV PATH="${PATH}:/docker_home/.local/bin"
 
